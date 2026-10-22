@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ionisierungsenergie & Ionenbildung</title>
+<meta name="description" content="Ionisierungsenergie und Ionenbildung: Sukzessive Ionisierungsenergien als Schalenbeweis, interaktive Ionenbildungs-Werkbank für alle Hauptgruppen und Übergang zu Salzen.">
+<meta name="material:typ" content="Lernpfad">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC, Beamer">
+<meta name="material:stichworte" content="Ionisierungsenergie, Ionenbildung, Kation, Anion, Oktettregel, Edelgaskonfiguration, Schalenbeweis, Salze">
+<meta name="material:reihenfolge" content="6">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Farbsystem abgestimmt auf den Lernpfad und die Materialsammlung */
+:root {
+  --papier: #f6f2e9;
+  --blatt: #ffffff;
+  --tinte: #1c2733;
+  --tinte-2: #4b5765;
+  --tinte-3: #6b7480;
+  --linie: #d9d2c3;
+  --linie-hell: #ebe5d8;
+  --akzent: #0b5c94;
+  --akzent-soft: #e5f1f8;
+  --orange: #D55E00;
+  --gruen: #009E73;
+  --gelb: #E69F00;
+  --lila: #8E3A9E;
+  --sky: #56B4E9;
+  --schrift: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --schrift-titel: "Lexend", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --radius: 6px;
+  --breite: 1180px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #11171d;
+    --blatt: #18222b;
+    --tinte: #e5edf2;
+    --tinte-2: #9aa8b5;
+    --tinte-3: #6e7d8c;
+    --linie: #2c3a47;
+    --linie-hell: #222e38;
+    --akzent: #4ba2d9;
+    --akzent-soft: #172d3d;
+    --orange: #f27731;
+    --gruen: #37bf87;
+    --gelb: #f2b43a;
+    --lila: #d79be3;
+    --sky: #6bc2f0;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papier); color: var(--tinte); font-family: var(--schrift); font-size: 1.02rem; line-height: 1.55; }
+.wrap { max-width: var(--breite); margin: 0 auto; padding: 20px 20px 50px; }
+
+/* In einem Iframe eingebettet? → Header-Breadcrumb ausblenden */
+.in-iframe .nav-top { display: none !important; }
+
+/* Navigation */
+.nav-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 0.95rem; }
+.breadcrumb { color: var(--akzent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.breadcrumb:hover { text-decoration: underline; }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+
+.header-lead { margin-bottom: 18px; }
+.ueberzeile { font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gelb); font-weight: 700; margin: 0 0 4px; }
+h1 { font-family: var(--schrift-titel); font-size: clamp(1.65rem, 3vw, 2.2rem); margin: 0 0 8px; font-weight: 700; line-height: 1.25; }
+.lead { font-size: 1.08rem; color: var(--tinte-2); margin: 0; max-width: 82ch; }
+
+/* Tabs: Modus-Wahl */
+.mode-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.seg-control { display: inline-flex; background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); padding: 3px; gap: 3px; }
+.seg-btn { border: 0; background: transparent; padding: 7px 14px; border-radius: 4px; font-family: var(--schrift-titel); font-size: 0.92rem; font-weight: 500; color: var(--tinte-2); cursor: pointer; transition: all 0.12s; display: inline-flex; align-items: center; gap: 6px; }
+.seg-btn:hover { color: var(--tinte); }
+.seg-btn.active { background: var(--tinte); color: var(--blatt); font-weight: 600; }
+
+/* Grid Layout */
+.main-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(350px, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 960px) { .main-grid { grid-template-columns: 1fr; } }
+
+.canvas-panel { background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.canvas-panel:fullscreen { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+.canvas-header { padding: 10px 16px; border-bottom: 1px solid var(--linie); display: flex; justify-content: space-between; align-items: center; background: var(--papier); font-family: var(--schrift-titel); font-size: 0.95rem; font-weight: 600; }
+.canvas-wrap { position: relative; width: 100%; aspect-ratio: 16/10; min-height: 400px; background: #0c1218; }
+.canvas-panel:fullscreen .canvas-wrap { flex: 1; aspect-ratio: auto; min-height: 0; max-height: none; }
+canvas { display: block; width: 100%; height: 100%; }
+
+.btn-icon { background: transparent; border: 1px solid var(--linie); border-radius: 4px; padding: 4px 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: var(--tinte); transition: all 0.12s; }
+.btn-icon:hover { background: var(--blatt); border-color: var(--akzent); color: var(--akzent); }
+
+/* Rechte Kontroll-Spalte */
+.ctrl-col { display: flex; flex-direction: column; gap: 14px; }
+.box { background: var(--blatt); border: 1.5px solid var(--linie); border-left: 4px solid var(--akzent); border-radius: var(--radius); padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.box.orange { border-left-color: var(--orange); }
+.box.green { border-left-color: var(--gruen); }
+.box.gold { border-left-color: var(--gelb); }
+.box h2 { font-family: var(--schrift-titel); font-size: 1.15rem; font-weight: 600; margin: 0 0 10px; }
+
+/* Element-Wahl Chips */
+.chips-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.chip-btn { border: 1px solid var(--tinte-2); background: var(--blatt); color: var(--tinte); padding: 5px 10px; border-radius: 4px; font-family: var(--schrift-titel); font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.12s; }
+.chip-btn:hover { background: var(--papier); }
+.chip-btn.active { background: var(--tinte); color: var(--blatt); border-color: var(--tinte); }
+
+/* Buttons & Aktionen */
+.btn { font: inherit; font-family: var(--schrift-titel); font-size: 0.92rem; font-weight: 600; padding: 8px 14px; border-radius: 5px; border: 1px solid var(--tinte-2); background: var(--blatt); color: var(--tinte); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.12s; }
+.btn:hover { background: var(--papier); }
+.btn.primary { background: var(--tinte); border-color: var(--tinte); color: var(--blatt); }
+.btn.orange { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+/* Reaktionsgleichung */
+.eq-box { background: var(--papier); border: 1.5px solid var(--linie); border-radius: 5px; padding: 10px 14px; text-align: center; font-family: var(--schrift-titel); font-size: 1.3rem; font-weight: 700; margin: 8px 0; }
+
+/* Edelgas-Badge */
+.noble-badge { background: var(--gruen); color: #fff; padding: 6px 12px; border-radius: 5px; font-family: var(--schrift-titel); font-size: 0.9rem; font-weight: 700; text-align: center; margin-top: 8px; display: none; }
+
+/* Ausklappbare Erklärung (<details>) */
+details.collapsible { background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); padding: 12px 16px; margin-top: 10px; }
+details.collapsible summary { font-family: var(--schrift-titel); font-weight: 600; font-size: 0.98rem; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+details.collapsible summary::-webkit-details-marker { display: none; }
+details.collapsible summary::after { content: "＋"; font-size: 1.15rem; color: var(--akzent); }
+details.collapsible[open] summary::after { content: "−"; }
+.details-body { margin-top: 10px; font-size: 0.92rem; line-height: 1.5; }
+
+/* Überleitung zum Ionenpuzzle */
+.puzzle-bridge { background: var(--blatt); border: 2px dashed var(--akzent); border-radius: var(--radius); padding: 18px 22px; margin-top: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.bridge-text { flex: 1; min-width: 280px; }
+.bridge-text h2 { margin: 0 0 6px; font-family: var(--schrift-titel); font-size: 1.2rem; font-weight: 700; color: var(--akzent); }
+.bridge-text p { margin: 0; color: var(--tinte-2); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav-top">
+    <a href="../../index.html" class="breadcrumb" target="_top">
+      <svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      Zurück zur Materialsammlung
+    </a>
+    <span style="color: var(--tinte-2);">Chemie · Atommodelle</span>
+  </div>
+
+  <header class="header-lead">
+    <p class="ueberzeile">Bindungslehre & Ionen</p>
+    <h1>Ionisierungsenergie & Ionenbildung</h1>
+    <p class="lead">
+      Wie beweist man experimentell, dass Elektronen in Schalen angeordnet sind?
+      Und warum bilden Metallatome positive Kationen und Nichtmetallatome negative Anionen?
+      Erforsche die charakteristischen Sprünge der Ionisierungsenergie und die Ionenbildung nach der Edelgasregel.
+    </p>
+  </header>
+
+  <div class="mode-bar">
+    <div class="seg-control" role="tablist" aria-label="Ansicht wählen">
+      <button class="seg-btn active" id="btnTabIE" role="tab" aria-selected="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        1. Sukzessive Ionisierungsenergie (Schalenbeweis)
+      </button>
+      <button class="seg-btn" id="btnTabIon" role="tab" aria-selected="false">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        2. Ionenbildungs-Werkbank (Edelgasregel)
+      </button>
+    </div>
+  </div>
+
+  <main class="main-grid">
+    <!-- Links: Leinwand (Balkendiagramm oder Ionenwerkbank) -->
+    <div class="canvas-panel">
+      <div class="canvas-header">
+        <div>
+          <span id="canvasCaption">Sukzessive Ionisierungsenergien (Balkendiagramm)</span>
+          <span id="canvasSub" style="display: block; font-size: 0.8rem; color: var(--tinte-2); font-weight: normal;">Achte auf den Schalensprung!</span>
+        </div>
+        <button class="btn-icon" id="btnFullscreen" title="Vollbildmodus (F)" aria-label="Vollbildmodus">
+          <svg class="icon" id="fsIcon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        </button>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="cv"></canvas>
+      </div>
+    </div>
+
+    <!-- Rechts: Steuerung & Analyse -->
+    <div class="ctrl-col">
+      <!-- Bereich A: Ionisierungsenergie -->
+      <div id="panelIE">
+        <section class="box orange">
+          <h2>1. Element auswählen</h2>
+          <div class="chips-row">
+            <button class="chip-btn active" data-ie="Na">Natrium (Na)</button>
+            <button class="chip-btn" data-ie="Mg">Magnesium (Mg)</button>
+            <button class="chip-btn" data-ie="Al">Aluminium (Al)</button>
+            <button class="chip-btn" data-ie="P">Phosphor (P)</button>
+            <button class="chip-btn" data-ie="S">Schwefel (S)</button>
+            <button class="chip-btn" data-ie="Cl">Chlor (Cl)</button>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button class="btn orange" id="btnIonizeNext">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Nächstes Elektron abziehen
+            </button>
+            <button class="btn" id="btnResetIE">Zurücksetzen</button>
+          </div>
+        </section>
+
+        <section class="box green" style="margin-top: 14px;">
+          <h2>Aktueller Status</h2>
+          <p id="descIE" style="margin: 0; font-size: 0.95rem; line-height: 1.5;">
+            Das 1. Elektron lässt sich relativ leicht abziehen. Beobachte, was passiert, wenn alle Valenzelektronen entfernt sind!
+          </p>
+        </section>
+
+        <details class="collapsible">
+          <summary>Didaktischer Schalenbeweis & Berechnungsgrundlagen</summary>
+          <div class="details-body">
+            <p style="margin: 0 0 8px;">
+              <strong>Experimenteller Schalenbeweis:</strong> Sobald alle Außenelektronen einer Schale abgezogen sind, muss das nächste Elektron aus einer kernnäheren Schale entfernt werden. Dort wirkt eine drastisch höhere Coulomb-Anziehungskraft ohne abschirmende Zwischenschalen – es kommt zum messbaren <strong>Schalensprung</strong>!
+            </p>
+            <p style="margin: 0 0 8px;">
+              <strong>Berechnungsformel (wasserstoffähnliche Ionen):</strong> Für das allerletzte 1s-Elektron gilt exakt nach Rydberg/Bohr:
+              <br><code>IE_Z = R_y · Z² = 1312,75 kJ/mol · Z²</code> (z. B. H: 1313 kJ, P¹⁴⁺: ~287.610 kJ).
+            </p>
+            <p style="margin: 0 0 8px;">
+              <strong>Slater-Regeln für Mehrelektronenatome:</strong>
+              <br><code>IE_i = 1312,75 · (Z − S)² / (n*)² kJ/mol</code> mit Abschirmungskonstante S und effektiver Hauptquantenzahl n*.
+            </p>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--tinte-2);">
+              <strong>Quellen der Messdaten:</strong> NIST Atomic Spectra Database (Standard Reference Database 78, NIST ASD Team, 2024); CRC Handbook of Chemistry and Physics (97. Auflage); J. C. Slater (1930), <em>Phys. Rev.</em> 36, 57.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <!-- Bereich B: Ionenbildung Werkbank mit 4 Schalen (K, L, M, N) -->
+      <div id="panelIon" style="display: none;">
+        <section class="box">
+          <h2>1. Element wählen</h2>
+          <div class="chips-row" id="ionElemChips"></div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+            <button class="btn orange" id="btnSubE">− Elektron abgeben</button>
+            <button class="btn primary" id="btnAddE">+ Elektron aufnehmen</button>
+            <button class="btn" id="btnResetIon">Neutralisieren</button>
+          </div>
+        </section>
+
+        <section class="box gold" style="margin-top: 14px;">
+          <h2>2. Reaktionsgleichung & Zustand</h2>
+          <div class="eq-box" id="eqBox">Na (neutral)</div>
+          <div class="noble-badge" id="nobleBadge">✨ Edelgaskonfiguration erreicht!</div>
+          <div id="stabilityBadge" style="margin-top: 8px; padding: 6px 12px; border-radius: 5px; font-family: var(--schrift-titel); font-size: 0.88rem; font-weight: 700; text-align: center;"></div>
+          <p id="ionInfoText" style="margin: 8px 0 0; font-size: 0.92rem; color: var(--tinte-2); line-height: 1.45;">
+            Das Atom startet ungeladen. Gib Elektronen ab oder nimm welche auf, um die stabile Edelgaskonfiguration zu erreichen.
+          </p>
+        </section>
+
+        <details class="collapsible">
+          <summary>Hintergrund: Oktettregel, Ionenradien & Stabilität</summary>
+          <div class="details-body">
+            <p style="margin: 0 0 8px;">
+              <strong>Kationen (Metalle):</strong> Geben Valenzelektronen ab. Fällt die äußerste Schale weg, schrumpft das Kation dramatisch auf rund die Hälfte des Atomradius (z. B. Na: 186 pm → Na⁺: 102 pm)!
+            </p>
+            <p style="margin: 0 0 8px;">
+              <strong>Anionen (Nichtmetalle):</strong> Nehmen Elektronen auf, bis die Außenschale voll ist (Oktett). Durch die zusätzliche Elektronenabstoßung bläht sich das Anion auf (z. B. Cl: 99 pm → Cl⁻: 181 pm).
+            </p>
+            <p style="margin: 0 0 6px;">
+              <strong>Warum sind Atome bei zu vielen Elektronen instabil?</strong><br>
+              Jedes zusätzliche Elektron bringt negative Ladung mit. Die elektrostatische Abstoßung zwischen den Elektronen übertrifft ab einem gewissen Punkt die Anziehungskraft des Kerns (F_Abstoßung > F_Kern). Ein freies Ion wie Cl²⁻ oder O³⁻ kann gasförmig gar nicht existieren und zerfällt spontan durch Autodetachment (Elektronenabstoßung).
+            </p>
+            <p style="margin: 0;">
+              <strong>Warum sind Atome bei zu wenigen Elektronen instabil?</strong><br>
+              Wird eine abgeschlossene Edelgasschale aufgebrochen (z. B. Na²⁺ oder Li²⁺), explodiert die benötigte Ionisierungsenergie (>4500 kJ/mol). Chemische Bindungen können diese Energie nicht aufbringen; das hochgeladene Kation entreißt seiner Umgebung schlagartig Elektronen.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <!-- Brücke zum Ionenpuzzle -->
+  <section class="puzzle-bridge">
+    <div class="bridge-text">
+      <h2>Weiterer Schritt: Wie verbinden sich Ionen zu Salzen?</h2>
+      <p>
+        Aus Kationen und Anionen entstehen durch elektrostatische Anziehung feste Kristallgitter.
+        Im interaktiven Ionenpuzzle kannst du Verhältnisformeln selbst zusammenbauen!
+      </p>
+    </div>
+    <a href="../interaktive-werkzeuge/ionenpuzzle.html" target="_top" class="btn primary" style="font-size: 0.95rem; padding: 10px 18px;">
+      Zum Ionenpuzzle: Baue Salzgitter! →
+    </a>
+  </section>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Iframe-Erkennung: Header ausblenden & Links im Hauptfenster öffnen
+  if (window.self !== window.top) {
+    document.body.classList.add('in-iframe');
+    document.querySelectorAll('a').forEach(a => {
+      if (!a.getAttribute('target')) a.setAttribute('target', '_top');
+    });
+  }
+
+  // Sukzessive Ionisierungsenergien in kJ/mol für ALLE Elektronen bis Z (NIST ASD & CRC Handbook)
+  const IE_DATA = {
+    Na: {
+      name: 'Natrium',
+      z: 11,
+      shells: [2, 8, 1],
+      energies: [496, 4562, 6910, 9543, 13354, 16613, 20117, 25496, 28932, 141362, 159075],
+      jumpAfter: [1, 9]
+    },
+    Mg: {
+      name: 'Magnesium',
+      z: 12,
+      shells: [2, 8, 2],
+      energies: [738, 1451, 7733, 10543, 13630, 18020, 21711, 25661, 31653, 35458, 169988, 189368],
+      jumpAfter: [2, 10]
+    },
+    Al: {
+      name: 'Aluminium',
+      z: 13,
+      shells: [2, 8, 3],
+      energies: [578, 1817, 2745, 11577, 14842, 18379, 23326, 27465, 31853, 38473, 42647, 201266, 222316],
+      jumpAfter: [3, 11]
+    },
+    P: {
+      name: 'Phosphor',
+      z: 15,
+      shells: [2, 8, 5],
+      energies: [1012, 1907, 2914, 4964, 6274, 21268, 25431, 29872, 35905, 40950, 46261, 54110, 59024, 271790, 287610],
+      jumpAfter: [5, 13]
+    },
+    S: {
+      name: 'Schwefel',
+      z: 16,
+      shells: [2, 8, 6],
+      energies: [1000, 2252, 3357, 4556, 7004, 8496, 27108, 31719, 36621, 43177, 48706, 54460, 62900, 68230, 311070, 327790],
+      jumpAfter: [6, 14]
+    },
+    Cl: {
+      name: 'Chlor',
+      z: 17,
+      shells: [2, 8, 7],
+      energies: [1251, 2298, 3822, 5158, 6542, 9362, 11018, 33604, 38600, 43962, 51068, 57120, 63360, 72340, 78100, 352940, 370870],
+      jumpAfter: [7, 15]
+    }
+  };
+
+  // Exakte Literaturdaten für Atomradien (neutral) und Ionenradien in pm (Shannon 1976 / Pauling)
+  const KNOWN_IONIC_RADII = {
+    Li: { 1: 152, 0: 76 },             // Li: 152 pm, Li+: 76 pm
+    Be: { 2: 112, 0: 45 },             // Be: 112 pm, Be2+: 45 pm
+    N:  { 5: 75,  8: 146 },            // N: 75 pm, N3-: 146 pm
+    O:  { 6: 73,  7: 110, 8: 140 },    // O: 73 pm, O2-: 140 pm
+    F:  { 7: 72,  8: 133 },            // F: 72 pm, F-: 133 pm
+    Na: { 1: 186, 0: 102 },            // Na: 186 pm, Na+: 102 pm
+    Mg: { 2: 160, 1: 110, 0: 72 },     // Mg: 160 pm, Mg2+: 72 pm
+    Al: { 3: 143, 0: 54 },             // Al: 143 pm, Al3+: 54 pm
+    P:  { 5: 110, 8: 212 },            // P: 110 pm, P3-: 212 pm
+    S:  { 6: 103, 7: 140, 8: 184 },    // S: 103 pm, S2-: 184 pm
+    Cl: { 7: 99,  8: 181 },            // Cl: 99 pm, Cl-: 181 pm
+    K:  { 1: 227, 0: 138 },            // K: 227 pm, K+: 138 pm
+    Ca: { 2: 197, 1: 135, 0: 100 }     // Ca: 197 pm, Ca2+: 100 pm
+  };
+
+  // Elemente für die Ionenbildungs-Werkbank (inkl. 4 Schalen: K, Ca!)
+  const ION_ELEMENTS = [
+    { z: 3,  sym: 'Li', name: 'Lithium',   metal: true,  mass: 7,   shells: [2, 1],       baseRadius: 152, nobleTarget: 2, nobleName: 'Helium' },
+    { z: 4,  sym: 'Be', name: 'Beryllium', metal: true,  mass: 9,   shells: [2, 2],       baseRadius: 112, nobleTarget: 2, nobleName: 'Helium' },
+    { z: 7,  sym: 'N',  name: 'Stickstoff',metal: false, mass: 14,  shells: [2, 5],       baseRadius: 75,  nobleTarget: 10, nobleName: 'Neon' },
+    { z: 8,  sym: 'O',  name: 'Sauerstoff',metal: false, mass: 16,  shells: [2, 6],       baseRadius: 73,  nobleTarget: 10, nobleName: 'Neon' },
+    { z: 9,  sym: 'F',  name: 'Fluor',     metal: false, mass: 19,  shells: [2, 7],       baseRadius: 72,  nobleTarget: 10, nobleName: 'Neon' },
+    { z: 11, sym: 'Na', name: 'Natrium',   metal: true,  mass: 23,  shells: [2, 8, 1],    baseRadius: 186, nobleTarget: 10, nobleName: 'Neon' },
+    { z: 12, sym: 'Mg', name: 'Magnesium', metal: true,  mass: 24,  shells: [2, 8, 2],    baseRadius: 160, nobleTarget: 10, nobleName: 'Neon' },
+    { z: 13, sym: 'Al', name: 'Aluminium', metal: true,  mass: 27,  shells: [2, 8, 3],    baseRadius: 143, nobleTarget: 10, nobleName: 'Neon' },
+    { z: 15, sym: 'P',  name: 'Phosphor',  metal: false, mass: 31,  shells: [2, 8, 5],    baseRadius: 110, nobleTarget: 18, nobleName: 'Argon' },
+    { z: 16, sym: 'S',  name: 'Schwefel',  metal: false, mass: 32,  shells: [2, 8, 6],    baseRadius: 103, nobleTarget: 18, nobleName: 'Argon' },
+    { z: 17, sym: 'Cl', name: 'Chlor',     metal: false, mass: 35,  shells: [2, 8, 7],    baseRadius: 99,  nobleTarget: 18, nobleName: 'Argon' },
+    { z: 19, sym: 'K',  name: 'Kalium',    metal: true,  mass: 39,  shells: [2, 8, 8, 1], baseRadius: 227, nobleTarget: 18, nobleName: 'Argon' },
+    { z: 20, sym: 'Ca', name: 'Calcium',   metal: true,  mass: 40,  shells: [2, 8, 8, 2], baseRadius: 197, nobleTarget: 18, nobleName: 'Argon' }
+  ];
+
+  // DOM
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const canvasPanel = cv.closest('.canvas-panel');
+  const btnFullscreen = document.getElementById('btnFullscreen');
+  const fsIcon = document.getElementById('fsIcon');
+  const btnTabIE = document.getElementById('btnTabIE');
+  const btnTabIon = document.getElementById('btnTabIon');
+  const panelIE = document.getElementById('panelIE');
+  const panelIon = document.getElementById('panelIon');
+  const canvasCaption = document.getElementById('canvasCaption');
+  const canvasSub = document.getElementById('canvasSub');
+
+  const btnIonizeNext = document.getElementById('btnIonizeNext');
+  const btnResetIE = document.getElementById('btnResetIE');
+  const descIE = document.getElementById('descIE');
+
+  const ionElemChips = document.getElementById('ionElemChips');
+  const btnSubE = document.getElementById('btnSubE');
+  const btnAddE = document.getElementById('btnAddE');
+  const btnResetIon = document.getElementById('btnResetIon');
+  const eqBox = document.getElementById('eqBox');
+  const nobleBadge = document.getElementById('nobleBadge');
+  const stabilityBadge = document.getElementById('stabilityBadge');
+  const ionInfoText = document.getElementById('ionInfoText');
+
+  let tab = 'ie';
+  let currentIEKey = 'Na';
+  let ionizedCount = 1; // Startet bei IE1!
+
+  let currentIonEl = ION_ELEMENTS.find(e => e.sym === 'Na');
+  let currentIonElectrons = currentIonEl.z; // Startet neutral!
+  let animatedRadius = currentIonEl.baseRadius; // Dynamische, flüssige Radien-Animation!
+
+  let W = 700, H = 400;
+  function resize() {
+    const rect = cv.parentElement.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Vollbild-Umschaltung
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      canvasPanel.requestFullscreen().catch(err => console.warn(err));
+    } else {
+      document.exitFullscreen().catch(err => console.warn(err));
+    }
+  }
+  btnFullscreen.addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.activeElement.tagName !== 'INPUT') toggleFullscreen();
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    fsIcon.innerHTML = isFs
+      ? '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>'
+      : '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+    setTimeout(resize, 60);
+  });
+
+  // -------------------------------------------------------------
+  // ATOM- & IONENRADIUS BERECHNUNG (Authentische Shannon- und Pauling-Werte)
+  // -------------------------------------------------------------
+  function calculateRadius(el, e) {
+    const p = el.z;
+    const charge = p - e; // >0: Kation, <0: Anion
+    const valenceNeutral = el.shells[el.shells.length - 1];
+    const valE = valenceNeutral - charge;
+
+    // Bekannter Standardzustand aus Literaturtabelle?
+    if (KNOWN_IONIC_RADII[el.sym] && KNOWN_IONIC_RADII[el.sym][valE] !== undefined) {
+      return KNOWN_IONIC_RADII[el.sym][valE];
+    }
+
+    if (charge > 0) {
+      // Kation
+      const nobleR = (KNOWN_IONIC_RADII[el.sym] && KNOWN_IONIC_RADII[el.sym][0]) || Math.round(el.baseRadius * 0.55);
+      if (e <= el.nobleTarget) {
+        // Schale bereits abgerissen (z. B. Na2+, Na3+)
+        const extraP = el.nobleTarget - e;
+        return Math.max(30, Math.round(nobleR * Math.pow(0.86, extraP)));
+      } else {
+        // Teilweise abgezogene Valenzelektronen
+        const frac = (el.z - e) / valenceNeutral;
+        return Math.round(el.baseRadius - frac * (el.baseRadius - nobleR));
+      }
+    } else if (charge < 0) {
+      // Anion
+      const nobleR = (KNOWN_IONIC_RADII[el.sym] && KNOWN_IONIC_RADII[el.sym][8]) || Math.round(el.baseRadius * 1.7);
+      if (e <= el.nobleTarget) {
+        const frac = (e - el.z) / (el.nobleTarget - el.z);
+        return Math.round(el.baseRadius + frac * (nobleR - el.baseRadius));
+      } else {
+        // Überbesetztes Anion (instabil)
+        const excess = e - el.nobleTarget;
+        return Math.min(270, Math.round(nobleR + excess * 32));
+      }
+    }
+    return el.baseRadius;
+  }
+
+  // -------------------------------------------------------------
+  // RENDERING TAB 1: SUKZESSIVE IONISIERUNGSENERGIEN
+  // -------------------------------------------------------------
+  function drawIEChart() {
+    ctx.fillStyle = '#0c1218';
+    ctx.fillRect(0, 0, W, H);
+
+    const data = IE_DATA[currentIEKey];
+    const totalBars = data.energies.length;
+    const marginL = 65, marginR = 25, marginT = 40, marginB = 55;
+    const chartW = W - marginL - marginR;
+    const chartH = H - marginT - marginB;
+
+    const maxVal = data.energies[totalBars - 1];
+    const power = 0.42;
+    const normMax = Math.pow(maxVal, power);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    const steps = [1000, 5000, 20000, 50000, 150000];
+    steps.filter(v => v <= maxVal * 1.1).forEach(v => {
+      const yRel = Math.pow(v, power) / normMax;
+      const y = marginT + chartH - yRel * chartH;
+      ctx.beginPath();
+      ctx.moveTo(marginL, y);
+      ctx.lineTo(marginL + chartW, y);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${v.toLocaleString('de-DE')} kJ`, marginL - 6, y + 3);
+    });
+    ctx.textAlign = 'left';
+
+    ctx.strokeStyle = '#4a5966';
+    ctx.beginPath();
+    ctx.moveTo(marginL, marginT + chartH);
+    ctx.lineTo(marginL + chartW, marginT + chartH);
+    ctx.stroke();
+
+    const barGap = chartW / totalBars;
+    const barW = Math.max(14, barGap * 0.72);
+
+    for (let i = 0; i < totalBars; i++) {
+      const eVal = data.energies[i];
+      const isVisible = (i < ionizedCount);
+      const x = marginL + i * barGap + (barGap - barW) / 2;
+
+      const yRel = Math.pow(eVal, power) / normMax;
+      const barH = yRel * chartH;
+      const y = marginT + chartH - barH;
+
+      const isFirstJump = (i === data.jumpAfter[0]);
+      const isSecondJump = (data.jumpAfter.length > 1 && i === data.jumpAfter[1]);
+
+      if (isVisible) {
+        let barColor = '#56B4E9';
+        if (i >= data.jumpAfter[0]) barColor = '#E69F00';
+        if (data.jumpAfter.length > 1 && i >= data.jumpAfter[1]) barColor = '#D55E00';
+
+        ctx.fillStyle = barColor;
+        ctx.fillRect(x, y, barW, barH);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.strokeRect(x, y, barW, barH);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px system-ui';
+        ctx.textAlign = 'center';
+        const displayVal = eVal >= 10000 ? `${Math.round(eVal / 1000)}k` : `${eVal}`;
+        ctx.fillText(displayVal, x + barW/2, y - 5);
+
+        if (isFirstJump || isSecondJump) {
+          ctx.fillStyle = '#f2b43a';
+          ctx.font = 'bold 10px system-ui';
+          ctx.fillText('⚡ Sprung!', x + barW/2, y - 18);
+        }
+      } else {
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.setLineDash([2, 2]);
+        ctx.strokeRect(x, marginT + chartH - 12, barW, 12);
+        ctx.setLineDash([]);
+      }
+
+      ctx.fillStyle = isVisible ? '#ffffff' : '#4b5765';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(`IE${i+1}`, x + barW/2, marginT + chartH + 16);
+    }
+    ctx.textAlign = 'left';
+  }
+
+  // -------------------------------------------------------------
+  // RENDERING TAB 2: INTERAKTIVE IONENBILDUNG MIT 4 SCHALEN (K, L, M, N)
+  // -------------------------------------------------------------
+  function drawIonWorkbench() {
+    ctx.fillStyle = '#0c1218';
+    ctx.fillRect(0, 0, W, H);
+
+    const el = currentIonEl;
+    const cx = W * 0.5;
+    const cy = H * 0.48;
+
+    const p = el.z;
+    const e = currentIonElectrons;
+    const charge = p - e;
+
+    // 4 Schalen: K, L, M, N
+    const curK = Math.min(e, 2);
+    const rem1 = Math.max(0, e - 2);
+    const curL = Math.min(rem1, 8);
+    const rem2 = Math.max(0, rem1 - 8);
+    const curM = Math.min(rem2, 8);
+    const rem3 = Math.max(0, rem2 - 8);
+    const curN = Math.min(rem3, 2);
+
+    // Physikalischer Radius in pm mit weicher Animation
+    const targetRadius = calculateRadius(el, e);
+    animatedRadius += (targetRadius - animatedRadius) * 0.16;
+    const radiusPm = Math.round(animatedRadius);
+
+    // Dynamischer Visual-Radius
+    const visualR = (animatedRadius / 230) * 145;
+
+    // Radius-Aura zeichnen
+    ctx.fillStyle = charge > 0 ? 'rgba(213, 94, 0, 0.16)' : (charge < 0 ? 'rgba(0, 114, 178, 0.18)' : 'rgba(86, 180, 233, 0.12)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, Math.max(35, visualR), 0, Math.PI * 2);
+    ctx.fill();
+
+    // Gestrichelte Hüllen-Grenzlinie
+    ctx.strokeStyle = charge > 0 ? 'rgba(213, 94, 0, 0.7)' : (charge < 0 ? 'rgba(86, 180, 233, 0.7)' : 'rgba(255, 255, 255, 0.35)');
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, Math.max(35, visualR), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 1. Schalen zeichnen (K, L, M, N)
+    const shellRadii = [42, 75, 110, 145];
+    const shellCounts = [curK, curL, curM, curN];
+    const shellMax = [2, 8, 8, 2];
+    const shellNames = ['K', 'L', 'M', 'N'];
+
+    // Wenn Element gar keine N-Schale neutral hat und curN == 0, N-Schale dünner zeichnen
+    const maxActiveShell = curN > 0 ? 4 : (curM > 0 ? 3 : (curL > 0 ? 2 : (curK > 0 ? 1 : 0)));
+    const showShells = Math.max(el.shells.length, maxActiveShell);
+
+    for (let idx = 0; idx < Math.min(4, Math.max(3, showShells)); idx++) {
+      const r = shellRadii[idx];
+      const count = shellCounts[idx];
+      const isOccupied = count > 0;
+
+      ctx.strokeStyle = isOccupied ? 'rgba(86, 180, 233, 0.5)' : 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = isOccupied ? 2 : 1;
+      ctx.setLineDash(isOccupied ? [] : [3, 3]);
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = isOccupied ? '#56B4E9' : 'rgba(255,255,255,0.25)';
+      ctx.font = '10px system-ui';
+      ctx.fillText(shellNames[idx], cx + r - 10, cy - 4);
+
+      for (let i = 0; i < count; i++) {
+        const ang = (i / shellMax[idx]) * Math.PI * 2 - Math.PI / 2;
+        const ex = cx + Math.cos(ang) * r;
+        const ey = cy + Math.sin(ang) * r;
+
+        ctx.fillStyle = 'rgba(86, 180, 233, 0.4)';
+        ctx.beginPath();
+        ctx.arc(ex, ey, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#56B4E9';
+        ctx.beginPath();
+        ctx.arc(ex, ey, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 8px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('−', ex, ey);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+      }
+    }
+
+    // 2. Atomkern im Zentrum
+    const nucleusR = 24;
+    ctx.fillStyle = '#D55E00';
+    ctx.beginPath();
+    ctx.arc(cx, cy, nucleusR, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${el.sym}`, cx, cy - 5);
+    ctx.font = '10px system-ui';
+    ctx.fillText(`+${el.z}`, cx, cy + 9);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+
+    // 3. Titel & Radius-Anzeige oben und unten
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 15px system-ui';
+    ctx.textAlign = 'center';
+
+    let chargeLabel = 'neutral (Atom)';
+    if (charge > 0) chargeLabel = `Kation (+${charge})`;
+    if (charge < 0) chargeLabel = `Anion (${charge})`;
+
+    ctx.fillText(`${el.name}: ${el.z} p⁺ | ${e} e⁻ → ${chargeLabel}`, cx, 26);
+
+    ctx.font = '12px system-ui';
+    ctx.fillStyle = '#E69F00';
+    ctx.fillText(`Geschätzter Radius: ${radiusPm} pm (Basis: ${el.baseRadius} pm)`, cx, 46);
+
+    ctx.fillStyle = '#9aa8b5';
+    let schalenStr = `K: ${curK}/2  ·  L: ${curL}/8  ·  M: ${curM}/8`;
+    if (showShells >= 4 || curN > 0) schalenStr += `  ·  N: ${curN}/2`;
+    ctx.fillText(`Schalenbesetzung: ${schalenStr}`, cx, H - 14);
+    ctx.textAlign = 'left';
+  }
+
+  function loop() {
+    if (tab === 'ie') {
+      drawIEChart();
+    } else {
+      drawIonWorkbench();
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  btnTabIE.addEventListener('click', () => {
+    tab = 'ie';
+    btnTabIE.classList.add('active');
+    btnTabIon.classList.remove('active');
+    panelIE.style.display = 'block';
+    panelIon.style.display = 'none';
+    canvasCaption.textContent = 'Sukzessive Ionisierungsenergien (Balkendiagramm)';
+    canvasSub.textContent = 'Achte auf den Schalensprung!';
+  });
+
+  btnTabIon.addEventListener('click', () => {
+    tab = 'ion';
+    btnTabIon.classList.add('active');
+    btnTabIE.classList.remove('active');
+    panelIE.style.display = 'none';
+    panelIon.style.display = 'block';
+    canvasCaption.textContent = 'Ionenbildungs-Werkbank (Edelgasregel)';
+    canvasSub.textContent = 'Verändere die Elektronenanzahl und beobachte Radius & Edelgaskonfiguration';
+  });
+
+  btnIonizeNext.addEventListener('click', () => {
+    const data = IE_DATA[currentIEKey];
+    if (ionizedCount < data.energies.length) {
+      ionizedCount++;
+      const val = data.energies[ionizedCount - 1];
+      const prevVal = data.energies[ionizedCount - 2];
+      const factor = (val / prevVal).toFixed(1);
+
+      if (data.jumpAfter.includes(ionizedCount - 1)) {
+        descIE.innerHTML = `<strong>Riesiger Schalensprung nachgewiesen!</strong><br>IE${ionizedCount} beträgt <strong>${val.toLocaleString('de-DE')} kJ/mol</strong> – ein Sprung um das <strong>${factor}-Fache</strong>!<br>Hier wurde die abgeschlossene innere Schale angebrochen.`;
+      } else {
+        descIE.innerHTML = `Elektron ${ionizedCount} entfernt: Erfordert ${val.toLocaleString('de-DE')} kJ/mol (innerhalb derselben Schale).`;
+      }
+    }
+  });
+
+  btnResetIE.addEventListener('click', () => {
+    ionizedCount = 1;
+    descIE.innerHTML = `Ausgangszustand: Ziehe Elektronen schrittweise ab, um zu sehen, wann die nächste Schale beginnt.`;
+  });
+
+  document.querySelectorAll('[data-ie]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-ie]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentIEKey = btn.getAttribute('data-ie');
+      ionizedCount = 1; // Startet bei IE1!
+      descIE.innerHTML = `Ausgangszustand für ${IE_DATA[currentIEKey].name}: Ziehe Elektronen schrittweise ab.`;
+    });
+  });
+
+  function buildIonElementChips() {
+    ionElemChips.innerHTML = '';
+    ION_ELEMENTS.forEach(el => {
+      const btn = document.createElement('button');
+      btn.className = `chip-btn ${el.sym === currentIonEl.sym ? 'active' : ''}`;
+      btn.textContent = `${el.sym} (${el.name})`;
+      btn.addEventListener('click', () => selectIonElement(el));
+      ionElemChips.appendChild(btn);
+    });
+  }
+
+  function selectIonElement(el) {
+    currentIonEl = el;
+    currentIonElectrons = el.z;
+    animatedRadius = el.baseRadius;
+    document.querySelectorAll('#ionElemChips .chip-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.startsWith(el.sym));
+    });
+    updateIonUI();
+  }
+
+  function updateIonUI() {
+    const p = currentIonEl.z;
+    const e = currentIonElectrons;
+    const charge = p - e;
+    const sym = currentIonEl.sym;
+    const rPm = calculateRadius(currentIonEl, e);
+
+    if (charge === 0) {
+      eqBox.textContent = `${sym} (neutrales Atom, Radius: ${rPm} pm)`;
+    } else if (charge > 0) {
+      const cStr = charge === 1 ? '+' : `${charge}+`;
+      eqBox.innerHTML = `${sym} ⟶ ${sym}<sup>${cStr}</sup> + ${charge} e⁻ &nbsp;<small style="font-size:0.9rem; color:var(--orange);">(${rPm} pm)</small>`;
+    } else {
+      const addE = Math.abs(charge);
+      const cStr = addE === 1 ? '−' : `${addE}−`;
+      eqBox.innerHTML = `${sym} + ${addE} e⁻ ⟶ ${sym}<sup>${cStr}</sup> &nbsp;<small style="font-size:0.9rem; color:var(--akzent);">(${rPm} pm)</small>`;
+    }
+
+    const isNoble = (e === currentIonEl.nobleTarget);
+    nobleBadge.style.display = isNoble ? 'block' : 'none';
+    if (isNoble) {
+      nobleBadge.textContent = `✨ Stabile Edelgaskonfiguration von ${currentIonEl.nobleName} erreicht (${e} e⁻, Radius: ${rPm} pm)!`;
+    }
+
+    if (isNoble) {
+      stabilityBadge.style.display = 'block';
+      stabilityBadge.style.background = 'var(--ok-bg, #e6f7f1)';
+      stabilityBadge.style.border = '1.5px solid var(--gruen)';
+      stabilityBadge.style.color = 'var(--gruen)';
+      stabilityBadge.textContent = '🟢 Zustand: Maximal stabil (Vollständige Edelgasschale / Oktett)';
+    } else if (charge === 0) {
+      stabilityBadge.style.display = 'block';
+      stabilityBadge.style.background = 'var(--papier)';
+      stabilityBadge.style.border = '1px solid var(--linie)';
+      stabilityBadge.style.color = 'var(--tinte)';
+      stabilityBadge.textContent = '🟡 Zustand: Neutrales Atom (chemisch reaktiv zur Bindungsbildung)';
+    } else if (e > currentIonEl.nobleTarget) {
+      stabilityBadge.style.display = 'block';
+      stabilityBadge.style.background = 'var(--alert-bg, #fdeee6)';
+      stabilityBadge.style.border = '1.5px solid var(--orange)';
+      stabilityBadge.style.color = 'var(--orange)';
+      stabilityBadge.textContent = '🔴 Zustand: Hochgradig instabil (zu viele Elektronen → Coulomb-Abstoßung)';
+    } else {
+      stabilityBadge.style.display = 'block';
+      stabilityBadge.style.background = 'var(--alert-bg, #fdeee6)';
+      stabilityBadge.style.border = '1.5px solid var(--orange)';
+      stabilityBadge.style.color = 'var(--orange)';
+      stabilityBadge.textContent = '🔴 Zustand: Extrem instabil (zu wenige Elektronen → Edelgasschale zerstört)';
+    }
+
+    if (charge === 0) {
+      ionInfoText.textContent = `Neutraler Zustand: ${currentIonEl.name} besitzt ${p} Protonen und ${e} Elektronen.`;
+    } else if (isNoble) {
+      ionInfoText.textContent = `Edelgaszustand: ${currentIonEl.name} hat durch ${charge > 0 ? 'Abgabe' : 'Aufnahme'} von ${Math.abs(charge)} Elektron(en) die energetisch günstigste Elektronenkonfiguration (${currentIonEl.nobleName}) erreicht.`;
+    } else if (e > currentIonEl.nobleTarget) {
+      ionInfoText.textContent = `Instabil (zu viele e⁻): ${e} Elektronen im Atom! Die gegenseitige elektrostatische Abstoßung übertrifft die Kernanziehungskraft – ein solches Ion stößt überschüssige Elektronen spontan ab.`;
+    } else if (charge > 0) {
+      ionInfoText.textContent = `Instabil (zu wenige e⁻): Bei ${e} Elektronen wurde eine voll besetzte innere Schale aufgebrochen. Dies erfordert exorbitante Energie (>4500 kJ/mol); das Kation entreißt seiner Umgebung sofort Elektronen.`;
+    } else {
+      ionInfoText.textContent = `Ungelöstes Ion: ${charge > 0 ? 'Kation' : 'Anion'} mit Radius ${rPm} pm.`;
+    }
+  }
+
+  btnSubE.addEventListener('click', () => {
+    if (currentIonElectrons > 1) {
+      currentIonElectrons--;
+      updateIonUI();
+    }
+  });
+
+  btnAddE.addEventListener('click', () => {
+    if (currentIonElectrons < 22) {
+      currentIonElectrons++;
+      updateIonUI();
+    }
+  });
+
+  btnResetIon.addEventListener('click', () => {
+    currentIonElectrons = currentIonEl.z;
+    updateIonUI();
+  });
+
+  buildIonElementChips();
+  updateIonUI();
+})();
+</script>
+</body>
+</html>

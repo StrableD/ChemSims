@@ -87,6 +87,7 @@ canvas{display:block;width:100%;touch-action:none}
     <button data-tab="t3d">Realistisch (3D)</button>
     <button data-tab="teq">Gleichgewicht</button>
   </nav>
+  <button id="fsBtn" class="btn" style="margin-left:auto; font-size: 0.88rem; padding: 4px 10px;">Vollbild</button>
 </header>
 <main>
 <!-- ============ 2D ============ -->
@@ -880,6 +881,19 @@ const EQ = (()=>{
   segInit('segEq', v=>{ S.speed=+v; });
   reset('a');
   requestAnimationFrame(loop);
+
+  if ($('#fsBtn')) {
+    $('#fsBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    });
+    document.addEventListener('fullscreenchange', () => {
+      $('#fsBtn').textContent = document.fullscreenElement ? 'Vollbild beenden' : 'Vollbild';
+      if (activeTab === 't3d' && window.tab3d && window.tab3d.resize) window.tab3d.resize();
+      if (activeTab === 'teq' && window.tabEq && window.tabEq.resize) window.tabEq.resize();
+    });
+  }
+
   return { resize:drawAll, S };
 })();
 </script>

@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernpfad: Entwicklung der Atommodelle</title>
+<meta name="description" content="Didaktischer Lernpfad für Klasse 9: Interaktive Reise vom Rutherford-Streuversuch über Schalen- und Energiestufen bis zur Ionenbildung.">
+<meta name="material:typ" content="Lernpfad">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC, Beamer">
+<meta name="material:stichworte" content="Lernpfad, Atommodell, Rutherford, Bohr, Schalenmodell, Energiestufen, Ionenbildung, Dalton, Thomson">
+<meta name="material:reihenfolge" content="1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Gestaltung angelehnt an die Startseite der Materialsammlung (Karopapier & Tinte) */
+:root {
+  --papier: #f6f2e9;
+  --blatt: #ffffff;
+  --tinte: #1c2733;
+  --tinte-2: #4b5765;
+  --tinte-3: #6b7480;
+  --linie: #d9d2c3;
+  --linie-hell: #ebe5d8;
+  --karo: #e6dfcf;
+  --akzent: #0b5c94;
+  --akzent-soft: #e5f1f8;
+  --orange: #D55E00;
+  --gruen: #009E73;
+  --gelb: #E69F00;
+  --schrift: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --schrift-titel: "Lexend", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --radius: 6px;
+  --breite: 1140px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #11171d;
+    --blatt: #18222b;
+    --tinte: #e5edf2;
+    --tinte-2: #9aa8b5;
+    --tinte-3: #6e7d8c;
+    --linie: #2c3a47;
+    --linie-hell: #222e38;
+    --karo: #1c2630;
+    --akzent: #4ba2d9;
+    --akzent-soft: #172d3d;
+    --orange: #f27731;
+    --gruen: #37bf87;
+    --gelb: #f2b43a;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--tinte);
+  font-family: var(--schrift);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.wrap { max-width: var(--breite); margin: 0 auto; padding: 0 20px; }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+
+/* Karopapier-Kopfbereich wie in index.html */
+.kopf {
+  background-color: #fbf9f3;
+  background-image:
+    linear-gradient(var(--karo) 1px, transparent 1px),
+    linear-gradient(90deg, var(--karo) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+  border-bottom: 1px solid var(--linie);
+  padding: 32px 0 28px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .kopf {
+    background-color: #141c24;
+    background-image:
+      linear-gradient(var(--karo) 1px, transparent 1px),
+      linear-gradient(90deg, var(--karo) 1px, transparent 1px);
+  }
+}
+
+.nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--akzent); text-decoration: none; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; }
+.nav-back:hover { text-decoration: underline; }
+
+.ueberzeile {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.kopf h1 {
+  font-family: var(--schrift-titel);
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+.intro {
+  max-width: 76ch;
+  margin: 0;
+  color: var(--tinte);
+  font-size: 1.12rem;
+}
+
+/* Hauptteil */
+main { padding: 32px 0 60px; }
+.section-title {
+  font-family: var(--schrift-titel);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Historische Zeitleiste */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.time-card {
+  background: var(--blatt);
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  border-top: 4px solid var(--tinte-3);
+  display: flex;
+  flex-direction: column;
+}
+.time-card.c-thomson { border-top-color: var(--gelb); }
+.time-card.c-rutherford { border-top-color: var(--orange); }
+.time-card.c-bohr { border-top-color: var(--akzent); }
+.time-card.c-energie { border-top-color: var(--gruen); }
+
+.time-year { font-size: 0.82rem; font-weight: 700; color: var(--tinte-2); text-transform: uppercase; }
+.time-name { font-family: var(--schrift-titel); font-size: 1.15rem; font-weight: 600; margin: 2px 0 6px; }
+.time-desc { font-size: 0.92rem; color: var(--tinte-2); margin: 0 0 8px; flex: 1; }
+.time-border { font-size: 0.85rem; background: var(--papier); padding: 5px 8px; border-radius: 4px; border-left: 3px solid var(--orange); }
+
+/* Interaktiver Modul-Viewer (Iframe Container) */
+.viewer-panel {
+  background: var(--blatt);
+  border: 1.5px solid var(--linie);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  margin-bottom: 36px;
+}
+
+/* Tab-Leiste der Module */
+.tabs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: var(--papier);
+  border-bottom: 1.5px solid var(--linie);
+  padding: 6px 6px 0;
+}
+.tab-btn {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  background: transparent;
+  padding: 10px 16px;
+  border-radius: 6px 6px 0 0;
+  font-family: var(--schrift-titel);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--tinte-2);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tab-btn:hover { color: var(--tinte); background: rgba(0,0,0,0.03); }
+.tab-btn.active {
+  background: var(--blatt);
+  border-color: var(--linie);
+  color: var(--akzent);
+  font-weight: 700;
+  position: relative;
+  margin-bottom: -1.5px;
+  padding-bottom: 11.5px;
+}
+
+/* Viewer Header & Actions */
+.viewer-head {
+  padding: 12px 18px;
+  background: var(--blatt);
+  border-bottom: 1px solid var(--linie);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.viewer-title {
+  font-family: var(--schrift-titel);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+.viewer-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  font: inherit;
+  font-family: var(--schrift-titel);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 5px;
+  border: 1px solid var(--tinte-2);
+  background: var(--blatt);
+  color: var(--tinte);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { background: var(--papier); }
+.btn.primary { background: var(--tinte); color: var(--blatt); border-color: var(--tinte); }
+
+/* Iframe Frame */
+.iframe-wrap {
+  position: relative;
+  width: 100%;
+  height: 900px;
+  min-height: 85vh;
+  background: var(--papier);
+}
+iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Viewer Footer Steuerung */
+.viewer-foot {
+  padding: 12px 18px;
+  background: var(--papier);
+  border-top: 1px solid var(--linie);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Didaktischer Leitfaden Box */
+.guidance-box {
+  background: var(--blatt);
+  border: 1px solid var(--linie);
+  border-left: 5px solid var(--gruen);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.guidance-box h2 {
+  font-family: var(--schrift-titel);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.questions-list {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+</style>
+</head>
+<body>
+
+<header class="kopf">
+  <div class="wrap">
+    <a href="../../index.html" class="nav-back">
+      <svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      Zurück zur Materialsammlung
+    </a>
+    <p class="ueberzeile">Chemie · Klasse 9 (2. Lernjahr)</p>
+    <h1>Lernpfad: Entwicklung der Atommodelle</h1>
+    <p class="intro">
+      Wie gelangen wir von chemischen Phänomenen zu submikroskopischen Modellvorstellungen der Materie?
+      Dieser interaktive Lernpfad führt schrittweise vom Rutherfordschen Streuversuch über Schalen- und Energiestufen bis zur Ionenbildung.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 1. Historische Zeitleiste -->
+  <h2 class="section-title">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Modellentwicklung im Überblick
+  </h2>
+
+  <div class="timeline">
+    <div class="time-card">
+      <span class="time-year">1803 · Dalton</span>
+      <h3 class="time-name">Kugelmodell</h3>
+      <p class="time-desc">Atome als kleinste, unteilbare Massekugeln. Gleiche Elemente = identische Atome.</p>
+      <div class="time-border">Grenze: Keine elektrischen Ladungen.</div>
+    </div>
+    <div class="time-card c-thomson">
+      <span class="time-year">1904 · Thomson</span>
+      <h3 class="time-name">Rosinenkuchen</h3>
+      <p class="time-desc">Gleichmäßig positiv geladene Kugel mit eingebetteten negativen Elektronen.</p>
+      <div class="time-border">Grenze: Streuversuch widerlegt Modell.</div>
+    </div>
+    <div class="time-card c-rutherford">
+      <span class="time-year">1911 · Rutherford</span>
+      <h3 class="time-name">Kern & Hülle</h3>
+      <p class="time-desc">Fast alle Masse und positive Ladung im winzigen Kern. Hülle ist fast leer.</p>
+      <div class="time-border">Grenze: Instabilität kreisender Elektronen.</div>
+    </div>
+    <div class="time-card c-bohr">
+      <span class="time-year">1913 · Bohr</span>
+      <h3 class="time-name">Schalenmodell</h3>
+      <p class="time-desc">Elektronen kreisen auf festen Schalen (K, L, M, N). Erklärt das PSE.</p>
+      <div class="time-border">Grenze: Keine festen Bahnen in Quantenphysik.</div>
+    </div>
+    <div class="time-card c-energie">
+      <span class="time-year">Ab 1920er · Quanten</span>
+      <h3 class="time-name">Energiestufen</h3>
+      <p class="time-desc">Diskrete Energieniveaus. Erklärt Flammenfärbung, Spektren und Ionen.</p>
+      <div class="time-border">Fokus Klasse 9: Brücke zu Salzen.</div>
+    </div>
+  </div>
+
+  <!-- 2. Interaktiver Modul-Viewer (Iframe Einbindung) -->
+  <h2 class="section-title">
+    <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Interaktive Lernstationen
+  </h2>
+
+  <div class="viewer-panel">
+    <!-- Tabs für die 5 Module -->
+    <nav class="tabs-bar" role="tablist">
+      <button class="tab-btn active" data-src="rutherford-streuversuch.html" data-title="1. Rutherfordscher Streuversuch" role="tab" aria-selected="true">
+        1. Rutherford-Streuversuch
+      </button>
+      <button class="tab-btn" data-src="bohr-schalenmodell.html" data-title="2. Bohr-Schalenmodell & PSE" role="tab" aria-selected="false">
+        2. Bohr-Schalenmodell
+      </button>
+      <button class="tab-btn" data-src="atom-baukasten.html" data-title="3. Interaktiver Atom-Baukasten" role="tab" aria-selected="false">
+        3. Atom-Baukasten
+      </button>
+      <button class="tab-btn" data-src="energiestufenmodell.html" data-title="4. Energiestufen & Spektren" role="tab" aria-selected="false">
+        4. Energiestufenmodell
+      </button>
+      <button class="tab-btn" data-src="ionisierungsenergie.html" data-title="5. Ionisierungsenergie & Ionen" role="tab" aria-selected="false">
+        5. Ionisierungsenergie & Ionen
+      </button>
+    </nav>
+
+    <!-- Viewer Kopfzeile mit Direktlink -->
+    <div class="viewer-head">
+      <h3 class="viewer-title" id="viewerTitle">1. Rutherfordscher Streuversuch</h3>
+      <div class="viewer-actions">
+        <a id="btnExternal" href="rutherford-streuversuch.html" target="_blank" class="btn">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          In eigenem Tab öffnen
+        </a>
+      </div>
+    </div>
+
+    <!-- Iframe Container -->
+    <div class="iframe-wrap">
+      <iframe id="viewerFrame" src="rutherford-streuversuch.html" title="Simulation Viewer"></iframe>
+    </div>
+
+    <!-- Vor- und Zurück-Steuerung im Lernpfad -->
+    <div class="viewer-foot">
+      <button class="btn" id="btnPrevMod">← Vorherige Simulation</button>
+      <button class="btn primary" id="btnNextMod">Nächste Simulation →</button>
+    </div>
+  </div>
+
+  <!-- 3. Didaktische Leitfragen -->
+  <section class="guidance-box">
+    <h2>Didaktische Leitfragen für den Unterricht</h2>
+    <ul class="questions-list">
+      <li><strong>Leitfrage 1:</strong> Warum war Rutherfords Ergebnis eine Sensation? (Rutherford: <em>„Es war fast so unglaublich, als ob man eine 15-Zoll-Granate auf ein Stück Seidenpapier abfeuerte und sie zurückkäme und einen träfe.“</em>)</li>
+      <li><strong>Leitfrage 2:</strong> Warum stehen Elemente mit ähnlichen chemischen Eigenschaften in derselben Hauptgruppe des Periodensystems?</li>
+      <li><strong>Leitfrage 3:</strong> Warum leuchtet Kochsalz in der Bunsenbrennerflamme intensiv gelb, Kupfersalze dagegen grünlich-blau?</li>
+      <li><strong>Leitfrage 4:</strong> Welche experimentelle Messung beweist zweifelsfrei, dass Natrium genau 1 Außenelektron und 8 Elektronen auf der darunterliegenden Schale besitzt?</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const viewerTitle = document.getElementById('viewerTitle');
+  const viewerFrame = document.getElementById('viewerFrame');
+  const btnExternal = document.getElementById('btnExternal');
+  const btnPrevMod = document.getElementById('btnPrevMod');
+  const btnNextMod = document.getElementById('btnNextMod');
+
+  let curIdx = 0;
+
+  function loadModule(idx) {
+    curIdx = idx;
+    tabBtns.forEach((btn, i) => {
+      const active = (i === idx);
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active);
+      if (active) {
+        const src = btn.getAttribute('data-src');
+        const title = btn.getAttribute('data-title');
+        viewerTitle.textContent = title;
+        viewerFrame.src = src;
+        btnExternal.href = src;
+      }
+    });
+
+    btnPrevMod.disabled = (curIdx === 0);
+    btnNextMod.disabled = (curIdx === tabBtns.length - 1);
+  }
+
+  tabBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => loadModule(i));
+  });
+
+  btnPrevMod.addEventListener('click', () => {
+    if (curIdx > 0) loadModule(curIdx - 1);
+  });
+
+  btnNextMod.addEventListener('click', () => {
+    if (curIdx < tabBtns.length - 1) loadModule(curIdx + 1);
+  });
+
+  loadModule(0);
+})();
+</script>
+</body>
+</html>
