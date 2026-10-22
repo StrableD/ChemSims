@@ -1,0 +1,2838 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Reaktionsausgleicher</title>
+  <meta name="description" content="Knacke chemische Reaktionsgleichungen: Bestimme die Stöchiometriezahlen im Übungsmodus, übersetze Wortgleichungen oder tritt in der 5-Minuten-Challenge an!">
+  <meta name="material:typ" content="Spiel">
+  <meta name="material:klasse" content="8-12">
+  <meta name="material:geraet" content="Tablet, PC, Smartphone">
+  <meta name="material:stichworte" content="Reaktionsgleichung, Stöchiometrie, Ausgleichen, chemische Reaktion, Atomerhaltung, Massenerhaltung, Wortgleichung, Ionen, Ladungserhaltung">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap">
+  <style>
+    :root {
+      --bg: #EDF1F4;
+      --surface: #FFFFFF;
+      --surface-subtle: #F4F7F9;
+      --ink: #17212B;
+      --muted: #55616D;
+      --line: #D2DAE0;
+      --line-strong: #A9B5BF;
+      --brand: #D55E00;
+      --brand-bg: #FDEDE5;
+      --ok: #1D7549;
+      --ok-bg: #DDF1E5;
+      --alert: #B52A1C;
+      --alert-bg: #FDECE9;
+      --info: #0072B2;
+      --info-bg: #E1EFF8;
+      --warn: #B87000;
+      --warn-bg: #FEF3D6;
+      --focus: #0072B2;
+      --f-display: "Lexend", system-ui, sans-serif;
+      --f-body: "Atkinson Hyperlegible", system-ui, sans-serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 16px rgba(23, 33, 43, 0.06);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #10161C;
+        --surface: #19222A;
+        --surface-subtle: #141B22;
+        --ink: #E6ECF1;
+        --muted: #9BA8B4;
+        --line: #2C3843;
+        --line-strong: #4A5966;
+        --brand: #E67E22;
+        --brand-bg: #2E1D13;
+        --ok: #5CC48B;
+        --ok-bg: #15352A;
+        --alert: #E57373;
+        --alert-bg: #341D1D;
+        --info: #56B4E9;
+        --info-bg: #142E40;
+        --warn: #E69F00;
+        --warn-bg: #302613;
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #10161C;
+      --surface: #19222A;
+      --surface-subtle: #141B22;
+      --ink: #E6ECF1;
+      --muted: #9BA8B4;
+      --line: #2C3843;
+      --line-strong: #4A5966;
+      --brand: #E67E22;
+      --brand-bg: #2E1D13;
+      --ok: #5CC48B;
+      --ok-bg: #15352A;
+      --alert: #E57373;
+      --alert-bg: #341D1D;
+      --info: #56B4E9;
+      --info-bg: #142E40;
+      --warn: #E69F00;
+      --warn-bg: #302613;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--f-body);
+      font-size: 17px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 16px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Bar */
+    header.top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-title h1 {
+      font-family: var(--f-display);
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--brand-bg);
+      color: var(--brand);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+    }
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Collapsible Info / Anleitung Box */
+    .info-card {
+      background: var(--surface);
+      border: 1.5px solid var(--info);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.25s ease-out;
+    }
+    .info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .info-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--info);
+    }
+    .info-body {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .info-body p { margin: 6px 0; }
+    .info-highlight {
+      background: var(--info-bg);
+      border-left: 4px solid var(--info);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin: 6px 0;
+    }
+
+    /* Mode Navigation Tabs */
+    .tabs-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mode-tabs {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      padding: 3px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      font-family: var(--f-body);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 7px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.active {
+      background: var(--ink);
+      color: var(--surface);
+    }
+
+    /* Presets and Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .filter-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .filter-select {
+      font-family: var(--f-body);
+      font-size: 0.92rem;
+      font-weight: 700;
+      background: var(--surface-subtle);
+      color: var(--ink);
+      border: 1.5px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    /* Main Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .task-title {
+      font-family: var(--f-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--ink);
+    }
+    .task-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* Word Equation Box (Mode 2) */
+    .word-eq-box {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .word-eq-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .word-eq-content {
+      font-family: var(--f-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* Equation Section */
+    .equation-container {
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 24px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px 10px;
+      user-select: none;
+    }
+    .chem-side {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px 8px;
+    }
+    .chem-op {
+      font-family: var(--f-display);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+    .chem-arrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      color: var(--brand);
+    }
+
+    /* Compound Term (Ausgleichen) */
+    .chem-term {
+      display: inline-flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1.5px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 4px 10px 4px 4px;
+      gap: 8px;
+      transition: border-color 0.15s;
+    }
+    .chem-term:focus-within {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 2px var(--focus);
+    }
+
+    /* Compound Term (Formeleingabe in Modus 2) */
+    .chem-input-term {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--surface);
+      border: 1.5px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 8px 12px;
+      gap: 6px;
+      min-width: 90px;
+    }
+    .chem-input-term.valid {
+      border-color: var(--ok);
+      background: var(--ok-bg);
+    }
+    .chem-input-term.invalid {
+      border-color: var(--alert);
+      background: var(--alert-bg);
+    }
+    .chem-input-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .formula-input {
+      font-family: var(--f-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      width: 110px;
+      padding: 6px 8px;
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+    .formula-input:focus {
+      outline: none;
+      border-color: var(--focus);
+    }
+
+    /* Vertical Stepper */
+    .stepper-v {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .step-btn {
+      width: 44px;
+      height: 24px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background 0.1s, color 0.1s;
+    }
+    .step-btn:hover {
+      background: var(--ink);
+      color: var(--surface);
+    }
+    .step-btn:active {
+      transform: scale(0.96);
+    }
+
+    .coeff-input {
+      width: 44px;
+      height: 38px;
+      text-align: center;
+      font-family: var(--f-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+      padding: 0;
+      margin: 2px 0;
+      -moz-appearance: textfield;
+    }
+    .coeff-input::-webkit-outer-spin-button,
+    .coeff-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .coeff-input:focus {
+      outline: none;
+      border-color: var(--focus);
+    }
+
+    .formula {
+      font-family: var(--f-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: baseline;
+    }
+    sub {
+      font-size: 0.65em;
+      line-height: 0;
+      vertical-align: -0.25em;
+      font-weight: 700;
+    }
+    sup {
+      font-size: 0.65em;
+      line-height: 0;
+      vertical-align: 0.45em;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    .chem-phase {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 700;
+      margin-left: 2px;
+    }
+
+    /* Actions Bar */
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn {
+      font-family: var(--f-body);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px 18px;
+      min-height: 46px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.1s, background 0.15s, border-color 0.15s;
+    }
+    .btn:hover { border-color: var(--ink); }
+    .btn:active { transform: scale(0.98); }
+    .btn.primary {
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
+    }
+    .btn.success {
+      background: var(--ok);
+      color: #FFFFFF;
+      border-color: var(--ok);
+    }
+    .btn.subtle {
+      border-color: transparent;
+      background: transparent;
+      color: var(--muted);
+    }
+    .btn.subtle:hover {
+      background: var(--surface-subtle);
+      color: var(--ink);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Atom Balance Box (Atombilanz & Ladungsbilanz) */
+    .atom-balance-card {
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .balance-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .balance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .balance-item {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .balance-item.ok {
+      border-color: var(--ok);
+      background: var(--ok-bg);
+    }
+    .balance-item.err {
+      border-color: var(--alert);
+      background: var(--alert-bg);
+    }
+    .elem-tag {
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .elem-counts {
+      font-size: 0.92rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Feedback & Explanation Box */
+    .feedback-box {
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      border-left: 5px solid var(--line-strong);
+      background: var(--surface-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .feedback-box.ok {
+      border-left-color: var(--ok);
+      background: var(--ok-bg);
+    }
+    .feedback-box.alert {
+      border-left-color: var(--alert);
+      background: var(--alert-bg);
+    }
+    .feedback-box.warn {
+      border-left-color: var(--warn);
+      background: var(--warn-bg);
+    }
+    .feedback-title {
+      font-family: var(--f-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+    .feedback-text {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    /* Collapsible Section */
+    .collapsible {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    .collapsible-trigger {
+      background: transparent;
+      border: none;
+      font-family: var(--f-body);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+    }
+    .collapsible-trigger:hover { color: var(--ink); }
+    .collapsible-trigger svg {
+      transition: transform 0.2s ease;
+    }
+    .collapsible-trigger.open svg {
+      transform: rotate(180deg);
+    }
+    .collapsible-content {
+      padding-top: 8px;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      display: none;
+    }
+    .collapsible-content.open {
+      display: block;
+    }
+
+    /* Challenge Mode Specifics */
+    .challenge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-weight: 700;
+    }
+    .timer-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.25rem;
+      font-family: var(--f-display);
+      color: var(--ink);
+    }
+    .timer-wrap.warning {
+      color: var(--alert);
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+    .score-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.05rem;
+      color: var(--brand);
+    }
+
+    /* Review Screen (Challenge End) */
+    .review-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .summary-card {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .summary-title {
+      font-family: var(--f-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .summary-message {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.45;
+    }
+    .summary-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 100%;
+      margin: 6px 0;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 130px;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .stat-val {
+      font-family: var(--f-display);
+      font-size: 1.6rem;
+      color: var(--ink);
+    }
+
+    /* Persistent Leaderboard Table */
+    .leaderboard-card {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    .leaderboard-table th {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+    .leaderboard-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line-strong);
+    }
+    .rank-badge.gold { background: #FFD700; color: #5B4700; border-color: #E6C200; }
+    .rank-badge.silver { background: #E0E0E0; color: #424242; border-color: #BDBDBD; }
+    .rank-badge.bronze { background: #E6A265; color: #4E2700; border-color: #C67E3F; }
+
+    /* Review Task Cards */
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .review-card {
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .review-card.correct { border-left: 5px solid var(--ok); }
+    .review-card.incorrect { border-left: 5px solid var(--alert); }
+    .review-card-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .review-q-num {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .review-eq {
+      font-family: var(--f-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 4px 0;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1.5px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    @media (max-width: 600px) {
+      .app { padding: 12px 10px 40px; }
+      .card { padding: 16px 12px; }
+      .formula { font-size: 1.35rem; }
+      .coeff-input { width: 38px; height: 34px; font-size: 1.2rem; }
+      .step-btn { width: 38px; height: 22px; }
+      .chem-term { padding: 3px 8px 3px 3px; gap: 6px; }
+      .formula-input { width: 90px; font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="brand-title">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--brand)">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+      <h1>Reaktionsausgleicher</h1>
+      <span class="badge">Chemie</span>
+    </div>
+    <div class="top-controls">
+      <!-- Info / Anleitung Toggle -->
+      <button id="btnInfoToggle" class="icon-btn" title="Anleitung anzeigen / verbergen" aria-label="Anleitung">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </button>
+      <!-- Mute Toggle -->
+      <button id="btnSound" class="icon-btn" title="Ton an/aus" aria-label="Ton umschalten">
+        <svg id="iconSoundOn" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <svg id="iconSoundOff" style="display:none" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Collapsible Info / Anleitung Box -->
+  <aside id="infoCard" class="info-card">
+    <div class="info-header">
+      <div class="info-header-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>So funktioniert das Reaktionsspiel</span>
+      </div>
+      <button id="btnCloseInfo" class="icon-btn" style="width:30px; height:30px; border:none;" aria-label="Schließen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="info-body">
+      <div class="info-highlight">
+        Wichtiger Hinweis: Die chemischen Summenformeln (wie H₂O oder Fe₂O₃) sind fachlich fest vorgegeben und können nicht verändert werden! Du bestimmst ausschließlich die Stöchiometriezahlen (Faktoren vor den Formeln).
+      </div>
+      <p>
+        <strong>1. Gesetz der Massenerhaltung:</strong> Bei einer chemischen Reaktion geht kein Atom verloren und keines entsteht aus dem Nichts. Auf der linken Seite (Edukte) müssen von jedem Element genauso viele Atome vorliegen wie auf der rechten Seite (Produkte). Bei Ionenreaktionen muss zusätzlich die Summe der elektrischen Ladungen auf beiden Seiten übereinstimmen.
+      </p>
+      <p>
+        <strong>2. Bedienung der Stepper:</strong> Klicke auf die Pfeile ▲ (Erhöhen) und ▼ (Verringern) oder tippe Zahlen direkt über die Tastatur ein. Ein leeres Feld wird automatisch als <code>1</code> gewertet.
+      </p>
+      <p>
+        <strong>3. Die Modi:</strong> Im <em>Übungsmodus</em> erhältst du bei Fehlern gezielte Tipps zur Atombilanz. Im Modus <em>Wortgleichung</em> stellst du zuerst die Formeln auf, bevor du ausgleichst. In der <em>Challenge</em> läuft ein 5-Minuten-Countdown um Punkte fürs Leaderboard!
+      </p>
+    </div>
+  </aside>
+
+  <!-- Navigation / Mode Tabs -->
+  <div class="tabs-wrap">
+    <div class="mode-tabs" role="tablist">
+      <button id="tabPractice" class="tab-btn active" role="tab" aria-selected="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        Übungsmodus
+      </button>
+      <button id="tabWordEq" class="tab-btn" role="tab" aria-selected="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Wortgleichung ➔ Formel
+      </button>
+      <button id="tabChallenge" class="tab-btn" role="tab" aria-selected="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        5-Minuten-Challenge
+      </button>
+    </div>
+
+    <!-- Presets & Topic Selectors -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="presetSelect">Klassen-Preset:</label>
+        <select id="presetSelect" class="filter-select">
+          <option value="8">Klasse 8 (Grundlagen)</option>
+          <option value="9">Klasse 9 (Mittel)</option>
+          <option value="10" selected>Klasse 10 (Erweitert & Ionen)</option>
+          <option value="12">Klasse 11/12 (Kursstufe)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="topicSelect">Thema:</label>
+        <select id="topicSelect" class="filter-select">
+          <option value="all">Alle Themen der Klasse</option>
+          <option value="metalle_sauerstoff">Metalle mit Sauerstoff (Oxidation)</option>
+          <option value="metalle_halogene">Metalle mit Halogenen (Salzbildung)</option>
+          <option value="metalle_wasser_saeure">Metalle mit Säure/Wasser (Gasbildung)</option>
+          <option value="verbrennung_organisch">Verbrennung (Alkane, Alkohole)</option>
+          <option value="saeure_base">Säure-Base-Neutralisation</option>
+          <option value="ionen_faellung">Fällungsreaktionen & Ionen (aq)</option>
+          <option value="ionen_redox">Redox mit geladenen Teilchen (Ionen)</option>
+          <option value="zersetzung">Zersetzungsreaktionen</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Challenge Info Bar (Visible in Challenge Mode) -->
+  <div id="challengeBar" class="challenge-bar" style="display:none">
+    <div id="timerContainer" class="timer-wrap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span id="timerText">05:00</span>
+    </div>
+    <div class="task-indicator">
+      Aufgabe <span id="chTaskIndex">1</span> von 10
+    </div>
+    <div class="score-wrap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+        <path d="M4 22h16"></path>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+      </svg>
+      Punkte: <span id="chScore">0</span> / 10
+    </div>
+  </div>
+
+  <!-- Interactive Task Card -->
+  <main id="gameCard" class="card">
+    <div class="card-meta">
+      <div>
+        <h2 id="taskReactionName" class="task-title">Reaktionsaufgabe</h2>
+      </div>
+      <div id="practiceBadge" class="task-indicator">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span id="taskLevelText">Klasse 10</span>
+      </div>
+    </div>
+
+    <!-- Mode 2: Word Equation Display -->
+    <div id="wordEqBox" class="word-eq-box" style="display:none">
+      <span class="word-eq-label">Wortgleichung (Reaktionsschema)</span>
+      <div id="wordEqText" class="word-eq-content">Eisen + Sauerstoff ➔ Eisen(III)-oxid</div>
+      <span id="wordEqInstruction" style="font-size:0.92rem; color:var(--muted); margin-top:4px;">
+        Schritt 1: Trage für jeden Stoff die korrekte chemische Summenformel ein.
+      </span>
+    </div>
+
+    <!-- Equation Interactive Area -->
+    <div id="equationContainer" class="equation-container">
+      <!-- Dynamic compound terms and inputs rendered here -->
+    </div>
+
+    <!-- Atom Balance & Charge Balance Box - Only appears when checked! -->
+    <div id="atomBalanceCard" class="atom-balance-card" style="display:none">
+      <div class="balance-header">
+        <span>Bilanzprüfung (Edukte vs. Produkte)</span>
+        <span id="balanceSummaryTag"></span>
+      </div>
+      <div id="balanceGrid" class="balance-grid">
+        <!-- Rendered items per chemical element and electrical charge -->
+      </div>
+    </div>
+
+    <!-- Feedback & Explanations -->
+    <div id="feedbackBox" class="feedback-box" style="display:none">
+      <h3 id="feedbackTitle" class="feedback-title"></h3>
+      <p id="feedbackText" class="feedback-text"></p>
+      
+      <!-- Collapsible Explanation Details -->
+      <div id="collapsibleSection" class="collapsible" style="display:none">
+        <button id="toggleExplanationBtn" class="collapsible-trigger" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <span id="toggleExplanationText">Erklärung anzeigen</span>
+        </button>
+        <div id="collapsibleContent" class="collapsible-content">
+          <p id="explanationDetailText" style="margin:0"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions-bar">
+      <div>
+        <button id="btnReset" class="btn subtle" type="button" title="Zurücksetzen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M8 16H3v5"></path>
+          </svg>
+          Zurücksetzen
+        </button>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button id="btnCheck" class="btn primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span id="btnCheckText">Prüfen</span>
+        </button>
+        <button id="btnNext" class="btn success" type="button" style="display:none">
+          <span>Nächste Aufgabe</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Challenge Finished / Review Screen -->
+  <section id="reviewScreen" class="review-screen" style="display:none">
+    <div class="summary-card">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--brand)">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+        <path d="M4 22h16"></path>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+      </svg>
+      <h2 id="summaryHeadline" class="summary-title">Challenge abgeschlossen!</h2>
+      <p id="summaryMessage" class="summary-message"></p>
+      
+      <div class="summary-stats">
+        <div class="stat-box">
+          <span class="stat-label">Punkte</span>
+          <span id="finalScoreVal" class="stat-val">8 / 10</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Genutzte Zeit</span>
+          <span id="finalTimeVal" class="stat-val">03:15</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Persönliche Bestmarke</span>
+          <span id="highScoreVal" class="stat-val">-</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <button id="btnRestartChallenge" class="btn primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M8 16H3v5"></path>
+          </svg>
+          Erneut spielen
+        </button>
+        <button id="btnBackToPractice" class="btn" type="button">
+          Zum Übungsmodus
+        </button>
+      </div>
+    </div>
+
+    <!-- Persistent Leaderboard -->
+    <div class="leaderboard-card">
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px;">
+        <h3 style="font-family:var(--f-display); margin:0; font-size:1.15rem; display:flex; align-items:center; gap:8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" color="var(--brand)">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+          </svg>
+          Leaderboard (Beste Durchläufe auf diesem Gerät)
+        </h3>
+        <button id="btnClearLeaderboard" class="btn subtle" style="font-size:0.8rem; padding:4px 8px; min-height:30px;" type="button">
+          Zurücksetzen
+        </button>
+      </div>
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th style="width:50px;">Rang</th>
+            <th>Datum</th>
+            <th>Preset</th>
+            <th>Punkte</th>
+            <th>Zeit</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody">
+          <!-- Rendered leaderboard entries -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Review of all 10 tasks -->
+    <div>
+      <h3 style="font-family:var(--f-display); margin: 0 0 14px;">Aufgaben-Rückblick</h3>
+      <div id="reviewList" class="review-list">
+        <!-- Rendered cards for each task -->
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/**
+ * REAKTIONSAUSGLEICHER - Didaktisches Chemie-Lernspiel
+ * Komplett dynamische Aufgabengenerierung nach Themen & Klassen-Presets
+ * Unterstützt Moleküle, aquatisierte Ionen, Ladungserhaltung und 2-Stufen-Wortgleichungen
+ */
+
+// --- CHEMIE-ENGINE: FORMEL-PARSER, LADUNGEN & BILANZEN ---
+
+function gcd(a, b) {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+/**
+ * Parst chemische Formeln mit Subskripten, Klammern, Ladungen und Aggregatzuständen:
+ * z.B. "Fe2O3(s)", "Ba2+(aq)", "SO4 2-(aq)", "H3O+", "Ca(OH)2"
+ */
+function parseFormulaAndCharge(raw) {
+  let s = raw.trim();
+  let phase = "";
+  const phaseMatch = s.match(/\((aq|s|l|g)\)$/i);
+  if (phaseMatch) {
+    phase = phaseMatch[1].toLowerCase();
+    s = s.slice(0, -phaseMatch[0].length).trim();
+  }
+
+  let charge = 0;
+  const chargeMatch = s.match(/(\d*)([\+\-])$/) || s.match(/([\+\-])(\d*)$/);
+  if (chargeMatch) {
+    const sign = (chargeMatch[1] === "+" || chargeMatch[2] === "+") ? 1 : -1;
+    const numPart = chargeMatch[1].replace(/[\+\-]/, "") || chargeMatch[2].replace(/[\+\-]/, "");
+    const mag = numPart ? parseInt(numPart, 10) : 1;
+    charge = sign * mag;
+    s = s.slice(0, -chargeMatch[0].length).trim();
+  }
+
+  const counts = {};
+  function parseSub(str, mult = 1) {
+    let i = 0;
+    while (i < str.length) {
+      if (str[i] === "(") {
+        let open = 1;
+        let j = i + 1;
+        while (j < str.length && open > 0) {
+          if (str[j] === "(") open++;
+          if (str[j] === ")") open--;
+          j++;
+        }
+        const inner = str.slice(i + 1, j - 1);
+        let numStr = "";
+        while (j < str.length && /\d/.test(str[j])) {
+          numStr += str[j];
+          j++;
+        }
+        const groupMult = (numStr === "" ? 1 : parseInt(numStr, 10)) * mult;
+        parseSub(inner, groupMult);
+        i = j;
+      } else {
+        const match = str.slice(i).match(/^([A-Z][a-z]?)(\d*)/);
+        if (match) {
+          const elem = match[1];
+          const count = (match[2] === "" ? 1 : parseInt(match[2], 10)) * mult;
+          counts[elem] = (counts[elem] || 0) + count;
+          i += match[0].length;
+        } else {
+          i++;
+        }
+      }
+    }
+  }
+
+  parseSub(s, 1);
+  return { counts, charge, phase, base: s };
+}
+
+// Saubere HTML-Formatierung chemischer Formeln
+function formatChemicalFormulaHTML(raw) {
+  let s = raw.trim();
+  let phase = "";
+  const phaseMatch = s.match(/\((aq|s|l|g)\)$/i);
+  if (phaseMatch) {
+    phase = phaseMatch[1].toLowerCase();
+    s = s.slice(0, -phaseMatch[0].length).trim();
+  }
+
+  let chargeStr = "";
+  const chargeMatch = s.match(/(\d*)([\+\-])$/) || s.match(/([\+\-])(\d*)$/);
+  if (chargeMatch) {
+    const sign = (chargeMatch[1] === "+" || chargeMatch[2] === "+") ? "+" : "−";
+    const num = chargeMatch[1].replace(/[\+\-]/, "") || chargeMatch[2].replace(/[\+\-]/, "");
+    chargeStr = (num ? num : "") + sign;
+    s = s.slice(0, -chargeMatch[0].length).trim();
+  }
+
+  let formulaHTML = s.replace(/(\d+)/g, "<sub>$1</sub>");
+  let res = formulaHTML;
+  if (chargeStr) {
+    res += `<sup>${chargeStr}</sup>`;
+  }
+  if (phase) {
+    res += `<span class="chem-phase">(${phase})</span>`;
+  }
+  return res;
+}
+
+// Eingabe-Normalisierung für Formeleingabe (Groß-/Kleinschreibung tolerant)
+function normalizeFormulaInput(str) {
+  let s = str.trim().replace(/\s+/g, "");
+  s = s.replace(/\((aq|s|l|g)\)$/i, "");
+  return s.toLowerCase();
+}
+
+function compareFormulaInput(userInput, expectedFormula) {
+  const normIn = normalizeFormulaInput(userInput);
+  const normExp = normalizeFormulaInput(expectedFormula);
+  return normIn === normExp;
+}
+
+
+// --- DYNAMISCHE TEMPLATE-GENERATOREN FÜR THEMEN ---
+
+const DYNAMIC_GENERATORS = {
+  metalle_sauerstoff: [
+    () => {
+      const ms = [{ m: "Li", name: "Lithium" }, { m: "Na", name: "Natrium" }, { m: "K", name: "Kalium" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      return {
+        name: `Oxidation von ${item.name}`,
+        topic: "metalle_sauerstoff",
+        level: 8,
+        reactants: [{ f: item.m, c: 4, name: item.name }, { f: "O2", c: 1, name: "Sauerstoff" }],
+        products: [{ f: `${item.m}2O`, c: 2, name: `${item.name}oxid` }],
+        desc: `Alkalimetalle sind einwertig. Aus 4 ${item.name}-Atomen und 1 zweiatomigen Sauerstoffmolekül (O₂) entstehen 2 Formeleinheiten ${item.name}oxid (${item.m}₂O).`
+      };
+    },
+    () => {
+      const ms = [{ m: "Mg", name: "Magnesium" }, { m: "Ca", name: "Calcium" }, { m: "Ba", name: "Barium" }, { m: "Zn", name: "Zink" }, { m: "Cu", name: "Kupfer" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      return {
+        name: `Verbrennung von ${item.name}`,
+        topic: "metalle_sauerstoff",
+        level: 8,
+        reactants: [{ f: item.m, c: 2, name: item.name }, { f: "O2", c: 1, name: "Sauerstoff" }],
+        products: [{ f: `${item.m}O`, c: 2, name: `${item.name}oxid` }],
+        desc: `Zweiwertige Metalle reagieren mit O₂ im Verhältnis 2 : 1 zu 2 ${item.name}oxid-Einheiten (${item.m}O).`
+      };
+    },
+    () => {
+      const ms = [{ m: "Al", name: "Aluminium" }, { m: "Fe", name: "Eisen", alt: "Eisen(III)-oxid" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      const prodName = item.alt || `${item.name}oxid`;
+      return {
+        name: `Oxidation von ${item.name}`,
+        topic: "metalle_sauerstoff",
+        level: 9,
+        reactants: [{ f: item.m, c: 4, name: item.name }, { f: "O2", c: 3, name: "Sauerstoff" }],
+        products: [{ f: `${item.m}2O3`, c: 2, name: prodName }],
+        desc: `Dreiwertige Kationen verlangen das kleinste gemeinsame Vielfache von 2 und 3 (6 O-Atome): 4 ${item.name} + 3 O₂ bilden 2 ${item.m}₂O₃.`
+      };
+    }
+  ],
+  metalle_halogene: [
+    () => {
+      const ms = [{ m: "Li", name: "Lithium" }, { m: "Na", name: "Natrium" }, { m: "K", name: "Kalium" }];
+      const xs = [{ x: "F", f2: "F2", name: "Fluor", suffix: "fluorid" }, { x: "Cl", f2: "Cl2", name: "Chlor", suffix: "chlorid" }, { x: "Br", f2: "Br2", name: "Brom", suffix: "bromid" }, { x: "I", f2: "I2", name: "Iod", suffix: "iodid" }];
+      const m = ms[Math.floor(Math.random() * ms.length)];
+      const x = xs[Math.floor(Math.random() * xs.length)];
+      return {
+        name: `Synthese von ${m.name}${x.suffix}`,
+        topic: "metalle_halogene",
+        level: 8,
+        reactants: [{ f: m.m, c: 2, name: m.name }, { f: x.f2, c: 1, name: x.name }],
+        products: [{ f: `${m.m}${x.x}`, c: 2, name: `${m.name}${x.suffix}` }],
+        desc: `2 Atome ${m.name} und 1 zweiatomiges ${x.name}-Molekül bilden 2 Formeleinheiten ${m.name}${x.suffix}.`
+      };
+    },
+    () => {
+      const ms = [{ m: "Mg", name: "Magnesium" }, { m: "Ca", name: "Calcium" }, { m: "Ba", name: "Barium" }, { m: "Zn", name: "Zink" }];
+      const xs = [{ x: "Cl", f2: "Cl2", name: "Chlor", suffix: "chlorid" }, { x: "Br", f2: "Br2", name: "Brom", suffix: "bromid" }, { x: "I", f2: "I2", name: "Iod", suffix: "iodid" }];
+      const m = ms[Math.floor(Math.random() * ms.length)];
+      const x = xs[Math.floor(Math.random() * xs.length)];
+      return {
+        name: `Synthese von ${m.name}${x.suffix}`,
+        topic: "metalle_halogene",
+        level: 8,
+        reactants: [{ f: m.m, c: 1, name: m.name }, { f: x.f2, c: 1, name: x.name }],
+        products: [{ f: `${m.m}${x.x}2`, c: 1, name: `${m.name}${x.suffix}` }],
+        desc: `Ein zweiwertiges ${m.name}-Atom bindet direkt die beiden Halogenatome aus ${x.f2} zu 1 Formeleinheit ${m.m}${x.x}₂.`
+      };
+    },
+    () => {
+      const ms = [{ m: "Al", name: "Aluminium" }, { m: "Fe", name: "Eisen", suffixAlt: "Eisen(III)-chlorid" }];
+      const xs = [{ x: "Cl", f2: "Cl2", name: "Chlor", suffix: "chlorid" }, { x: "Br", f2: "Br2", name: "Brom", suffix: "bromid" }];
+      const m = ms[Math.floor(Math.random() * ms.length)];
+      const x = xs[Math.floor(Math.random() * xs.length)];
+      const prod = m.suffixAlt || `${m.name}${x.suffix}`;
+      return {
+        name: `Synthese von ${prod}`,
+        topic: "metalle_halogene",
+        level: 9,
+        reactants: [{ f: m.m, c: 2, name: m.name }, { f: x.f2, c: 3, name: x.name }],
+        products: [{ f: `${m.m}${x.x}3`, c: 2, name: prod }],
+        desc: `2 ${m.m}-Atome reagieren mit 3 ${x.f2}-Molekülen zu 2 ${m.m}${x.x}₃.`
+      };
+    }
+  ],
+  metalle_wasser_saeure: [
+    () => {
+      const ms = [{ m: "Li", name: "Lithium" }, { m: "Na", name: "Natrium" }, { m: "K", name: "Kalium" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      return {
+        name: `Reaktion von ${item.name} mit Wasser`,
+        topic: "metalle_wasser_saeure",
+        level: 9,
+        reactants: [{ f: item.m, c: 2, name: item.name }, { f: "H2O", c: 2, name: "Wasser" }],
+        products: [{ f: `${item.m}OH`, c: 2, name: `${item.name}hydroxid` }, { f: "H2", c: 1, name: "Wasserstoff" }],
+        desc: `Alkalimetalle reagieren mit Wasser zu Lauge und brennbarem Wasserstoff: 2 ${item.m} + 2 H₂O -> 2 ${item.m}OH + H₂.`
+      };
+    },
+    () => {
+      const ms = [{ m: "Ca", name: "Calcium" }, { m: "Ba", name: "Barium" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      return {
+        name: `Reaktion von ${item.name} mit Wasser`,
+        topic: "metalle_wasser_saeure",
+        level: 9,
+        reactants: [{ f: item.m, c: 1, name: item.name }, { f: "H2O", c: 2, name: "Wasser" }],
+        products: [{ f: `${item.m}(OH)2`, c: 1, name: `${item.name}hydroxid` }, { f: "H2", c: 1, name: "Wasserstoff" }],
+        desc: `1 ${item.name}-Atom benötigt 2 Wassermoleküle, um ${item.m}(OH)₂ und 1 H₂-Molekül zu bilden.`
+      };
+    },
+    () => {
+      const ms = [{ m: "Mg", name: "Magnesium" }, { m: "Zn", name: "Zink" }, { m: "Fe", name: "Eisen", alt: "Eisen(II)-chlorid" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      const prod = item.alt || `${item.name}chlorid`;
+      return {
+        name: `Reaktion von ${item.name} mit Salzsäure`,
+        topic: "metalle_wasser_saeure",
+        level: 9,
+        reactants: [{ f: item.m, c: 1, name: item.name }, { f: "HCl", c: 2, name: "Salzsäure" }],
+        products: [{ f: `${item.m}Cl2`, c: 1, name: prod }, { f: "H2", c: 1, name: "Wasserstoff" }],
+        desc: `1 ${item.name}-Atom reagiert mit 2 HCl-Molekülen zu ${item.m}Cl₂ und H₂.`
+      };
+    },
+    () => ({
+      name: "Reaktion von Aluminium mit Salzsäure",
+      topic: "metalle_wasser_saeure",
+      level: 10,
+      reactants: [{ f: "Al", c: 2, name: "Aluminium" }, { f: "HCl", c: 6, name: "Salzsäure" }],
+      products: [{ f: "AlCl3", c: 2, name: "Aluminiumchlorid" }, { f: "H2", c: 3, name: "Wasserstoff" }],
+      desc: "Wegen AlCl₃ und H₂ ist 6 das KGV für Chlor und Wasserstoff: 2 Al + 6 HCl -> 2 AlCl₃ + 3 H₂."
+    })
+  ],
+  verbrennung_organisch: [
+    () => {
+      const alkanes = [
+        { name: "Methan", f: "CH4", n: 1, lvl: 9 },
+        { name: "Ethan", f: "C2H6", n: 2, lvl: 10 },
+        { name: "Propan", f: "C3H8", n: 3, lvl: 10 },
+        { name: "Butan", f: "C4H10", n: 4, lvl: 11 },
+        { name: "Pentan", f: "C5H12", n: 5, lvl: 11 },
+        { name: "Hexan", f: "C6H14", n: 6, lvl: 11 }
+      ];
+      const alk = alkanes[Math.floor(Math.random() * alkanes.length)];
+      const n = alk.n;
+      if (n % 2 === 0) {
+        return {
+          name: `Verbrennung von ${alk.name}`,
+          topic: "verbrennung_organisch",
+          level: alk.lvl,
+          reactants: [{ f: alk.f, c: 2, name: alk.name }, { f: "O2", c: 3 * n + 1, name: "Sauerstoff" }],
+          products: [{ f: "CO2", c: 2 * n, name: "Kohlenstoffdioxid" }, { f: "H2O", c: 2 * n + 2, name: "Wasser" }],
+          desc: `Ungerade Sauerstoffzahl verlangt Verdopplung: 2 ${alk.name} (${alk.f}) verbrennen mit ${3 * n + 1} O₂ zu ${2 * n} CO₂ und ${2 * n + 2} H₂O.`
+        };
+      } else {
+        const o2c = (3 * n + 1) / 2;
+        return {
+          name: `Verbrennung von ${alk.name}`,
+          topic: "verbrennung_organisch",
+          level: alk.lvl,
+          reactants: [{ f: alk.f, c: 1, name: alk.name }, { f: "O2", c: o2c, name: "Sauerstoff" }],
+          products: [{ f: "CO2", c: n, name: "Kohlenstoffdioxid" }, { f: "H2O", c: n + 1, name: "Wasser" }],
+          desc: `1 ${alk.name} (${alk.f}) liefert ${n} CO₂ und ${n + 1} H₂O. Zusammen ${3 * n + 1} O-Atome, also ${o2c} O₂.`
+        };
+      }
+    },
+    () => {
+      const alcohols = [
+        { name: "Methanol", f: "CH3OH", c_alc: 2, c_o2: 3, c_co2: 2, c_h2o: 4, lvl: 11 },
+        { name: "Ethanol", f: "C2H5OH", c_alc: 1, c_o2: 3, c_co2: 2, c_h2o: 3, lvl: 11 },
+        { name: "Propanol", f: "C3H7OH", c_alc: 2, c_o2: 9, c_co2: 6, c_h2o: 8, lvl: 11 }
+      ];
+      const alc = alcohols[Math.floor(Math.random() * alcohols.length)];
+      return {
+        name: `Verbrennung von ${alc.name}`,
+        topic: "verbrennung_organisch",
+        level: alc.lvl,
+        reactants: [{ f: alc.f, c: alc.c_alc, name: alc.name }, { f: "O2", c: alc.c_o2, name: "Sauerstoff" }],
+        products: [{ f: "CO2", c: alc.c_co2, name: "Kohlenstoffdioxid" }, { f: "H2O", c: alc.c_h2o, name: "Wasser" }],
+        desc: `Beachte den bereits im Alkoholmolekül vorhandenen Sauerstoff! Ausgeglichen mit kleinsten ganzzahligen Koeffizienten.`
+      };
+    },
+    () => ({
+      name: "Zellatmung (Glucose-Verbrennung)",
+      topic: "verbrennung_organisch",
+      level: 12,
+      reactants: [{ f: "C6H12O6", c: 1, name: "Glucose" }, { f: "O2", c: 6, name: "Sauerstoff" }],
+      products: [{ f: "CO2", c: 6, name: "Kohlenstoffdioxid" }, { f: "H2O", c: 6, name: "Wasser" }],
+      desc: "1 Glucosemolekül (C₆H₁₂O₆) benötigt 6 Sauerstoffmoleküle (O₂) und bildet 6 CO₂ sowie 6 H₂O."
+    })
+  ],
+  saeure_base: [
+    () => {
+      const saeuren = [{ f: "HCl", name: "Salzsäure", an: "Cl" }, { f: "HNO3", name: "Salpetersäure", an: "NO3" }];
+      const basen = [{ f: "NaOH", name: "Natronlauge", k: "Na", sname: "Natrium" }, { f: "KOH", name: "Kalilauge", k: "K", sname: "Kalium" }];
+      const s = saeuren[Math.floor(Math.random() * saeuren.length)];
+      const b = basen[Math.floor(Math.random() * basen.length)];
+      const saltName = s.an === "Cl" ? `${b.sname}chlorid` : `${b.sname}nitrat`;
+      return {
+        name: `Neutralisation von ${s.name} mit ${b.name}`,
+        topic: "saeure_base",
+        level: 10,
+        reactants: [{ f: s.f, c: 1, name: s.name }, { f: b.f, c: 1, name: b.name }],
+        products: [{ f: `${b.k}${s.an}`, c: 1, name: saltName }, { f: "H2O", c: 1, name: "Wasser" }],
+        desc: "Einprotonige Säure und einwertige Base reagieren im Verhältnis 1 : 1 zu Salz und Wasser."
+      };
+    },
+    () => {
+      const basen = [{ f: "NaOH", name: "Natronlauge", k: "Na", sname: "Natrium" }, { f: "KOH", name: "Kalilauge", k: "K", sname: "Kalium" }];
+      const b = basen[Math.floor(Math.random() * basen.length)];
+      return {
+        name: `Neutralisation von Schwefelsäure mit ${b.name}`,
+        topic: "saeure_base",
+        level: 10,
+        reactants: [{ f: "H2SO4", c: 1, name: "Schwefelsäure" }, { f: b.f, c: 2, name: b.name }],
+        products: [{ f: `${b.k}2SO4`, c: 1, name: `${b.sname}sulfat` }, { f: "H2O", c: 2, name: "Wasser" }],
+        desc: `Die zweiprotonige Schwefelsäure liefert 2 Protonen und erfordert 2 ${b.name} (${b.f}), wobei 2 Wassermoleküle entstehen.`
+      };
+    },
+    () => {
+      const hydroxides = [{ f: "Ca(OH)2", name: "Calciumhydroxid", m: "Ca", sname: "Calcium" }, { f: "Ba(OH)2", name: "Bariumhydroxid", m: "Ba", sname: "Barium" }];
+      const h = hydroxides[Math.floor(Math.random() * hydroxides.length)];
+      return {
+        name: `Neutralisation von Salzsäure mit ${h.name}`,
+        topic: "saeure_base",
+        level: 10,
+        reactants: [{ f: "HCl", c: 2, name: "Salzsäure" }, { f: h.f, c: 1, name: h.name }],
+        products: [{ f: `${h.m}Cl2`, c: 1, name: `${h.sname}chlorid` }, { f: "H2O", c: 2, name: "Wasser" }],
+        desc: `Das zweiwertige ${h.name} bindet 2 HCl-Moleküle; es entstehen 1 ${h.m}Cl₂ und 2 H₂O.`
+      };
+    },
+    () => ({
+      name: "Neutralisation von Phosphorsäure mit Natronlauge",
+      topic: "saeure_base",
+      level: 11,
+      reactants: [{ f: "H3PO4", c: 1, name: "Phosphorsäure" }, { f: "NaOH", c: 3, name: "Natronlauge" }],
+      products: [{ f: "Na3PO4", c: 1, name: "Natriumphosphat" }, { f: "H2O", c: 3, name: "Wasser" }],
+      desc: "Die dreiprotonige Phosphorsäure benötigt 3 NaOH; es entstehen 1 Na₃PO₄ und 3 Wassermoleküle."
+    })
+  ],
+  ionen_faellung: [
+    () => ({
+      name: "Fällung von Bariumsulfat",
+      topic: "ionen_faellung",
+      level: 10,
+      reactants: [{ f: "Ba2+(aq)", c: 1, name: "Barium-Ionen" }, { f: "SO4 2-(aq)", c: 1, name: "Sulfat-Ionen" }],
+      products: [{ f: "BaSO4(s)", c: 1, name: "Bariumsulfat" }],
+      desc: "Ba²⁺ und SO₄²⁻ fallen als schwerlösliches Bariumsulfat (BaSO₄) aus. Beide Ladungen (+2 und -2) heben sich exakt auf."
+    }),
+    () => {
+      const halides = [{ f: "Cl-(aq)", name: "Chlorid-Ionen", solid: "AgCl(s)", sname: "Silberchlorid" }, { f: "Br-(aq)", name: "Bromid-Ionen", solid: "AgBr(s)", sname: "Silberbromid" }, { f: "I-(aq)", name: "Iodid-Ionen", solid: "AgI(s)", sname: "Silberiodid" }];
+      const h = halides[Math.floor(Math.random() * halides.length)];
+      return {
+        name: `Fällung von ${h.sname}`,
+        topic: "ionen_faellung",
+        level: 10,
+        reactants: [{ f: "Ag+(aq)", c: 1, name: "Silber-Ionen" }, { f: h.f, c: 1, name: h.name }],
+        products: [{ f: h.solid, c: 1, name: h.sname }],
+        desc: `Ag⁺ und ${h.f} bilden den charakteristischen Niederschlag ${h.sname}. Die Ladungssumme ist auf beiden Seiten 0.`
+      };
+    },
+    () => ({
+      name: "Fällung von Calciumcarbonat",
+      topic: "ionen_faellung",
+      level: 10,
+      reactants: [{ f: "Ca2+(aq)", c: 1, name: "Calcium-Ionen" }, { f: "CO3 2-(aq)", c: 1, name: "Carbonat-Ionen" }],
+      products: [{ f: "CaCO3(s)", c: 1, name: "Calciumcarbonat" }],
+      desc: "Calcium-Ionen (Ca²⁺) und Carbonat-Ionen (CO₃²⁻) bilden unlöslichen Kalk (CaCO₃)."
+    }),
+    () => ({
+      name: "Fällung von Blei(II)-iodid",
+      topic: "ionen_faellung",
+      level: 11,
+      reactants: [{ f: "Pb2+(aq)", c: 1, name: "Blei(II)-Ionen" }, { f: "I-(aq)", c: 2, name: "Iodid-Ionen" }],
+      products: [{ f: "PbI2(s)", c: 1, name: "Blei(II)-iodid" }],
+      desc: "Das zweiwertige Pb²⁺ verlangt 2 einfach geladene Iodid-Ionen (I⁻); es entsteht goldgelbes PbI₂."
+    }),
+    () => ({
+      name: "Fällung von Calciumphosphat",
+      topic: "ionen_faellung",
+      level: 11,
+      reactants: [{ f: "Ca2+(aq)", c: 3, name: "Calcium-Ionen" }, { f: "PO4 3-(aq)", c: 2, name: "Phosphat-Ionen" }],
+      products: [{ f: "Ca3(PO4)2(s)", c: 1, name: "Calciumphosphat" }],
+      desc: "KGV von 2 und 3: 3 Ca²⁺ (+6) und 2 PO₄³⁻ (-6) bilden elektrisch neutrales Ca₃(PO₄)₂."
+    }),
+    () => ({
+      name: "Fällung von Eisen(III)-hydroxid",
+      topic: "ionen_faellung",
+      level: 11,
+      reactants: [{ f: "Fe3+(aq)", c: 1, name: "Eisen(III)-Ionen" }, { f: "OH-(aq)", c: 3, name: "Hydroxid-Ionen" }],
+      products: [{ f: "Fe(OH)3(s)", c: 1, name: "Eisen(III)-hydroxid" }],
+      desc: "1 dreifach positives Fe³⁺ benötigt 3 OH⁻; es entsteht rotbraunes Fe(OH)₃."
+    })
+  ],
+  ionen_redox: [
+    () => {
+      const ms = [{ m: "Zn", name: "Zink", ion: "Zn2+(aq)", iname: "Zink-Ionen" }, { m: "Mg", name: "Magnesium", ion: "Mg2+(aq)", iname: "Magnesium-Ionen" }, { m: "Fe", name: "Eisen", ion: "Fe2+(aq)", iname: "Eisen(II)-Ionen" }];
+      const item = ms[Math.floor(Math.random() * ms.length)];
+      return {
+        name: `Reaktion von ${item.name} mit Säure (Ionengleichung)`,
+        topic: "ionen_redox",
+        level: 10,
+        reactants: [{ f: `${item.m}(s)`, c: 1, name: item.name }, { f: "H+(aq)", c: 2, name: "Wasserstoff-Ionen" }],
+        products: [{ f: item.ion, c: 1, name: item.iname }, { f: "H2(g)", c: 1, name: "Wasserstoff" }],
+        desc: `Das Metall gibt 2 Elektronen an 2 H⁺-Ionen ab: Ladung links = +2, rechts = +2.`
+      };
+    },
+    () => ({
+      name: "Aluminium in Säure (Ionengleichung)",
+      topic: "ionen_redox",
+      level: 11,
+      reactants: [{ f: "Al(s)", c: 2, name: "Aluminium" }, { f: "H+(aq)", c: 6, name: "Wasserstoff-Ionen" }],
+      products: [{ f: "Al3+(aq)", c: 2, name: "Aluminium-Ionen" }, { f: "H2(g)", c: 3, name: "Wasserstoff" }],
+      desc: "2 Al-Atome geben je 3 Elektronen (zusammen 6) an 6 H⁺ ab. Ladung auf beiden Seiten: +6."
+    }),
+    () => ({
+      name: "Redoxreaktion von Eisen mit Kupfer(II)-Ionen",
+      topic: "ionen_redox",
+      level: 10,
+      reactants: [{ f: "Fe(s)", c: 1, name: "Eisen" }, { f: "Cu2+(aq)", c: 1, name: "Kupfer(II)-Ionen" }],
+      products: [{ f: "Fe2+(aq)", c: 1, name: "Eisen(II)-Ionen" }, { f: "Cu(s)", c: 1, name: "Kupfer" }],
+      desc: "Das unedlere Eisen oxidiert zu Fe²⁺ und scheidet metallisches Kupfer ab. Ladung links: +2, rechts: +2."
+    }),
+    () => ({
+      name: "Redoxreaktion von Kupfer mit Silber-Ionen",
+      topic: "ionen_redox",
+      level: 11,
+      reactants: [{ f: "Cu(s)", c: 1, name: "Kupfer" }, { f: "Ag+(aq)", c: 2, name: "Silber-Ionen" }],
+      products: [{ f: "Cu2+(aq)", c: 1, name: "Kupfer(II)-Ionen" }, { f: "Ag(s)", c: 2, name: "Silber" }],
+      desc: "1 Cu-Atom gibt 2 Elektronen ab, wofür 2 Ag⁺-Ionen benötigt werden (Kupferbaum). Ladung: +2."
+    }),
+    () => ({
+      name: "Neutralisation von Oxonium- mit Hydroxidionen",
+      topic: "ionen_redox",
+      level: 10,
+      reactants: [{ f: "H3O+(aq)", c: 1, name: "Oxonium-Ionen" }, { f: "OH-(aq)", c: 1, name: "Hydroxid-Ionen" }],
+      products: [{ f: "H2O(l)", c: 2, name: "Wasser" }],
+      desc: "Das Kernprinzip jeder wässrigen Neutralisation: H₃O⁺ und OH⁻ bilden 2 Wassermoleküle."
+    })
+  ],
+  zersetzung: [
+    () => ({
+      name: "Elektrolyse von Wasser",
+      topic: "zersetzung",
+      level: 8,
+      reactants: [{ f: "H2O", c: 2, name: "Wasser" }],
+      products: [{ f: "H2", c: 2, name: "Wasserstoff" }, { f: "O2", c: 1, name: "Sauerstoff" }],
+      desc: "Wasser zerfällt durch elektrischen Strom in Wasserstoff und Sauerstoff (Knallgasverhältnis 2 : 1)."
+    }),
+    () => ({
+      name: "Zersetzung von Wasserstoffperoxid",
+      topic: "zersetzung",
+      level: 9,
+      reactants: [{ f: "H2O2", c: 2, name: "Wasserstoffperoxid" }],
+      products: [{ f: "H2O", c: 2, name: "Wasser" }, { f: "O2", c: 1, name: "Sauerstoff" }],
+      desc: "2 H₂O₂ zerfallen katalytisch in 2 H₂O und 1 Sauerstoffmolekül O₂."
+    }),
+    () => ({
+      name: "Thermitreaktion",
+      topic: "zersetzung",
+      level: 11,
+      reactants: [{ f: "Al", c: 2, name: "Aluminium" }, { f: "Fe2O3", c: 1, name: "Eisen(III)-oxid" }],
+      products: [{ f: "Al2O3", c: 1, name: "Aluminiumoxid" }, { f: "Fe", c: 2, name: "Eisen" }],
+      desc: "Aluminium reduziert Eisen(III)-oxid zu flüssigem Eisen und Aluminiumoxid."
+    }),
+    () => ({
+      name: "Thermische Zersetzung von Kalk",
+      topic: "zersetzung",
+      level: 10,
+      reactants: [{ f: "CaCO3", c: 1, name: "Calciumcarbonat" }],
+      products: [{ f: "CaO", c: 1, name: "Calciumoxid" }, { f: "CO2", c: 1, name: "Kohlenstoffdioxid" }],
+      desc: "Kalkbrennen: Aus 1 CaCO₃ entstehen 1 CaO (Branntkalk) und 1 Kohlenstoffdioxid (CO₂)."
+    })
+  ]
+};
+
+// Klassen-Presets Zuordnung: Welche Themen sind für welches Preset aktiv
+const PRESET_TOPICS = {
+  8: ["metalle_sauerstoff", "metalle_halogene", "zersetzung"],
+  9: ["metalle_sauerstoff", "metalle_halogene", "metalle_wasser_saeure", "verbrennung_organisch", "zersetzung"],
+  10: ["metalle_sauerstoff", "metalle_halogene", "metalle_wasser_saeure", "verbrennung_organisch", "saeure_base", "ionen_faellung", "ionen_redox", "zersetzung"],
+  12: ["metalle_sauerstoff", "metalle_halogene", "metalle_wasser_saeure", "verbrennung_organisch", "saeure_base", "ionen_faellung", "ionen_redox", "zersetzung"]
+};
+
+// Vollständig dynamische Aufgabengenerierung
+function generateTask(maxLevel, specificTopic = "all", excludeNames = []) {
+  let allowedTopics = PRESET_TOPICS[maxLevel] || PRESET_TOPICS[10];
+  if (specificTopic !== "all") {
+    allowedTopics = [specificTopic];
+  }
+
+  // Versuche bis zu 15 Mal eine nicht-kürzliche Aufgabe zu finden
+  for (let attempt = 0; attempt < 15; attempt++) {
+    const topicKey = allowedTopics[Math.floor(Math.random() * allowedTopics.length)];
+    const genList = DYNAMIC_GENERATORS[topicKey];
+    if (genList && genList.length > 0) {
+      const generator = genList[Math.floor(Math.random() * genList.length)];
+      const task = generator();
+      if (task.level <= maxLevel && !excludeNames.includes(task.name)) {
+        return task;
+      }
+    }
+  }
+
+  // Fallback
+  const fallbackTopic = allowedTopics[0];
+  return DYNAMIC_GENERATORS[fallbackTopic][0]();
+}
+
+
+// --- AUDIO-FEEDBACK (Synthetisch, dezent) ---
+
+let audioCtx = null;
+let isMuted = localStorage.getItem("chemsim_rechner_muted") === "true";
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  if (isMuted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const gain = ctx.createGain();
+  gain.connect(ctx.destination);
+
+  if (type === "correct") {
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    const osc1 = ctx.createOscillator();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(523.25, now);
+    osc1.connect(gain);
+    osc1.start(now);
+    osc1.stop(now + 0.16);
+
+    const osc2 = ctx.createOscillator();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(659.25, now + 0.14);
+    osc2.connect(gain);
+    osc2.start(now + 0.14);
+    osc2.stop(now + 0.35);
+
+  } else if (type === "error") {
+    gain.gain.setValueAtTime(0.07, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.25);
+    osc.connect(gain);
+    osc.start(now);
+    osc.stop(now + 0.25);
+
+  } else if (type === "finish") {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const g = ctx.createGain();
+      g.connect(ctx.destination);
+      const t = now + idx * 0.12;
+      g.gain.setValueAtTime(0.07, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, t);
+      osc.connect(g);
+      osc.start(t);
+      osc.stop(t + 0.35);
+    });
+  }
+}
+
+
+// --- APP-ZUSTAND ---
+
+const state = {
+  mode: "practice", // "practice" | "wordEq" | "challenge"
+  maxLevel: 10,
+  topic: "all",
+  currentTask: null,
+  practiceAttempt: 0,
+  recentTaskNames: [],
+  
+  // Modus 2: Wortgleichung Zustand
+  wordEqPhase: 1, // 1 = Formeleingabe, 2 = Koeffizienten ausgleichen
+  wordEqFormulaAttempt: 0,
+
+  // Challenge Zustand (5 Minuten Countdown = 300 Sekunden)
+  challenge: {
+    active: false,
+    tasks: [],
+    currentIndex: 0,
+    score: 0,
+    totalSeconds: 300,
+    remainingSeconds: 300,
+    timerInterval: null,
+    answers: []
+  }
+};
+
+// DOM Referenzen
+const btnInfoToggle = document.getElementById("btnInfoToggle");
+const btnCloseInfo = document.getElementById("btnCloseInfo");
+const infoCard = document.getElementById("infoCard");
+
+const btnSound = document.getElementById("btnSound");
+const iconSoundOn = document.getElementById("iconSoundOn");
+const iconSoundOff = document.getElementById("iconSoundOff");
+
+const tabPractice = document.getElementById("tabPractice");
+const tabWordEq = document.getElementById("tabWordEq");
+const tabChallenge = document.getElementById("tabChallenge");
+
+const presetSelect = document.getElementById("presetSelect");
+const topicSelect = document.getElementById("topicSelect");
+
+const challengeBar = document.getElementById("challengeBar");
+const timerContainer = document.getElementById("timerContainer");
+const timerText = document.getElementById("timerText");
+const chTaskIndex = document.getElementById("chTaskIndex");
+const chScore = document.getElementById("chScore");
+
+const gameCard = document.getElementById("gameCard");
+const taskReactionName = document.getElementById("taskReactionName");
+const practiceBadge = document.getElementById("practiceBadge");
+const taskLevelText = document.getElementById("taskLevelText");
+
+const wordEqBox = document.getElementById("wordEqBox");
+const wordEqText = document.getElementById("wordEqText");
+const wordEqInstruction = document.getElementById("wordEqInstruction");
+const equationContainer = document.getElementById("equationContainer");
+
+const atomBalanceCard = document.getElementById("atomBalanceCard");
+const balanceGrid = document.getElementById("balanceGrid");
+const balanceSummaryTag = document.getElementById("balanceSummaryTag");
+
+const feedbackBox = document.getElementById("feedbackBox");
+const feedbackTitle = document.getElementById("feedbackTitle");
+const feedbackText = document.getElementById("feedbackText");
+const collapsibleSection = document.getElementById("collapsibleSection");
+const toggleExplanationBtn = document.getElementById("toggleExplanationBtn");
+const toggleExplanationText = document.getElementById("toggleExplanationText");
+const collapsibleContent = document.getElementById("collapsibleContent");
+const explanationDetailText = document.getElementById("explanationDetailText");
+
+const btnReset = document.getElementById("btnReset");
+const btnCheck = document.getElementById("btnCheck");
+const btnCheckText = document.getElementById("btnCheckText");
+const btnNext = document.getElementById("btnNext");
+
+const reviewScreen = document.getElementById("reviewScreen");
+const summaryHeadline = document.getElementById("summaryHeadline");
+const summaryMessage = document.getElementById("summaryMessage");
+const finalScoreVal = document.getElementById("finalScoreVal");
+const finalTimeVal = document.getElementById("finalTimeVal");
+const highScoreVal = document.getElementById("highScoreVal");
+const leaderboardBody = document.getElementById("leaderboardBody");
+const btnClearLeaderboard = document.getElementById("btnClearLeaderboard");
+const reviewList = document.getElementById("reviewList");
+const btnRestartChallenge = document.getElementById("btnRestartChallenge");
+const btnBackToPractice = document.getElementById("btnBackToPractice");
+
+
+// --- INITIALISIERUNG ---
+
+function init() {
+  updateSoundIcon();
+
+  btnSound.addEventListener("click", () => {
+    isMuted = !isMuted;
+    localStorage.setItem("chemsim_rechner_muted", isMuted ? "true" : "false");
+    updateSoundIcon();
+  });
+
+  btnInfoToggle.addEventListener("click", () => {
+    infoCard.style.display = infoCard.style.display === "none" ? "flex" : "none";
+  });
+  btnCloseInfo.addEventListener("click", () => {
+    infoCard.style.display = "none";
+  });
+
+  tabPractice.addEventListener("click", () => setMode("practice"));
+  tabWordEq.addEventListener("click", () => setMode("wordEq"));
+  tabChallenge.addEventListener("click", () => setMode("challenge"));
+
+  presetSelect.addEventListener("change", (e) => {
+    state.maxLevel = parseInt(e.target.value, 10);
+    updateTopicSelectOptions();
+    reloadCurrentMode();
+  });
+
+  topicSelect.addEventListener("change", (e) => {
+    state.topic = e.target.value;
+    reloadCurrentMode();
+  });
+
+  btnCheck.addEventListener("click", handleCheck);
+  btnNext.addEventListener("click", handleNextTask);
+  btnReset.addEventListener("click", handleReset);
+
+  toggleExplanationBtn.addEventListener("click", toggleCollapsible);
+  btnRestartChallenge.addEventListener("click", startChallenge);
+  btnBackToPractice.addEventListener("click", () => setMode("practice"));
+  btnClearLeaderboard.addEventListener("click", handleClearLeaderboard);
+
+  updateTopicSelectOptions();
+  loadNewTask();
+}
+
+function updateSoundIcon() {
+  iconSoundOn.style.display = isMuted ? "none" : "block";
+  iconSoundOff.style.display = isMuted ? "block" : "none";
+}
+
+function updateTopicSelectOptions() {
+  const allowed = PRESET_TOPICS[state.maxLevel] || PRESET_TOPICS[10];
+  Array.from(topicSelect.options).forEach(opt => {
+    if (opt.value === "all") return;
+    opt.disabled = !allowed.includes(opt.value);
+  });
+  if (state.topic !== "all" && !allowed.includes(state.topic)) {
+    state.topic = "all";
+    topicSelect.value = "all";
+  }
+}
+
+function reloadCurrentMode() {
+  if (state.mode === "practice" || state.mode === "wordEq") {
+    loadNewTask();
+  } else if (state.mode === "challenge") {
+    startChallenge();
+  }
+}
+
+function setMode(newMode) {
+  state.mode = newMode;
+  [tabPractice, tabWordEq, tabChallenge].forEach(t => {
+    t.classList.remove("active");
+    t.setAttribute("aria-selected", "false");
+  });
+
+  if (newMode === "practice") {
+    tabPractice.classList.add("active");
+    tabPractice.setAttribute("aria-selected", "true");
+    challengeBar.style.display = "none";
+    practiceBadge.style.display = "inline-flex";
+    wordEqBox.style.display = "none";
+    reviewScreen.style.display = "none";
+    gameCard.style.display = "flex";
+    clearInterval(state.challenge.timerInterval);
+    loadNewTask();
+
+  } else if (newMode === "wordEq") {
+    tabWordEq.classList.add("active");
+    tabWordEq.setAttribute("aria-selected", "true");
+    challengeBar.style.display = "none";
+    practiceBadge.style.display = "inline-flex";
+    wordEqBox.style.display = "flex";
+    reviewScreen.style.display = "none";
+    gameCard.style.display = "flex";
+    clearInterval(state.challenge.timerInterval);
+    loadNewTask();
+
+  } else if (newMode === "challenge") {
+    tabChallenge.classList.add("active");
+    tabChallenge.setAttribute("aria-selected", "true");
+    practiceBadge.style.display = "none";
+    wordEqBox.style.display = "none";
+    startChallenge();
+  }
+}
+
+function toggleCollapsible() {
+  const isOpen = collapsibleContent.classList.contains("open");
+  if (isOpen) {
+    collapsibleContent.classList.remove("open");
+    toggleExplanationBtn.classList.remove("open");
+    toggleExplanationText.textContent = "Erklärung anzeigen";
+  } else {
+    collapsibleContent.classList.add("open");
+    toggleExplanationBtn.classList.add("open");
+    toggleExplanationText.textContent = "Erklärung verbergen";
+  }
+}
+
+
+// --- RENDERING DER AUFGABEN ---
+
+function loadNewTask() {
+  state.practiceAttempt = 0;
+  state.wordEqPhase = 1;
+  state.wordEqFormulaAttempt = 0;
+
+  state.currentTask = generateTask(state.maxLevel, state.topic, state.recentTaskNames);
+  state.recentTaskNames.push(state.currentTask.name);
+  if (state.recentTaskNames.length > 8) state.recentTaskNames.shift();
+
+  taskReactionName.textContent = state.currentTask.name;
+  taskLevelText.textContent = `Bis Klasse ${state.currentTask.level}`;
+
+  atomBalanceCard.style.display = "none";
+  feedbackBox.style.display = "none";
+  collapsibleSection.style.display = "none";
+  collapsibleContent.classList.remove("open");
+  toggleExplanationBtn.classList.remove("open");
+
+  btnCheck.style.display = "inline-flex";
+  btnNext.style.display = "none";
+  btnReset.disabled = false;
+
+  if (state.mode === "wordEq") {
+    setupWordEquationUI();
+  } else {
+    wordEqBox.style.display = "none";
+    btnCheckText.textContent = "Prüfen";
+    renderBalancingEquation(state.currentTask);
+  }
+}
+
+function setupWordEquationUI() {
+  wordEqBox.style.display = "flex";
+  const rNames = state.currentTask.reactants.map(r => r.name).join(" + ");
+  const pNames = state.currentTask.products.map(p => p.name).join(" + ");
+  wordEqText.textContent = `${rNames} ➔ ${pNames}`;
+  wordEqInstruction.textContent = "Schritt 1: Trage für jeden Stoff die korrekte chemische Summenformel ein.";
+  btnCheckText.textContent = "Formeln prüfen";
+
+  renderFormulaInputs(state.currentTask);
+}
+
+// Phase 1 (Modus 2): Eingabe der chemischen Formeln
+function renderFormulaInputs(task) {
+  equationContainer.innerHTML = "";
+
+  const leftSide = document.createElement("div");
+  leftSide.className = "chem-side";
+  task.reactants.forEach((r, idx) => {
+    if (idx > 0) {
+      const op = document.createElement("span");
+      op.className = "chem-op";
+      op.textContent = "+";
+      leftSide.appendChild(op);
+    }
+    const box = document.createElement("div");
+    box.className = "chem-input-term";
+    box.id = `f_box_r_${idx}`;
+    box.innerHTML = `
+      <span class="chem-input-label">${r.name}</span>
+      <input type="text" class="formula-input" id="inp_r_${idx}" placeholder="Formel" autocomplete="off" autocorrect="off" autocapitalize="off">
+    `;
+    leftSide.appendChild(box);
+  });
+  equationContainer.appendChild(leftSide);
+
+  const arrow = document.createElement("div");
+  arrow.className = "chem-arrow";
+  arrow.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><polyline points="14 6 20 12 14 18"></polyline></svg>`;
+  equationContainer.appendChild(arrow);
+
+  const rightSide = document.createElement("div");
+  rightSide.className = "chem-side";
+  task.products.forEach((p, idx) => {
+    if (idx > 0) {
+      const op = document.createElement("span");
+      op.className = "chem-op";
+      op.textContent = "+";
+      rightSide.appendChild(op);
+    }
+    const box = document.createElement("div");
+    box.className = "chem-input-term";
+    box.id = `f_box_p_${idx}`;
+    box.innerHTML = `
+      <span class="chem-input-label">${p.name}</span>
+      <input type="text" class="formula-input" id="inp_p_${idx}" placeholder="Formel" autocomplete="off" autocorrect="off" autocapitalize="off">
+    `;
+    rightSide.appendChild(box);
+  });
+  equationContainer.appendChild(rightSide);
+
+  equationContainer.querySelectorAll(".formula-input").forEach(inp => {
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnCheck.click();
+      }
+    });
+  });
+}
+
+// Phase 2 (bzw. Normalmodus): Ausgleichen der Stöchiometriezahlen mit vertikalen Steppern
+function renderBalancingEquation(task) {
+  equationContainer.innerHTML = "";
+
+  const leftSide = document.createElement("div");
+  leftSide.className = "chem-side";
+  task.reactants.forEach((r, idx) => {
+    if (idx > 0) {
+      const op = document.createElement("span");
+      op.className = "chem-op";
+      op.textContent = "+";
+      leftSide.appendChild(op);
+    }
+    leftSide.appendChild(createTermElement(r, `r_${idx}`));
+  });
+  equationContainer.appendChild(leftSide);
+
+  const arrow = document.createElement("div");
+  arrow.className = "chem-arrow";
+  arrow.innerHTML = `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><polyline points="14 6 20 12 14 18"></polyline></svg>`;
+  equationContainer.appendChild(arrow);
+
+  const rightSide = document.createElement("div");
+  rightSide.className = "chem-side";
+  task.products.forEach((p, idx) => {
+    if (idx > 0) {
+      const op = document.createElement("span");
+      op.className = "chem-op";
+      op.textContent = "+";
+      rightSide.appendChild(op);
+    }
+    rightSide.appendChild(createTermElement(p, `p_${idx}`));
+  });
+  equationContainer.appendChild(rightSide);
+}
+
+function createTermElement(item, id) {
+  const term = document.createElement("div");
+  term.className = "chem-term";
+
+  const stepper = document.createElement("div");
+  stepper.className = "stepper-v";
+
+  const btnUp = document.createElement("button");
+  btnUp.className = "step-btn up";
+  btnUp.type = "button";
+  btnUp.setAttribute("aria-label", "Koeffizient erhöhen");
+  btnUp.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>`;
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.pattern = "[0-9]*";
+  input.className = "coeff-input";
+  input.value = "1";
+  input.placeholder = "1";
+  input.dataset.termId = id;
+
+  const btnDown = document.createElement("button");
+  btnDown.className = "step-btn down";
+  btnDown.type = "button";
+  btnDown.setAttribute("aria-label", "Koeffizient verringern");
+  btnDown.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+  btnUp.addEventListener("click", () => {
+    let val = parseInt(input.value.trim(), 10);
+    if (isNaN(val) || val < 1) val = 1;
+    input.value = String(val + 1);
+  });
+
+  btnDown.addEventListener("click", () => {
+    let val = parseInt(input.value.trim(), 10);
+    if (isNaN(val) || val <= 1) {
+      input.value = "1";
+    } else {
+      input.value = String(val - 1);
+    }
+  });
+
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^0-9]/g, "");
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      btnUp.click();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      btnDown.click();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      btnCheck.click();
+    }
+  });
+
+  stepper.appendChild(btnUp);
+  stepper.appendChild(input);
+  stepper.appendChild(btnDown);
+
+  const formulaSpan = document.createElement("span");
+  formulaSpan.className = "formula";
+  formulaSpan.innerHTML = formatChemicalFormulaHTML(item.f);
+
+  term.appendChild(stepper);
+  term.appendChild(formulaSpan);
+  return term;
+}
+
+function handleReset() {
+  if (state.mode === "wordEq" && state.wordEqPhase === 1) {
+    equationContainer.querySelectorAll(".formula-input").forEach(i => i.value = "");
+  } else {
+    equationContainer.querySelectorAll(".coeff-input").forEach(i => i.value = "1");
+  }
+}
+
+function getCurrentUserCoefficients() {
+  const reactants = state.currentTask.reactants.map((r, idx) => {
+    const input = equationContainer.querySelector(`[data-term-id="r_${idx}"]`);
+    const raw = input ? input.value.trim() : "";
+    const parsed = parseInt(raw, 10);
+    return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+  });
+
+  const products = state.currentTask.products.map((p, idx) => {
+    const input = equationContainer.querySelector(`[data-term-id="p_${idx}"]`);
+    const raw = input ? input.value.trim() : "";
+    const parsed = parseInt(raw, 10);
+    return isNaN(parsed) || parsed < 1 ? 1 : parsed;
+  });
+
+  return { reactants, products };
+}
+
+function setCoefficientsInUI(reactants, products, disabled = false) {
+  reactants.forEach((c, idx) => {
+    const input = equationContainer.querySelector(`[data-term-id="r_${idx}"]`);
+    if (input) {
+      input.value = String(c);
+      input.disabled = disabled;
+    }
+  });
+  products.forEach((c, idx) => {
+    const input = equationContainer.querySelector(`[data-term-id="p_${idx}"]`);
+    if (input) {
+      input.value = String(c);
+      input.disabled = disabled;
+    }
+  });
+  equationContainer.querySelectorAll(".step-btn").forEach(btn => btn.disabled = disabled);
+}
+
+
+// --- AUSWERTUNG & ATOMBILANZ PRÜFUNG ---
+
+function evaluateUserSolution(task, userCoeffs) {
+  const leftAtoms = {}, rightAtoms = {};
+  let leftCharge = 0, rightCharge = 0;
+  const allElements = new Set();
+
+  task.reactants.forEach((r, idx) => {
+    const c = userCoeffs.reactants[idx];
+    const parsed = parseFormulaAndCharge(r.f);
+    leftCharge += parsed.charge * c;
+    for (const [elem, count] of Object.entries(parsed.counts)) {
+      leftAtoms[elem] = (leftAtoms[elem] || 0) + count * c;
+      allElements.add(elem);
+    }
+  });
+
+  task.products.forEach((p, idx) => {
+    const c = userCoeffs.products[idx];
+    const parsed = parseFormulaAndCharge(p.f);
+    rightCharge += parsed.charge * c;
+    for (const [elem, count] of Object.entries(parsed.counts)) {
+      rightAtoms[elem] = (rightAtoms[elem] || 0) + count * c;
+      allElements.add(elem);
+    }
+  });
+
+  const elementDetails = [];
+  let isBalanced = true;
+
+  allElements.forEach(elem => {
+    const lCount = leftAtoms[elem] || 0;
+    const rCount = rightAtoms[elem] || 0;
+    const match = lCount === rCount;
+    if (!match) isBalanced = false;
+    elementDetails.push({ elem, left: lCount, right: rCount, match });
+  });
+
+  const chargeMatch = leftCharge === rightCharge;
+  if (!chargeMatch) isBalanced = false;
+
+  let isSimplified = true;
+  if (isBalanced) {
+    const allCoeffs = [...userCoeffs.reactants, ...userCoeffs.products];
+    const commonGCD = allCoeffs.reduce((acc, val) => gcd(acc, val));
+    if (commonGCD > 1) {
+      isSimplified = false;
+    }
+  }
+
+  return { isBalanced, isSimplified, elementDetails, leftCharge, rightCharge, chargeMatch };
+}
+
+function renderAtomBalanceCard(evaluation) {
+  atomBalanceCard.style.display = "flex";
+  balanceGrid.innerHTML = "";
+
+  evaluation.elementDetails.forEach(item => {
+    const elBox = document.createElement("div");
+    elBox.className = `balance-item ${item.match ? "ok" : "err"}`;
+    const svgIcon = item.match
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--ok)"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+    elBox.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="elem-tag">${item.elem}</span>
+      </div>
+      <div class="elem-counts">
+        <span>${item.left}</span>
+        <span style="color:var(--muted)">vs</span>
+        <span>${item.right}</span>
+        <span class="elem-status-icon">${svgIcon}</span>
+      </div>
+    `;
+    balanceGrid.appendChild(elBox);
+  });
+
+  if (evaluation.leftCharge !== 0 || evaluation.rightCharge !== 0 || !evaluation.chargeMatch) {
+    const chBox = document.createElement("div");
+    chBox.className = `balance-item ${evaluation.chargeMatch ? "ok" : "err"}`;
+    const svgIcon = evaluation.chargeMatch
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--ok)"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+    const lSign = evaluation.leftCharge > 0 ? "+" + evaluation.leftCharge : String(evaluation.leftCharge);
+    const rSign = evaluation.rightCharge > 0 ? "+" + evaluation.rightCharge : String(evaluation.rightCharge);
+
+    chBox.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="elem-tag" style="font-size:0.95rem;">Ladung</span>
+      </div>
+      <div class="elem-counts">
+        <span>${lSign}</span>
+        <span style="color:var(--muted)">vs</span>
+        <span>${rSign}</span>
+        <span class="elem-status-icon">${svgIcon}</span>
+      </div>
+    `;
+    balanceGrid.appendChild(chBox);
+  }
+
+  if (evaluation.isBalanced && evaluation.isSimplified) {
+    balanceSummaryTag.innerHTML = `<span style="color:var(--ok); font-weight:700;">Vollständig ausgeglichen</span>`;
+  } else if (evaluation.isBalanced && !evaluation.isSimplified) {
+    balanceSummaryTag.innerHTML = `<span style="color:var(--warn); font-weight:700;">Noch nicht gekürzt</span>`;
+  } else {
+    balanceSummaryTag.innerHTML = `<span style="color:var(--alert); font-weight:700;">Ungleichgewicht</span>`;
+  }
+}
+
+
+// --- HAUPT-PRÜFROUTINEN NACH MODUS ---
+
+function handleCheck() {
+  if (state.mode === "wordEq" && state.wordEqPhase === 1) {
+    handleWordEqFormulaCheck();
+  } else {
+    const userCoeffs = getCurrentUserCoefficients();
+    const evalResult = evaluateUserSolution(state.currentTask, userCoeffs);
+    renderAtomBalanceCard(evalResult);
+
+    if (state.mode === "practice" || state.mode === "wordEq") {
+      handlePracticeCheck(evalResult, userCoeffs);
+    } else if (state.mode === "challenge") {
+      handleChallengeCheck(evalResult, userCoeffs);
+    }
+  }
+}
+
+function handleWordEqFormulaCheck() {
+  let allCorrect = true;
+  feedbackBox.style.display = "flex";
+
+  state.currentTask.reactants.forEach((r, idx) => {
+    const inp = document.getElementById(`inp_r_${idx}`);
+    const box = document.getElementById(`f_box_r_${idx}`);
+    const isOk = compareFormulaInput(inp.value, r.f);
+    if (!isOk) allCorrect = false;
+    box.className = `chem-input-term ${isOk ? "valid" : "invalid"}`;
+  });
+
+  state.currentTask.products.forEach((p, idx) => {
+    const inp = document.getElementById(`inp_p_${idx}`);
+    const box = document.getElementById(`f_box_p_${idx}`);
+    const isOk = compareFormulaInput(inp.value, p.f);
+    if (!isOk) allCorrect = false;
+    box.className = `chem-input-term ${isOk ? "valid" : "invalid"}`;
+  });
+
+  if (allCorrect) {
+    playSound("correct");
+    feedbackBox.className = "feedback-box ok";
+    feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--ok)"><polyline points="20 6 9 17 4 12"></polyline></svg> Formeln korrekt aufgestellt!`;
+    feedbackText.textContent = "Super! Die Summenformeln stimmen. Gleiche nun in Schritt 2 die Stöchiometriezahlen aus.";
+    collapsibleSection.style.display = "none";
+
+    state.wordEqPhase = 2;
+    wordEqInstruction.textContent = "Schritt 2: Gleiche nun die Stöchiometriezahlen (Faktoren vor den Stoffen) aus.";
+    btnCheckText.textContent = "Ausgleichung prüfen";
+    renderBalancingEquation(state.currentTask);
+
+  } else {
+    playSound("error");
+    state.wordEqFormulaAttempt++;
+    feedbackBox.className = "feedback-box alert";
+
+    if (state.wordEqFormulaAttempt === 1) {
+      feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Formel noch nicht korrekt – 1 Korrekturversuch`;
+      feedbackText.textContent = "Achte auf die Elementsymbole und Indexzahlen (z. B. elementare Gase wie O₂ oder H₂, Ladungen bei Ionen). Probiere es noch einmal!";
+    } else {
+      feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Richtige Formeln aufgedeckt`;
+      feedbackText.textContent = "Hier sind die korrekten Summenformeln. Nun kannst du die Stöchiometriezahlen ausgleichen:";
+
+      state.currentTask.reactants.forEach((r, idx) => {
+        const inp = document.getElementById(`inp_r_${idx}`);
+        inp.value = r.f;
+      });
+      state.currentTask.products.forEach((p, idx) => {
+        const inp = document.getElementById(`inp_p_${idx}`);
+        inp.value = p.f;
+      });
+
+      setTimeout(() => {
+        state.wordEqPhase = 2;
+        wordEqInstruction.textContent = "Schritt 2: Gleiche nun die Stöchiometriezahlen aus.";
+        btnCheckText.textContent = "Ausgleichung prüfen";
+        renderBalancingEquation(state.currentTask);
+      }, 1400);
+    }
+  }
+}
+
+function handlePracticeCheck(evalResult, userCoeffs) {
+  feedbackBox.style.display = "flex";
+  explanationDetailText.textContent = state.currentTask.desc;
+
+  if (evalResult.isBalanced && evalResult.isSimplified) {
+    playSound("correct");
+    feedbackBox.className = "feedback-box ok";
+    feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--ok)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Perfekt gelöst!`;
+    feedbackText.textContent = "Alle Atome und Ladungen stimmen auf beiden Seiten genau überein.";
+
+    collapsibleSection.style.display = "block";
+    collapsibleContent.classList.remove("open");
+    toggleExplanationBtn.classList.remove("open");
+    toggleExplanationText.textContent = "Erklärung anzeigen";
+
+    btnCheck.style.display = "none";
+    btnNext.style.display = "inline-flex";
+    btnReset.disabled = true;
+    setCoefficientsInUI(userCoeffs.reactants, userCoeffs.products, true);
+
+  } else if (evalResult.isBalanced && !evalResult.isSimplified) {
+    playSound("error");
+    feedbackBox.className = "feedback-box warn";
+    feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--warn)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Fast! Bitte noch kürzen`;
+    feedbackText.textContent = "Die Bilanz stimmt, aber in der Chemie wird das kleinste ganzzahlige Verhältnis gesucht. Teile alle Zahlen durch ihren gemeinsamen Teiler!";
+    collapsibleSection.style.display = "none";
+
+  } else {
+    playSound("error");
+    state.practiceAttempt++;
+
+    const mismatchElems = evalResult.elementDetails
+      .filter(d => !d.match)
+      .map(d => `${d.elem} (links: ${d.left}, rechts: ${d.right})`)
+      .join(", ");
+
+    let errorDetail = "";
+    if (mismatchElems) errorDetail += `Fehlende Übereinstimmung bei: ${mismatchElems}. `;
+    if (!evalResult.chargeMatch) errorDetail += `Elektrische Ladung links (${evalResult.leftCharge}) ungleich rechts (${evalResult.rightCharge}). `;
+
+    if (state.practiceAttempt === 1) {
+      feedbackBox.className = "feedback-box alert";
+      feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Noch nicht ausgeglichen – 1 Korrekturversuch`;
+      feedbackText.textContent = `${errorDetail}Prüfe die Atombilanz und passe die Stöchiometriezahlen an!`;
+      collapsibleSection.style.display = "none";
+      btnCheckText.textContent = "Korrektur prüfen";
+
+    } else {
+      feedbackBox.className = "feedback-box alert";
+      feedbackTitle.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" color="var(--alert)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Richtige Lösung aufgedeckt`;
+      feedbackText.textContent = "Hier ist die korrekte Ausgleichung:";
+
+      const correctReactants = state.currentTask.reactants.map(r => r.c);
+      const correctProducts = state.currentTask.products.map(p => p.c);
+      setCoefficientsInUI(correctReactants, correctProducts, true);
+
+      collapsibleSection.style.display = "block";
+      collapsibleContent.classList.add("open");
+      toggleExplanationBtn.classList.add("open");
+      toggleExplanationText.textContent = "Erklärung verbergen";
+
+      btnCheck.style.display = "none";
+      btnNext.style.display = "inline-flex";
+      btnReset.disabled = true;
+    }
+  }
+}
+
+function handleNextTask() {
+  loadNewTask();
+}
+
+
+// --- 5-MINUTEN CHALLENGE-MODUS MIT PERSISTENTEM LEADERBOARD ---
+
+function startChallenge() {
+  clearInterval(state.challenge.timerInterval);
+
+  state.challenge.active = true;
+  state.challenge.currentIndex = 0;
+  state.challenge.score = 0;
+  state.challenge.answers = [];
+  state.challenge.totalSeconds = 300;
+  state.challenge.remainingSeconds = 300;
+
+  const tasks = [];
+  const pickedNames = [];
+  for (let i = 0; i < 10; i++) {
+    const t = generateTask(state.maxLevel, state.topic, pickedNames);
+    tasks.push(t);
+    pickedNames.push(t.name);
+  }
+  state.challenge.tasks = tasks;
+
+  updateTimerDisplay();
+  timerContainer.classList.remove("warning");
+  state.challenge.timerInterval = setInterval(handleChallengeTimerTick, 1000);
+
+  challengeBar.style.display = "flex";
+  reviewScreen.style.display = "none";
+  gameCard.style.display = "flex";
+
+  loadChallengeTask(0);
+}
+
+function handleChallengeTimerTick() {
+  state.challenge.remainingSeconds--;
+  updateTimerDisplay();
+
+  if (state.challenge.remainingSeconds <= 30) {
+    timerContainer.classList.add("warning");
+  }
+
+  if (state.challenge.remainingSeconds <= 0) {
+    clearInterval(state.challenge.timerInterval);
+    finishChallenge(true);
+  }
+}
+
+function updateTimerDisplay() {
+  const s = Math.max(0, state.challenge.remainingSeconds);
+  const mm = String(Math.floor(s / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  timerText.textContent = `${mm}:${ss}`;
+}
+
+function loadChallengeTask(index) {
+  state.currentTask = state.challenge.tasks[index];
+  chTaskIndex.textContent = String(index + 1);
+  chScore.textContent = String(state.challenge.score);
+
+  taskReactionName.textContent = state.currentTask.name;
+
+  atomBalanceCard.style.display = "none";
+  feedbackBox.style.display = "none";
+  btnCheck.style.display = "inline-flex";
+  btnCheckText.textContent = "Prüfen & Weiter";
+  btnNext.style.display = "none";
+  btnReset.disabled = false;
+
+  renderBalancingEquation(state.currentTask);
+}
+
+function handleChallengeCheck(evalResult, userCoeffs) {
+  const isCorrect = evalResult.isBalanced && evalResult.isSimplified;
+  if (isCorrect) {
+    state.challenge.score++;
+    playSound("correct");
+  } else {
+    playSound("error");
+  }
+  chScore.textContent = String(state.challenge.score);
+
+  state.challenge.answers.push({
+    task: state.currentTask,
+    userCoeffs: userCoeffs,
+    isCorrect: isCorrect,
+    evalResult: evalResult
+  });
+
+  state.challenge.currentIndex++;
+  if (state.challenge.currentIndex < 10) {
+    loadChallengeTask(state.challenge.currentIndex);
+  } else {
+    finishChallenge(false);
+  }
+}
+
+function finishChallenge(timeRanOut = false) {
+  clearInterval(state.challenge.timerInterval);
+  playSound("finish");
+
+  const usedSeconds = state.challenge.totalSeconds - Math.max(0, state.challenge.remainingSeconds);
+  const uMin = String(Math.floor(usedSeconds / 60)).padStart(2, "0");
+  const uSec = String(usedSeconds % 60).padStart(2, "0");
+  const timeUsedFormatted = `${uMin}:${uSec}`;
+
+  gameCard.style.display = "none";
+  challengeBar.style.display = "none";
+  reviewScreen.style.display = "flex";
+
+  finalScoreVal.textContent = `${state.challenge.score} / 10`;
+  finalTimeVal.textContent = timeUsedFormatted;
+
+  const score = state.challenge.score;
+  let headline = "Challenge beendet!";
+  let msg = "";
+
+  if (score === 10) {
+    headline = "Perfektion! 🏆";
+    msg = "10 von 10 Punkten – du bist eine absolute Koryphäe beim Ausgleichen von Reaktionsgleichungen!";
+  } else if (score >= 8) {
+    headline = "Hervorragend! 🌟";
+    msg = "Fast fehlerfrei – deine Stöchiometrie-Fähigkeiten sitzen absolut sattelfest!";
+  } else if (score >= 6) {
+    headline = "Gut gemacht! 👍";
+    msg = "Eine solide Leistung. Ein bisschen mehr Übung bei kniffligen Molekülen, und die 10 Punkte gehören dir!";
+  } else if (score >= 4) {
+    headline = "Guter Einsatz! ⚡";
+    msg = "Die Grundlagen sind da. Schau dir unten im Rückblick die Erklärungen an, um typische Zählfehler künftig zu vermeiden.";
+  } else {
+    headline = "Dranbleiben! 💪";
+    msg = "Chemie braucht etwas Übung. Nutze den Übungsmodus, um die Atombilanz Schritt für Schritt zu trainieren!";
+  }
+
+  if (timeRanOut) {
+    headline += " (Zeit abgelaufen)";
+  }
+
+  summaryHeadline.textContent = headline;
+  summaryMessage.textContent = msg;
+
+  saveAndRenderLeaderboard(score, timeUsedFormatted);
+  renderReviewList();
+}
+
+function saveAndRenderLeaderboard(score, timeUsedFormatted) {
+  const LEADERBOARD_KEY = "chemsim_rechner_leaderboard_v1";
+  let board = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || "[]");
+
+  const now = new Date();
+  const dateStr = `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}. ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const presetLabel = presetSelect.options[presetSelect.selectedIndex].text.split(" ")[0] + " " + presetSelect.value;
+
+  board.push({
+    score: score,
+    time: timeUsedFormatted,
+    date: dateStr,
+    preset: presetLabel,
+    timestamp: Date.now()
+  });
+
+  board.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.time.localeCompare(b.time);
+  });
+
+  board = board.slice(0, 10);
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(board));
+
+  if (board.length > 0) {
+    highScoreVal.textContent = `${board[0].score} / 10 (${board[0].time})`;
+  }
+
+  leaderboardBody.innerHTML = "";
+  board.forEach((entry, idx) => {
+    const tr = document.createElement("tr");
+    let rankBadge = `<span class="rank-badge">${idx + 1}</span>`;
+    if (idx === 0) rankBadge = `<span class="rank-badge gold">1</span>`;
+    if (idx === 1) rankBadge = `<span class="rank-badge silver">2</span>`;
+    if (idx === 2) rankBadge = `<span class="rank-badge bronze">3</span>`;
+
+    tr.innerHTML = `
+      <td>${rankBadge}</td>
+      <td>${entry.date}</td>
+      <td><span class="badge" style="font-size:0.75rem;">${entry.preset}</span></td>
+      <td style="font-weight:700; font-family:var(--f-display);">${entry.score} / 10</td>
+      <td>${entry.time}</td>
+    `;
+    leaderboardBody.appendChild(tr);
+  });
+}
+
+function handleClearLeaderboard() {
+  if (confirm("Möchtest du das Leaderboard auf diesem Gerät wirklich zurücksetzen?")) {
+    localStorage.removeItem("chemsim_rechner_leaderboard_v1");
+    leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Noch keine Durchläufe vorhanden.</td></tr>`;
+    highScoreVal.textContent = "-";
+  }
+}
+
+function formatEquationString(task, coeffs) {
+  const rStr = task.reactants.map((r, i) => `${coeffs.reactants[i] > 1 ? coeffs.reactants[i] + " " : ""}${r.f}`).join(" + ");
+  const pStr = task.products.map((p, i) => `${coeffs.products[i] > 1 ? coeffs.products[i] + " " : ""}${p.f}`).join(" + ");
+  return formatChemicalFormulaHTML(`${rStr} → ${pStr}`);
+}
+
+function renderReviewList() {
+  reviewList.innerHTML = "";
+
+  state.challenge.answers.forEach((entry, idx) => {
+    const card = document.createElement("div");
+    card.className = `review-card ${entry.isCorrect ? "correct" : "incorrect"}`;
+
+    const correctCoeffs = {
+      reactants: entry.task.reactants.map(r => r.c),
+      products: entry.task.products.map(p => p.c)
+    };
+
+    const statusBadge = entry.isCorrect
+      ? `<span style="color:var(--ok); font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Richtig (+1)
+         </span>`
+      : `<span style="color:var(--alert); font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          Falsch (0)
+         </span>`;
+
+    const userEqHTML = formatEquationString(entry.task, entry.userCoeffs);
+    const correctEqHTML = formatEquationString(entry.task, correctCoeffs);
+
+    card.innerHTML = `
+      <div class="review-card-head">
+        <span class="review-q-num">Aufgabe ${idx + 1}: ${entry.task.name}</span>
+        ${statusBadge}
+      </div>
+      <div>
+        <div style="font-size:0.92rem; color:var(--muted)">Deine Eingabe:</div>
+        <div class="review-eq">${userEqHTML}</div>
+      </div>
+      ${!entry.isCorrect ? `
+        <div>
+          <div style="font-size:0.92rem; color:var(--ok); font-weight:700;">Korrekte Ausgleichung:</div>
+          <div class="review-eq">${correctEqHTML}</div>
+        </div>
+      ` : ""}
+      
+      <div class="collapsible" style="border-top:1px dashed var(--line); margin-top:6px; padding-top:8px;">
+        <button class="collapsible-trigger rev-toggle" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <span>Erklärung anzeigen</span>
+        </button>
+        <div class="collapsible-content" style="padding-top:6px; color:var(--muted); font-size:0.92rem;">
+          ${entry.task.desc}
+        </div>
+      </div>
+    `;
+
+    const toggleBtn = card.querySelector(".rev-toggle");
+    const content = card.querySelector(".collapsible-content");
+    const btnSpan = toggleBtn.querySelector("span");
+    toggleBtn.addEventListener("click", () => {
+      const open = content.classList.contains("open");
+      if (open) {
+        content.classList.remove("open");
+        toggleBtn.classList.remove("open");
+        btnSpan.textContent = "Erklärung anzeigen";
+      } else {
+        content.classList.add("open");
+        toggleBtn.classList.add("open");
+        btnSpan.textContent = "Erklärung verbergen";
+      }
+    });
+
+    reviewList.appendChild(card);
+  });
+}
+
+// Start beim Laden
+window.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
