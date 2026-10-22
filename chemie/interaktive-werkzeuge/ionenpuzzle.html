@@ -103,7 +103,10 @@ sub, sup { font-size: 0.68em; line-height: 0 }
       <h1>Ionenpuzzle</h1>
       <div class="mode">Name → Verhältnisformel · Stufe 1</div>
     </div>
-    <nav class="dots" id="dots" aria-label="Aufgaben"></nav>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <nav class="dots" id="dots" aria-label="Aufgaben"></nav>
+      <button id="fsBtn" class="btn" style="padding: 4px 10px; font-size: 0.85rem;" title="Vollbildmodus">Vollbild</button>
+    </div>
   </header>
 
   <section class="box">
@@ -582,6 +585,17 @@ svg.addEventListener('keydown', e => {
 if (state.solved.includes(state.task) && state.solved.length < TASKS.length) {
   const n = TASKS.findIndex((t, i) => !state.solved.includes(i)); state.task = n < 0 ? 0 : n;
 }
+
+if ($('fsBtn')) {
+  $('fsBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen().catch(() => {});
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fsBtn').textContent = document.fullscreenElement ? 'Vollbild beenden' : 'Vollbild';
+  });
+}
+
 render();
 </script>
 </body>

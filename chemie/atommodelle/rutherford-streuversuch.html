@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rutherfordscher Streuversuch & Kern-Hülle-Modell</title>
+<meta name="description" content="Rutherfordscher Streuversuch: Laboransicht, atomarer Modellvergleich (Thomson vs. Rutherford), Winkelverteilung und visueller Größenvergleich von Atomkern und Hülle.">
+<meta name="material:typ" content="Vorführung">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC, Beamer">
+<meta name="material:stichworte" content="Rutherford, Streuversuch, Goldfolie, Kern-Hülle-Modell, Thomson, Alpha-Teilchen, Atomkern">
+<meta name="material:reihenfolge" content="2">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Farbsystem abgestimmt auf den Lernpfad und die Materialsammlung */
+:root {
+  --papier: #f6f2e9;
+  --blatt: #ffffff;
+  --tinte: #1c2733;
+  --tinte-2: #4b5765;
+  --tinte-3: #6b7480;
+  --linie: #d9d2c3;
+  --linie-hell: #ebe5d8;
+  --akzent: #0b5c94;
+  --akzent-soft: #e5f1f8;
+  --orange: #D55E00;
+  --gruen: #009E73;
+  --gelb: #E69F00;
+  --lila: #8E3A9E;
+  --gold: #D4AF37;
+  --schrift: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --schrift-titel: "Lexend", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --radius: 6px;
+  --breite: 1180px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #11171d;
+    --blatt: #18222b;
+    --tinte: #e5edf2;
+    --tinte-2: #9aa8b5;
+    --tinte-3: #6e7d8c;
+    --linie: #2c3a47;
+    --linie-hell: #222e38;
+    --akzent: #4ba2d9;
+    --akzent-soft: #172d3d;
+    --orange: #f27731;
+    --gruen: #37bf87;
+    --gelb: #f2b43a;
+    --lila: #d79be3;
+    --gold: #f5d061;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papier); color: var(--tinte); font-family: var(--schrift); font-size: 1.02rem; line-height: 1.55; }
+.wrap { max-width: var(--breite); margin: 0 auto; padding: 20px 20px 50px; }
+
+/* In einem Iframe eingebettet? → Header-Breadcrumb ausblenden */
+.in-iframe .nav-top { display: none !important; }
+
+/* Navigation */
+.nav-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 0.95rem; }
+.breadcrumb { color: var(--akzent); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.breadcrumb:hover { text-decoration: underline; }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+
+.header-lead { margin-bottom: 18px; }
+.ueberzeile { font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--orange); font-weight: 700; margin: 0 0 4px; }
+h1 { font-family: var(--schrift-titel); font-size: clamp(1.65rem, 3vw, 2.2rem); margin: 0 0 8px; font-weight: 700; line-height: 1.25; }
+.lead { font-size: 1.08rem; color: var(--tinte-2); margin: 0; max-width: 82ch; }
+
+/* Segmented Control Mode Switcher */
+.mode-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.seg-control { display: inline-flex; background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); padding: 3px; gap: 3px; }
+.seg-btn { border: 0; background: transparent; padding: 7px 14px; border-radius: 4px; font-family: var(--schrift-titel); font-size: 0.92rem; font-weight: 500; color: var(--tinte-2); cursor: pointer; transition: all 0.12s; display: inline-flex; align-items: center; gap: 6px; }
+.seg-btn:hover { color: var(--tinte); }
+.seg-btn.active { background: var(--tinte); color: var(--blatt); font-weight: 600; }
+
+/* Simulation Container Layout */
+.sim-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(330px, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 960px) { .sim-grid { grid-template-columns: 1fr; } }
+
+.canvas-panel { background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.canvas-panel:fullscreen { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+.canvas-header { padding: 10px 16px; border-bottom: 1px solid var(--linie); display: flex; justify-content: space-between; align-items: center; background: var(--papier); font-family: var(--schrift-titel); font-size: 0.95rem; font-weight: 600; }
+.canvas-wrap { position: relative; width: 100%; aspect-ratio: 16/10; background: #0c1218; min-height: 380px; }
+.canvas-panel:fullscreen .canvas-wrap { flex: 1; aspect-ratio: auto; min-height: 0; max-height: none; }
+canvas { display: block; width: 100%; height: 100%; }
+
+.btn-icon { background: transparent; border: 1px solid var(--linie); border-radius: 4px; padding: 4px 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: var(--tinte); transition: all 0.12s; }
+.btn-icon:hover { background: var(--blatt); border-color: var(--akzent); color: var(--akzent); }
+
+.controls-panel { display: flex; flex-direction: column; gap: 14px; }
+.box { background: var(--blatt); border: 1.5px solid var(--linie); border-left: 4px solid var(--akzent); border-radius: var(--radius); padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.box.orange { border-left-color: var(--orange); }
+.box.green { border-left-color: var(--gruen); }
+.box h2 { font-family: var(--schrift-titel); font-size: 1.15rem; font-weight: 600; margin: 0 0 10px; }
+
+/* Controls */
+.ctrl-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.ctrl-row:last-child { margin-bottom: 0; }
+.btn { font: inherit; font-family: var(--schrift-titel); font-size: 0.92rem; font-weight: 600; padding: 8px 14px; border-radius: 5px; border: 1px solid var(--tinte-2); background: var(--blatt); color: var(--tinte); cursor: pointer; transition: all 0.12s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { background: var(--papier); }
+.btn.primary { background: var(--tinte); border-color: var(--tinte); color: var(--blatt); }
+
+.slider-group { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.slider-header { display: flex; justify-content: space-between; color: var(--tinte-2); font-family: var(--schrift-titel); }
+.slider-header output { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--tinte); }
+input[type=range] { width: 100%; accent-color: var(--akzent); cursor: pointer; }
+
+/* Zähler-Statistik & Histogramm */
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+.stat-box { background: var(--papier); padding: 8px 10px; border-radius: 5px; text-align: center; border: 1px solid var(--linie); }
+.stat-val { font-family: var(--schrift-titel); font-size: 1.35rem; font-weight: 700; line-height: 1.1; margin-bottom: 2px; }
+.stat-lbl { font-size: 0.78rem; color: var(--tinte-2); }
+
+/* Verteilungsdiagramm */
+.dist-chart { background: var(--papier); padding: 10px; border-radius: 5px; border: 1px solid var(--linie); }
+.dist-title { font-size: 0.85rem; font-weight: 600; color: var(--tinte-2); margin-bottom: 6px; font-family: var(--schrift-titel); display: flex; justify-content: space-between; }
+.dist-bars { display: flex; gap: 8px; align-items: flex-end; height: 75px; padding-top: 10px; border-bottom: 1.5px solid var(--linie); }
+.dist-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+.dist-fill { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.2s; }
+.dist-lbl { font-size: 0.72rem; color: var(--tinte-2); margin-top: 4px; text-align: center; font-variant-numeric: tabular-nums; font-family: var(--schrift-titel); }
+
+/* Ausklappbare Abschnitte (<details>) */
+details.collapsible { background: var(--blatt); border: 1.5px solid var(--linie); border-radius: var(--radius); padding: 12px 16px; margin-top: 14px; }
+details.collapsible summary { font-family: var(--schrift-titel); font-weight: 600; font-size: 1.02rem; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+details.collapsible summary::-webkit-details-marker { display: none; }
+details.collapsible summary::after { content: "＋"; font-size: 1.15rem; color: var(--akzent); }
+details.collapsible[open] summary::after { content: "−"; }
+details.collapsible summary:focus-visible { outline: 2px solid var(--akzent); outline-offset: 2px; }
+.details-body { margin-top: 10px; font-size: 0.95rem; line-height: 1.55; }
+
+/* Visuelles Stadion-Widget */
+.stadium-wrap { background: #16241b; border: 1.5px solid #2f4d38; border-radius: 6px; padding: 14px; margin-top: 10px; text-align: center; color: #e5f0ea; }
+.stadium-svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav-top">
+    <a href="../../index.html" class="breadcrumb" target="_top">
+      <svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      Zurück zur Materialsammlung
+    </a>
+    <span style="color: var(--tinte-2);">Chemie · Atommodelle</span>
+  </div>
+
+  <header class="header-lead">
+    <p class="ueberzeile">Vorführsimulation</p>
+    <h1>Rutherfordscher Streuversuch & Kern-Hülle-Modell</h1>
+    <p class="lead">
+      1911 beschossen Ernest Rutherford, Hans Geiger und Ernest Marsden eine hauchdünne Goldfolie mit positiv geladenen Alpha-Teilchen.
+      Die Beobachtung widerlegte das Thomson-Modell und bewies die Existenz des winzigen, massereichen Atomkerns.
+    </p>
+  </header>
+
+  <div class="mode-bar">
+    <div class="seg-control" role="tablist" aria-label="Ansicht wählen">
+      <button class="seg-btn active" id="btnModeLab" role="tab" aria-selected="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 18h12M10 22h4M12 2v4M4.93 10.93l2.83-2.83M19.07 10.93l-2.83-2.83M14 6l4 12H6L10 6z"/></svg>
+        Labor-Ansicht (Makro)
+      </button>
+      <button class="seg-btn" id="btnModeMicro" role="tab" aria-selected="false">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/></svg>
+        Atomarer Modellvergleich (Mikro)
+      </button>
+    </div>
+
+    <div id="subModeControls" style="display: none; flex-wrap: wrap; gap: 8px; align-items: center;">
+      <div style="display: inline-flex; align-items: center; gap: 4px;">
+        <span style="font-size: 0.85rem; color: var(--tinte-2); font-weight: 600;">Modell:</span>
+        <div class="seg-control">
+          <button class="seg-btn" id="btnModellThomson" title="Homogene Ladungsverteilung">Thomson</button>
+          <button class="seg-btn" id="btnModellDalton" title="Massive undurchdringliche Kugeln">Dalton (solide)</button>
+          <button class="seg-btn active" id="btnModellRutherford" title="Winziger Kern + Coulombfeld">Rutherford</button>
+          <button class="seg-btn" id="btnModellVacuum" title="Nur gestrichelte Atomumrisse (Vakuum)">Leerer Raum</button>
+        </div>
+      </div>
+
+      <div style="display: inline-flex; align-items: center; gap: 4px;">
+        <span style="font-size: 0.85rem; color: var(--tinte-2); font-weight: 600;">Gitter:</span>
+        <div class="seg-control">
+          <button class="seg-btn active" id="btnGridSimple" title="Rechteckiges Standardgitter">Einfach</button>
+          <button class="seg-btn" id="btnGridHcp" title="Dichteste Kugelpackung (hexagonal versetzt)">Dichteste Packung</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="sim-grid">
+    <div class="canvas-panel">
+      <div class="canvas-header">
+        <span id="canvasCaption">Versuchsaufbau mit Zinksulfid-Detektorschirm</span>
+        <div style="display: inline-flex; align-items: center; gap: 10px;">
+          <span id="canvasStatus" style="font-weight: normal; font-size: 0.85rem; color: var(--tinte-2);">Pausiert</span>
+          <button class="btn-icon" id="btnFullscreen" title="Vollbildmodus (F)" aria-label="Vollbildmodus">
+            <svg class="icon" id="fsIcon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="cv"></canvas>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <!-- Steuerungs-Kasten -->
+      <section class="box orange">
+        <h2>Steuerung & Versuchsaufbau</h2>
+        <div class="ctrl-row">
+          <button class="btn primary" id="btnPlay">
+            <span id="playIconSpan">
+              <svg class="icon" viewBox="0 0 24 24" style="fill: currentColor;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </span>
+            <span id="playLabel">Starten</span>
+          </button>
+          <button class="btn" id="btnStep" title="Einen Zeitschritt weiter">
+            <svg class="icon" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="4" x2="19" y2="20"/></svg>
+            Schritt
+          </button>
+          <button class="btn" id="btnSingleShot" title="Ein einzelnes markiertes Teilchen abfeuern">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m12 6 4 6h-8z"/></svg>
+            Einzelschuss
+          </button>
+          <button class="btn" id="btnReset" title="Zähler und Spuren zurücksetzen">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Zurücksetzen
+          </button>
+        </div>
+
+        <div class="ctrl-row" style="margin-top: 14px;">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Strahl-Intensität:</span>
+              <output id="outRate">60 Teilchen/s</output>
+            </div>
+            <input type="range" id="rngRate" min="10" max="150" value="60">
+          </div>
+        </div>
+
+        <div class="ctrl-row" id="rowTargetAtom" style="margin-top: 12px;">
+          <label for="selTarget" style="font-size: 0.92rem; font-weight: 600; font-family: var(--schrift-titel);">Versuchsaufbau / Folie:</label>
+          <select id="selTarget" style="flex: 1; min-width: 180px; font: inherit; padding: 6px 10px; border-radius: 4px; border: 1px solid var(--tinte-2); background: var(--blatt); color: var(--tinte); font-weight: 600;">
+            <option value="none">1. Ohne Folie (Vakuum / Referenzprobe)</option>
+            <option value="79" selected>2. Mit Goldfolie (Au, Z = 79, schwere Kerne)</option>
+            <option value="47">3. Mit Silberfolie (Ag, Z = 47, mittlere Kerne)</option>
+            <option value="13">4. Mit Aluminiumfolie (Al, Z = 13, leichte Kerne)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Messwert-Zähler & Verteilungsdiagramm -->
+      <section class="box">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+          <h2 style="margin: 0;">Detektor-Statistik</h2>
+          <span style="font-size: 0.85rem; color: var(--tinte-2); font-family: var(--schrift-titel);">
+            Ausgesendet: <strong id="cntEmitted" style="color: var(--tinte);">0</strong>
+          </span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-val" id="cntStraight" style="color: var(--gruen);">0</div>
+            <div class="stat-lbl">&lt; 3° (Geradeaus)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="cntMedium" style="color: var(--gelb);">0</div>
+            <div class="stat-lbl">3°–45° (Leicht)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="cntLarge" style="color: var(--orange);">0</div>
+            <div class="stat-lbl">45°–90° (Stark)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="cntBack" style="color: var(--lila);">0</div>
+            <div class="stat-lbl">&gt; 90° (Rückstreuung)</div>
+          </div>
+        </div>
+
+        <!-- Verteilungsdiagramm (Histogramm) -->
+        <div class="dist-chart">
+          <div class="dist-title">
+            <span>Ablenkungs-Verteilung N(θ)</span>
+            <span style="font-size: 0.75rem; color: var(--tinte-2);">relativ zur Vorwärtsrichtung</span>
+          </div>
+          <div class="dist-bars">
+            <div class="dist-col">
+              <div class="dist-fill" id="bar1" style="background: var(--gruen); height: 95%;"></div>
+              <span class="dist-lbl">&lt;3°</span>
+            </div>
+            <div class="dist-col">
+              <div class="dist-fill" id="bar2" style="background: var(--gelb); height: 6%;"></div>
+              <span class="dist-lbl">3-45°</span>
+            </div>
+            <div class="dist-col">
+              <div class="dist-fill" id="bar3" style="background: var(--orange); height: 2%;"></div>
+              <span class="dist-lbl">45-90°</span>
+            </div>
+            <div class="dist-col">
+              <div class="dist-fill" id="bar4" style="background: var(--lila); height: 1%;"></div>
+              <span class="dist-lbl">&gt;90°</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ausklappbare Erkenntnis -->
+      <details class="collapsible">
+        <summary>Erkenntnis des Versuchs einblenden</summary>
+        <div class="details-body">
+          <p style="margin: 0 0 10px;">
+            <strong>1. Die Hülle ist fast leer:</strong> Über 99 % der Alpha-Teilchen durchdringen die Folie nahezu ungestört. Das Atom besteht fast vollständig aus leerem Raum.
+          </p>
+          <p style="margin: 0 0 10px;">
+            <strong>2. Die Masse sitzt im Kern:</strong> Nur wer einem Kern extrem nahe kommt, wird abgelenkt. Dass einzelne Teilchen sogar zurückprallen (&gt; 90°), beweist: Nahezu die gesamte Masse und alle positive Ladung müssen in einem winzigen <strong>Atomkern</strong> konzentriert sein.
+          </p>
+          <p style="margin: 0; color: var(--tinte-2); font-size: 0.88rem;">
+            Rutherfords Zitat: <em>„Es war fast so unglaublich, als ob man eine 15-Zoll-Granate auf ein Stück Seidenpapier abfeuerte und sie zurückkäme und einen träfe.“</em>
+          </p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+  <!-- Ausklappbarer visueller Größenvergleich -->
+  <details class="collapsible" style="margin-top: 20px;">
+    <summary>Visueller Größenvergleich: Der Atomkern im Fußballstadion (1 : 100.000)</summary>
+    <div class="details-body">
+      <p style="margin: 0 0 10px;">
+        Atomdurchmesser: ca. 10<sup>−10</sup> m = 0,1 nm (Hülle).<br>
+        Kerndurchmesser: ca. 10<sup>−15</sup> m = 1 fm (Kern).<br>
+        <strong>Verhältnis: 1 zu 100.000!</strong>
+      </p>
+
+      <div class="stadium-wrap">
+        <svg class="stadium-svg" viewBox="0 0 700 280" width="100%">
+          <ellipse cx="350" cy="140" rx="330" ry="125" fill="#1b3022" stroke="#3b6348" stroke-width="4"/>
+          <ellipse cx="350" cy="140" rx="270" ry="98" fill="#243f2d" stroke="#4d7c5b" stroke-width="2"/>
+
+          <rect x="150" y="80" width="400" height="120" fill="#2e543b" stroke="#ffffff" stroke-width="2"/>
+          <line x1="350" y1="80" x2="350" y2="200" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="350" cy="140" r="35" fill="none" stroke="#ffffff" stroke-width="2"/>
+
+          <circle cx="350" cy="140" r="3" fill="#D55E00"/>
+
+          <g transform="translate(560, 70)">
+            <circle cx="0" cy="0" r="50" fill="#0f1912" stroke="#E69F00" stroke-width="3"/>
+            <circle cx="0" cy="0" r="4" fill="#D55E00"/>
+            <text x="0" y="24" fill="#ffffff" font-size="11" text-anchor="middle" font-family="system-ui">Kern: 1 mm</text>
+            <text x="0" y="38" fill="#E69F00" font-size="10" text-anchor="middle" font-family="system-ui">(Stecknadelkopf)</text>
+          </g>
+
+          <line x1="353" y1="138" x2="512" y2="72" stroke="#E69F00" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+          <text x="350" y="55" fill="#ffffff" font-size="14" font-weight="bold" text-anchor="middle" font-family="system-ui">Fußballstadion (ca. 100 m Durchmesser = Atomhülle)</text>
+          <text x="180" y="240" fill="#56B4E9" font-size="12" font-family="system-ui">Oberste Ränge: Elektronen schwirren umher</text>
+          <text x="500" y="240" fill="#9aa8b5" font-size="12" font-family="system-ui">Dazwischen: absolut nichts!</text>
+        </svg>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Iframe-Erkennung: Header ausblenden & Links im Hauptfenster öffnen
+  if (window.self !== window.top) {
+    document.body.classList.add('in-iframe');
+    document.querySelectorAll('a').forEach(a => {
+      if (!a.getAttribute('target')) a.setAttribute('target', '_top');
+    });
+  }
+
+  // DOM Elemente
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const canvasPanel = cv.closest('.canvas-panel');
+  const btnFullscreen = document.getElementById('btnFullscreen');
+  const fsIcon = document.getElementById('fsIcon');
+
+  const btnModeLab = document.getElementById('btnModeLab');
+  const btnModeMicro = document.getElementById('btnModeMicro');
+  const subModeControls = document.getElementById('subModeControls');
+  const btnModellThomson = document.getElementById('btnModellThomson');
+  const btnModellDalton = document.getElementById('btnModellDalton');
+  const btnModellRutherford = document.getElementById('btnModellRutherford');
+  const btnModellVacuum = document.getElementById('btnModellVacuum');
+  const btnGridSimple = document.getElementById('btnGridSimple');
+  const btnGridHcp = document.getElementById('btnGridHcp');
+
+  const btnPlay = document.getElementById('btnPlay');
+  const playLabel = document.getElementById('playLabel');
+  const playIconSpan = document.getElementById('playIconSpan');
+  const btnStep = document.getElementById('btnStep');
+  const btnReset = document.getElementById('btnReset');
+  const btnSingleShot = document.getElementById('btnSingleShot');
+  const rngRate = document.getElementById('rngRate');
+  const outRate = document.getElementById('outRate');
+  const selTarget = document.getElementById('selTarget');
+
+  const cntEmitted = document.getElementById('cntEmitted');
+  const cntStraight = document.getElementById('cntStraight');
+  const cntMedium = document.getElementById('cntMedium');
+  const cntLarge = document.getElementById('cntLarge');
+  const cntBack = document.getElementById('cntBack');
+  const bar1 = document.getElementById('bar1');
+  const bar2 = document.getElementById('bar2');
+  const bar3 = document.getElementById('bar3');
+  const bar4 = document.getElementById('bar4');
+  const canvasCaption = document.getElementById('canvasCaption');
+  const canvasStatus = document.getElementById('canvasStatus');
+
+  let mode = 'lab';
+  let microModell = 'rutherford';
+  let gridType = 'simple';
+  let isPlaying = false; // Startet NICHT direkt!
+  let particles = [];
+  let scintillationHits = [];
+  let totalEmitted = 0;
+  let counts = { straight: 0, medium: 0, large: 0, back: 0 };
+  let targetFoil = '79'; // 'none', '79', '47', '13'
+  let targetZ = 79;
+  let spawnAccumulator = 0;
+
+  let W = 800, H = 500;
+  function resize() {
+    const rect = cv.parentElement.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Vollbild-Umschaltung
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      canvasPanel.requestFullscreen().catch(err => {
+        console.warn('Vollbild fehlgeschlagen:', err);
+      });
+    } else {
+      document.exitFullscreen().catch(err => {
+        console.warn('Vollbild beenden fehlgeschlagen:', err);
+      });
+    }
+  }
+  btnFullscreen.addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+        toggleFullscreen();
+      }
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    fsIcon.innerHTML = isFs
+      ? '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>'
+      : '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+    setTimeout(resize, 60);
+  });
+
+  class Particle {
+    constructor(x, y, vx, vy, isSingle = false) {
+      this.x = x;
+      this.y = y;
+      this.vx = vx;
+      this.vy = vy;
+      this.v0 = Math.hypot(vx, vy);
+      this.isSingle = isSingle;
+      this.trail = [{ x, y }];
+      this.dead = false;
+      this.entered = false;
+      this.scattered = false;
+      this.recorded = false;
+    }
+
+    update(dt) {
+      if (this.dead) return;
+
+      const cx = W * 0.5;
+      const cy = H * 0.5;
+      const detR = Math.min(W * 0.42, H * 0.42);
+
+      if (mode === 'lab') {
+        const foilW = 10;
+        const foilH = H * 0.55;
+
+        // Eintritt in Detektor-Innere
+        const distFromCenter = Math.hypot(this.x - cx, this.y - cy);
+        if (!this.entered && distFromCenter < detR - 4) {
+          this.entered = true;
+        }
+
+        // Streuung an Folie
+        if (!this.scattered && this.x >= cx - foilW/2 && this.x <= cx + foilW/2 && Math.abs(this.y - cy) < foilH/2) {
+          this.scattered = true;
+          let angle = 0;
+
+          if (targetFoil === 'none') {
+            // Keine Folie: 100% geradeaus
+            angle = (Math.random() - 0.5) * 0.01;
+          } else {
+            // Z-abhängige realistische Streuverteilung
+            const r = Math.random();
+            const zWeight = (targetZ / 79);
+
+            // Häufigkeiten skaliert nach Kernladungszahl
+            const pStraight = Math.max(0.86, 0.98 - 0.09 * zWeight);
+            const pMedium = Math.max(pStraight + 0.015, 0.992 - 0.02 * zWeight);
+            const pLarge = Math.max(pMedium + 0.004, 0.998 - 0.004 * zWeight);
+
+            if (r < pStraight) {
+              angle = (Math.random() - 0.5) * 0.045; // < 2.5° (Geradeaus)
+            } else if (r < pMedium) {
+              const sign = Math.random() > 0.5 ? 1 : -1;
+              angle = sign * (0.06 + Math.random() * 0.65); // 3°–42° (Leicht)
+            } else if (r < pLarge) {
+              const sign = Math.random() > 0.5 ? 1 : -1;
+              angle = sign * (0.75 + Math.random() * 0.75); // 45°–86° (Stark)
+            } else {
+              const sign = Math.random() > 0.5 ? 1 : -1;
+              angle = sign * (1.65 + Math.random() * 1.25); // > 90° (Rückstreuung!)
+            }
+          }
+
+          const speed = this.v0;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed;
+        }
+
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        if (this.isSingle && Math.random() < 0.7) {
+          this.trail.push({ x: this.x, y: this.y });
+        }
+
+        // Auftreffen auf Detektorschirm
+        if (this.entered && distFromCenter >= detR) {
+          this.dead = true;
+          const hitAngle = Math.atan2(this.y - cy, this.x - cx);
+          const inSlit = Math.abs(hitAngle) > 0.88 * Math.PI;
+          if (!inSlit) {
+            scintillationHits.push({ angle: hitAngle, time: Date.now() });
+          }
+          const deg = Math.abs(hitAngle * 180 / Math.PI);
+          recordDeflection(deg);
+        }
+      } else {
+        // MIKRO-ANSICHT
+        const dtSub = dt / 6;
+        const nuclei = getNuclei();
+        const atomRadius = 45;
+
+        for (let s = 0; s < 6; s++) {
+          if (targetFoil === 'none' || microModell === 'vacuum') {
+            // Leerer Raum / Nullversuch: Teilchen fliegen kräftefrei geradeaus
+            this.x += this.vx * dtSub;
+            this.y += this.vy * dtSub;
+          } else if (microModell === 'dalton') {
+            // Dalton: Massive, undurchdringliche harte Kugeln
+            this.x += this.vx * dtSub;
+            this.y += this.vy * dtSub;
+
+            for (const n of nuclei) {
+              const dx = this.x - n.x;
+              const dy = this.y - n.y;
+              const dist = Math.hypot(dx, dy);
+
+              if (dist < atomRadius && dist > 0.001) {
+                // Elastischer Stoß an Kugeloberfläche
+                const nx = dx / dist;
+                const ny = dy / dist;
+                const dot = this.vx * nx + this.vy * ny;
+                if (dot < 0) {
+                  this.vx -= 2 * dot * nx;
+                  this.vy -= 2 * dot * ny;
+                  this.x = n.x + nx * (atomRadius + 1);
+                  this.y = n.y + ny * (atomRadius + 1);
+                }
+              }
+            }
+          } else if (microModell === 'thomson') {
+            // Thomson: Homogene positive Ladungskugel → extrem schwache Ablenkung
+            this.x += this.vx * dtSub;
+            this.y += this.vy * dtSub;
+            // Minimale stochastische Streuung beim Durchflug
+            for (const n of nuclei) {
+              const dist = Math.hypot(this.x - n.x, this.y - n.y);
+              if (dist < atomRadius) {
+                this.vy += (Math.random() - 0.5) * 8 * dtSub;
+              }
+            }
+          } else {
+            // Rutherford: Winziger Kern (+Z) mit physikalisch kalibrierter Coulomb-Kraft
+            const kCoulomb = 68000 * (targetZ / 79);
+            let fx = 0, fy = 0;
+
+            for (const n of nuclei) {
+              const dx = this.x - n.x;
+              const dy = this.y - n.y;
+              const distSq = dx * dx + dy * dy;
+              const dist = Math.sqrt(distSq);
+
+              if (dist < 5) {
+                // Direkter Kernkontakt: Elastische Rückstreuung
+                this.vx = -Math.abs(this.vx) * 0.95;
+                this.vy += (dy > 0 ? 1 : -1) * 80;
+              } else {
+                // Hyperbolische Coulomb-Kraft F ~ 1/r^2
+                const force = kCoulomb / (distSq + 25);
+                fx += (dx / dist) * force;
+                fy += (dy / dist) * force;
+              }
+            }
+
+            this.vx += fx * dtSub;
+            this.vy += fy * dtSub;
+            this.x += this.vx * dtSub;
+            this.y += this.vy * dtSub;
+          }
+
+          if (this.isSingle && s === 0 && Math.random() < 0.6) {
+            this.trail.push({ x: this.x, y: this.y });
+          }
+        }
+
+        if (this.x < -30 || this.x > W + 40 || this.y < -30 || this.y > H + 40) {
+          this.dead = true;
+          if (!this.recorded) {
+            this.recorded = true;
+            const deg = Math.abs(Math.atan2(this.vy, this.vx) * 180 / Math.PI);
+            recordDeflection(deg);
+          }
+        }
+      }
+
+      if (this.trail.length > 50) this.trail.shift();
+    }
+
+    draw() {
+      if (this.trail.length > 1) {
+        ctx.strokeStyle = this.isSingle ? 'rgba(230, 159, 0, 0.9)' : 'rgba(213, 94, 0, 0.45)';
+        ctx.lineWidth = this.isSingle ? 2.5 : 1.5;
+        ctx.beginPath();
+        ctx.moveTo(this.trail[0].x, this.trail[0].y);
+        for (let i = 1; i < this.trail.length; i++) ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = this.isSingle ? '#E69F00' : '#D55E00';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.isSingle ? 4.5 : 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function getNuclei() {
+    const list = [];
+    const cx = W * 0.55;
+    const cy = H * 0.5;
+    const spacing = 100;
+
+    if (gridType === 'hcp') {
+      // Dichteste Kugelpackung (hexagonal versetzte Reihen)
+      const rowH = spacing * 0.866;
+      for (let gy = -2; gy <= 2; gy++) {
+        const offset = (Math.abs(gy) % 2 === 1) ? spacing * 0.5 : 0;
+        for (let gx = -2; gx <= 1; gx++) {
+          list.push({ x: cx + gx * spacing + offset, y: cy + gy * rowH });
+        }
+      }
+    } else {
+      // Einfaches Rechteckgitter
+      for (let gx = -1; gx <= 1; gx++) {
+        for (let gy = -2; gy <= 2; gy++) {
+          list.push({ x: cx + gx * spacing, y: cy + gy * spacing });
+        }
+      }
+    }
+    return list;
+  }
+
+  function recordDeflection(deg) {
+    if (deg < 3) counts.straight++;
+    else if (deg < 45) counts.medium++;
+    else if (deg < 90) counts.large++;
+    else counts.back++;
+
+    cntStraight.textContent = counts.straight.toLocaleString('de-DE');
+    cntMedium.textContent = counts.medium.toLocaleString('de-DE');
+    cntLarge.textContent = counts.large.toLocaleString('de-DE');
+    cntBack.textContent = counts.back.toLocaleString('de-DE');
+
+    const total = counts.straight + counts.medium + counts.large + counts.back;
+    if (total > 0) {
+      bar1.style.height = `${Math.max(4, (counts.straight / total) * 100)}%`;
+      bar2.style.height = `${Math.max(4, (counts.medium / total) * 100 * 5)}%`;
+      bar3.style.height = `${Math.max(3, (counts.large / total) * 100 * 15)}%`;
+      bar4.style.height = `${Math.max(2, (counts.back / total) * 100 * 35)}%`;
+    }
+  }
+
+  function spawnParticle(isSingle = false) {
+    totalEmitted++;
+    cntEmitted.textContent = totalEmitted.toLocaleString('de-DE');
+
+    if (mode === 'lab') {
+      const cx = W * 0.5;
+      const cy = H * 0.5;
+      const detR = Math.min(W * 0.42, H * 0.42);
+      const srcX = cx - detR - 40;
+      const vy = (Math.random() - 0.5) * 6;
+      particles.push(new Particle(srcX, cy + (Math.random() - 0.5) * 6, 320, vy, isSingle));
+    } else {
+      const startY = (H * 0.5) + (Math.random() - 0.5) * 230;
+      particles.push(new Particle(15, startY, 280, 0, isSingle));
+    }
+  }
+
+  function drawLabSetup() {
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+    const detR = Math.min(W * 0.42, H * 0.42);
+
+    // 1. Zirkulärer Zinksulfid-Detektorschirm
+    ctx.strokeStyle = '#3a4a58';
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.arc(cx, cy, detR, 1.12 * Math.PI, 0.88 * Math.PI);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#56B4E9';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, detR, 1.12 * Math.PI, 0.88 * Math.PI);
+    ctx.stroke();
+
+    ctx.fillStyle = '#9aa8b5';
+    ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+    ctx.fillText('Eintrittsspalt', cx - detR - 15, cy - 24);
+    ctx.fillText('Zinksulfid-Detektorschirm (360°)', cx - 85, cy - detR - 12);
+
+    // 2. Alpha-Strahler links VOR dem Spalt
+    const srcX = cx - detR - 45;
+    const srcY = cy;
+    ctx.fillStyle = '#4a5966';
+    ctx.fillRect(srcX - 35, srcY - 26, 40, 52);
+    ctx.fillStyle = '#1c2733';
+    ctx.fillRect(srcX - 8, srcY - 5, 18, 10);
+
+    ctx.fillStyle = '#D55E00';
+    ctx.beginPath();
+    ctx.arc(srcX - 22, srcY, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('α', srcX - 22, srcY + 4);
+    ctx.textAlign = 'left';
+
+    ctx.fillStyle = '#9aa8b5';
+    ctx.fillText('Radium-Quelle', srcX - 45, srcY + 42);
+
+    // 3. Folie im Zentrum (oder Halterung ohne Folie)
+    const foilH = H * 0.55;
+
+    if (targetFoil === 'none') {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.setLineDash([4, 4]);
+      ctx.strokeRect(cx - 4, cy - foilH/2, 8, foilH);
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#9aa8b5';
+      ctx.font = 'italic 12px system-ui';
+      ctx.fillText('Keine Folie (Nullversuch / Vakuum)', cx - 95, cy + foilH/2 + 20);
+    } else {
+      let foilColor = 'rgba(212, 175, 55, 0.9)';
+      let foilBorder = '#D4AF37';
+      let foilText = 'Goldfolie (Z = 79, ca. 1000 Atomlagen)';
+
+      if (targetFoil === '47') {
+        foilColor = 'rgba(192, 192, 205, 0.9)';
+        foilBorder = '#C0C0D0';
+        foilText = 'Silberfolie (Z = 47, mittlere Kerne)';
+      } else if (targetFoil === '13') {
+        foilColor = 'rgba(140, 180, 210, 0.9)';
+        foilBorder = '#56B4E9';
+        foilText = 'Aluminiumfolie (Z = 13, leichte Kerne)';
+      }
+
+      ctx.fillStyle = foilColor;
+      ctx.fillRect(cx - 3, cy - foilH/2, 6, foilH);
+      ctx.strokeStyle = foilBorder;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cx - 3, cy - foilH/2, 6, foilH);
+
+      ctx.fillStyle = foilBorder;
+      ctx.font = 'bold 13px system-ui';
+      ctx.fillText(foilText, cx - 105, cy + foilH/2 + 20);
+    }
+
+    // 4. Szintillationsblitze
+    const now = Date.now();
+    scintillationHits = scintillationHits.filter(h => now - h.time < 350);
+    for (const h of scintillationHits) {
+      const age = (now - h.time) / 350;
+      const alpha = 1 - age;
+      const hx = cx + Math.cos(h.angle) * detR;
+      const hy = cy + Math.sin(h.angle) * detR;
+
+      ctx.fillStyle = `rgba(0, 255, 120, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(hx, hy, 4 + (1 - alpha) * 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawMicroView() {
+    const nuclei = getNuclei();
+    const atomRadius = 45;
+
+    if (targetFoil === 'none' || microModell === 'vacuum') {
+      // Leerer Raum (Vakuum)
+      for (const n of nuclei) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, atomRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#56B4E9';
+      ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
+      ctx.fillText('Leerer Raum (Nullprobe): Keine Atome vorhanden → Teilchen fliegen ungestört geradeaus', 20, 28);
+    } else if (microModell === 'dalton') {
+      // Dalton: Massive undurchdringliche Kugeln
+      for (const n of nuclei) {
+        const grad = ctx.createRadialGradient(n.x - 12, n.y - 12, 5, n.x, n.y, atomRadius);
+        grad.addColorStop(0, '#5a738e');
+        grad.addColorStop(1, '#1b2836');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, atomRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#8fa3b8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Massiv', n.x, n.y + 4);
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#D55E00';
+      ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
+      ctx.fillText('Dalton: Atome sind solide Billardkugeln → Alpha-Teilchen prallen an der Oberfläche ab', 20, 28);
+    } else if (microModell === 'thomson') {
+      // Thomson: Rosinenkuchen-Modell
+      for (const n of nuclei) {
+        const grad = ctx.createRadialGradient(n.x, n.y, 8, n.x, n.y, atomRadius);
+        grad.addColorStop(0, 'rgba(213, 94, 0, 0.35)');
+        grad.addColorStop(1, 'rgba(213, 94, 0, 0.05)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, atomRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(213, 94, 0, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(213, 94, 0, 0.6)';
+        ctx.font = 'bold 18px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('+', n.x, n.y + 6);
+
+        const offsets = [[-18, -14], [20, -16], [-12, 22], [16, 15], [0, -30]];
+        for (const [ox, oy] of offsets) {
+          ctx.fillStyle = '#56B4E9';
+          ctx.beginPath();
+          ctx.arc(n.x + ox, n.y + oy, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#E69F00';
+      ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
+      ctx.fillText('Thomson: Positive Ladung gleichmäßig verteilt → Homogenes Feld lenkt kaum ab', 20, 28);
+    } else {
+      // Rutherford: Kern-Hülle-Modell
+      let coreColor = '#D4AF37';
+      if (targetZ === 47) coreColor = '#C0C0D0';
+      if (targetZ === 13) coreColor = '#56B4E9';
+
+      for (const n of nuclei) {
+        // Hülle (gestrichelt)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, atomRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Kern (+Z)
+        ctx.fillStyle = coreColor;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(`+${targetZ}`, n.x, n.y + 16);
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#009E73';
+      ctx.font = '13px ' + getComputedStyle(document.body).fontFamily;
+      ctx.fillText(`Rutherford: Winziger Kern (+${targetZ}) & riesige leere Hülle → Nur Nahbegegnungen streuen stark`, 20, 28);
+    }
+  }
+
+  function updatePhysics(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update(dt);
+      if (p.dead) particles.splice(i, 1);
+    }
+  }
+
+  function drawScene() {
+    ctx.fillStyle = '#0c1218';
+    ctx.fillRect(0, 0, W, H);
+
+    if (mode === 'lab') {
+      drawLabSetup();
+    } else {
+      drawMicroView();
+    }
+
+    for (const p of particles) {
+      p.draw();
+    }
+  }
+
+  let lastTime = performance.now();
+  function loop(time) {
+    const dt = Math.min(0.05, (time - lastTime) / 1000);
+    lastTime = time;
+
+    if (isPlaying) {
+      const rate = Number(rngRate.value);
+      spawnAccumulator += dt;
+      const interval = 1 / rate;
+      while (spawnAccumulator >= interval) {
+        spawnParticle(false);
+        spawnAccumulator -= interval;
+      }
+      updatePhysics(dt);
+    }
+
+    drawScene();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // Steuerung
+  function setPlayState(playing) {
+    isPlaying = playing;
+    playLabel.textContent = isPlaying ? 'Anhalten' : 'Starten';
+    canvasStatus.textContent = isPlaying ? 'Strahl aktiv' : 'Pausiert';
+    playIconSpan.innerHTML = isPlaying
+      ? '<svg class="icon" viewBox="0 0 24 24" style="fill: currentColor;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+      : '<svg class="icon" viewBox="0 0 24 24" style="fill: currentColor;"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  }
+
+  btnPlay.addEventListener('click', () => {
+    setPlayState(!isPlaying);
+  });
+
+  // Einzelschritt-Modus
+  btnStep.addEventListener('click', () => {
+    if (isPlaying) setPlayState(false);
+    if (particles.length === 0) {
+      spawnParticle(false);
+    }
+    updatePhysics(0.025);
+    drawScene();
+  });
+
+  btnReset.addEventListener('click', () => {
+    particles = [];
+    scintillationHits = [];
+    totalEmitted = 0;
+    cntEmitted.textContent = '0';
+    counts = { straight: 0, medium: 0, large: 0, back: 0 };
+    cntStraight.textContent = '0';
+    cntMedium.textContent = '0';
+    cntLarge.textContent = '0';
+    cntBack.textContent = '0';
+    bar1.style.height = '4%';
+    bar2.style.height = '2%';
+    bar3.style.height = '2%';
+    bar4.style.height = '2%';
+  });
+
+  btnSingleShot.addEventListener('click', () => {
+    spawnParticle(true);
+  });
+
+  rngRate.addEventListener('input', () => {
+    outRate.textContent = `${rngRate.value} Teilchen/s`;
+  });
+
+  selTarget.addEventListener('change', () => {
+    targetFoil = selTarget.value;
+    if (targetFoil !== 'none') {
+      targetZ = Number(targetFoil);
+    }
+  });
+
+  btnModeLab.addEventListener('click', () => {
+    mode = 'lab';
+    btnModeLab.classList.add('active');
+    btnModeMicro.classList.remove('active');
+    subModeControls.style.display = 'none';
+    canvasCaption.textContent = 'Versuchsaufbau mit Zinksulfid-Detektorschirm';
+    particles = [];
+  });
+
+  btnModeMicro.addEventListener('click', () => {
+    mode = 'micro';
+    btnModeMicro.classList.add('active');
+    btnModeLab.classList.remove('active');
+    subModeControls.style.display = 'flex';
+    canvasCaption.textContent = 'Atomare Ebene: Flug durch das Atomgitter';
+    particles = [];
+  });
+
+  // Modell-Wahl Mikro
+  btnModellThomson.addEventListener('click', () => {
+    microModell = 'thomson';
+    btnModellThomson.classList.add('active');
+    btnModellDalton.classList.remove('active');
+    btnModellRutherford.classList.remove('active');
+    btnModellVacuum.classList.remove('active');
+    particles = [];
+  });
+
+  btnModellDalton.addEventListener('click', () => {
+    microModell = 'dalton';
+    btnModellDalton.classList.add('active');
+    btnModellThomson.classList.remove('active');
+    btnModellRutherford.classList.remove('active');
+    btnModellVacuum.classList.remove('active');
+    particles = [];
+  });
+
+  btnModellRutherford.addEventListener('click', () => {
+    microModell = 'rutherford';
+    btnModellRutherford.classList.add('active');
+    btnModellThomson.classList.remove('active');
+    btnModellDalton.classList.remove('active');
+    btnModellVacuum.classList.remove('active');
+    particles = [];
+  });
+
+  btnModellVacuum.addEventListener('click', () => {
+    microModell = 'vacuum';
+    btnModellVacuum.classList.add('active');
+    btnModellThomson.classList.remove('active');
+    btnModellDalton.classList.remove('active');
+    btnModellRutherford.classList.remove('active');
+    particles = [];
+  });
+
+  // Gitter-Wahl Mikro
+  btnGridSimple.addEventListener('click', () => {
+    gridType = 'simple';
+    btnGridSimple.classList.add('active');
+    btnGridHcp.classList.remove('active');
+    particles = [];
+  });
+
+  btnGridHcp.addEventListener('click', () => {
+    gridType = 'hcp';
+    btnGridHcp.classList.add('active');
+    btnGridSimple.classList.remove('active');
+    particles = [];
+  });
+
+})();
+</script>
+</body>
+</html>

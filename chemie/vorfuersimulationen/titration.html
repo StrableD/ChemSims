@@ -122,9 +122,12 @@ table.vals td:last-child{text-align:right;font-weight:700;white-space:nowrap}
 </style>
 </head>
 <body>
-<header>
-  <h1>Säure-Base-Titration</h1>
-  <p>Titrationskurve, Indikatoren und Protonenübergang auf Teilchenebene</p>
+<header style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 10px;">
+  <div>
+    <h1>Säure-Base-Titration</h1>
+    <p>Titrationskurve, Indikatoren und Protonenübergang auf Teilchenebene</p>
+  </div>
+  <button id="fsBtn" style="font-size: 0.88rem; padding: 5px 12px; border-radius: 5px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; font-weight: 600;">Vollbild</button>
 </header>
 
 <main>
@@ -1086,6 +1089,17 @@ function loop(ts){
 // ---------- Start ----------
 loadDisplay(); buildApparatus(); fillSelects(); readInputsFromState(); updateIndInfo();
 resize(); resetExperiment(); requestAnimationFrame(loop);
+
+if ($('fsBtn')) {
+  $('fsBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen().catch(() => {});
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fsBtn').textContent = document.fullscreenElement ? 'Vollbild beenden' : 'Vollbild';
+    setTimeout(resize, 60);
+  });
+}
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ for(const k in rCache) delete rCache[k]; drawCurve(); });
 </script>
 </body>
