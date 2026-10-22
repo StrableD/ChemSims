@@ -1,0 +1,3612 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wie funktioniert das Internet? – Netzwerk-Simulation</title>
+  <meta name="description" content="Interaktive Simulation für Kinder und Schüler: Wie Nachrichten und Webseiten durch Router und Netzknoten reisen.">
+  <meta name="material:typ" content="Interaktive Simulation">
+  <meta name="material:klasse" content="5-8">
+  <meta name="material:geraet" content="Tablet, PC, Beamer">
+  <meta name="material:stichworte" content="Netzwerk, Internet, Router, Client, Server, Paket, Nachricht, Webseite, Chat, Topologie">
+  <meta name="material:reihenfolge" content="1">
+
+  <!-- Schriften wie in den bestehenden Materialien (Atkinson Hyperlegible & Lexend) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap">
+
+  <style>
+    /* Lokale Fallback-Schriftarten (Offline-Fähigkeit) */
+    @font-face {
+      font-family: "Atkinson Hyperlegible";
+      src: url("../../assets/fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Atkinson Hyperlegible";
+      src: url("../../assets/fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+
+    /* Farbschema nach Okabe-Ito (barrierefrei für alle Farbsehschwächen) */
+    :root {
+      --bg: #edf1f4;
+      --surface: #ffffff;
+      --surface-subtle: #f6f8fa;
+      --surface-border: #d2dae0;
+      --ink: #17212b;
+      --ink-muted: #55616d;
+      --line: #c3ced7;
+      --line-active: #0072b2;
+      --line-broken: #d55e00;
+
+      /* Signalfarben Okabe-Ito */
+      --blue: #0072b2;
+      --blue-light: #cfe4f3;
+      --sky: #56b4e9;
+      --green: #009e73;
+      --green-light: #ddf1e5;
+      --orange: #e69f00;
+      --orange-light: #fef0d2;
+      --vermillion: #d55e00;
+      --vermillion-light: #fce7e4;
+      --purple: #cc79a7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+      --font-ui: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+      --font-heading: "Lexend", system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* SVG Icon Utility */
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25em;
+      height: 1.25em;
+      vertical-align: middle;
+      fill: currentColor;
+    }
+    .icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ======================================================================== */
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--surface-border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand h1 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--blue-light);
+      color: var(--blue);
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      padding: 3px 6px;
+      border-radius: var(--radius-md);
+    }
+
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-left: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-toggle-group {
+      display: flex;
+      background: var(--surface-border);
+      padding: 2px;
+      border-radius: var(--radius-sm);
+      gap: 2px;
+    }
+
+    .btn-toggle {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-toggle:hover {
+      color: var(--ink);
+    }
+
+    .btn-toggle.active {
+      background: var(--surface);
+      color: var(--blue);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .btn-icon {
+      border: 1px solid var(--surface-border);
+      background: var(--surface);
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--ink-muted);
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      background: var(--surface-subtle);
+      color: var(--ink);
+      border-color: var(--ink-muted);
+    }
+
+    .btn-icon.active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .btn-action-text {
+      border: 1px solid var(--surface-border);
+      background: var(--surface);
+      height: 34px;
+      padding: 0 12px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+      transition: all 0.15s;
+    }
+
+    .btn-action-text:hover {
+      background: var(--surface-subtle);
+      border-color: var(--ink-muted);
+    }
+
+    .btn-action-text.active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    /* ==========================================================================
+       HAUPTBEREICH & STAGE
+       ========================================================================== */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    #network-stage {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      background: radial-gradient(circle at center, #ffffff 0%, var(--bg) 100%);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #network-stage.dragging {
+      cursor: grabbing;
+    }
+
+    #network-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Floating Zoom Controls */
+    .stage-nav-controls {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 15;
+    }
+
+    .stage-nav-controls .btn-icon {
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+      width: 36px;
+      height: 36px;
+    }
+
+    /* ==========================================================================
+       SVG GRAFIKEN & ELEMENTE
+       ========================================================================== */
+    .edge {
+      cursor: default;
+    }
+
+    body.dist-manual .edge {
+      cursor: pointer;
+    }
+
+    .edge-line {
+      stroke: var(--line);
+      stroke-width: 4px;
+      stroke-linecap: round;
+      fill: none;
+      transition: stroke 0.25s, stroke-dasharray 0.25s, stroke-width 0.2s;
+    }
+
+    .edge-hitbox {
+      stroke: transparent;
+      stroke-width: 28px;
+      stroke-linecap: round;
+      fill: none;
+      cursor: inherit;
+    }
+
+    body.dist-manual .edge:hover .edge-line {
+      stroke: var(--vermillion);
+      stroke-width: 6px;
+      filter: drop-shadow(0 0 5px rgba(213, 94, 0, 0.4));
+    }
+
+    .edge-pulse {
+      stroke: var(--blue);
+      stroke-width: 6px;
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .edge.transmitting .edge-pulse {
+      opacity: 1;
+      stroke-dasharray: 10 10;
+      animation: dashMove 0.8s linear infinite;
+    }
+
+    @keyframes dashMove {
+      from { stroke-dashoffset: 20; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    .edge.broken .edge-line {
+      stroke: var(--line-broken);
+      stroke-dasharray: 6 6;
+      opacity: 0.6;
+    }
+
+    .edge-broken-icon {
+      display: none;
+    }
+
+    .edge.broken .edge-broken-icon {
+      display: block;
+    }
+
+    /* KNOTEN BASIS */
+    .node {
+      cursor: default;
+    }
+
+    .node.client {
+      cursor: pointer;
+    }
+
+    .node.client:hover .client-card-inner {
+      filter: drop-shadow(0 6px 14px rgba(0, 114, 178, 0.28));
+      transform: translateY(-2px);
+    }
+
+    .client-selection-ring {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 3px;
+      stroke-dasharray: 6 6;
+      stroke-dashoffset: 0;
+      animation: spinDash 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .node.client.selected .client-selection-ring {
+      opacity: 1;
+    }
+
+    @keyframes spinDash {
+      to { stroke-dashoffset: 48; }
+    }
+
+    .client-card-inner {
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .node-label {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 700;
+      fill: var(--ink);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .node-sublabel {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      fill: var(--ink-muted);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    /* ROUTER */
+    .router-core {
+      fill: var(--surface);
+      stroke: var(--ink-muted);
+      stroke-width: 2.5px;
+      transition: stroke 0.2s, fill 0.2s, filter 0.2s;
+    }
+
+    .node.router.active .router-core {
+      stroke: var(--orange);
+      fill: var(--orange-light);
+      filter: drop-shadow(0 0 8px var(--orange));
+    }
+
+    /* SERVER */
+    .server-card {
+      fill: var(--surface);
+      stroke: var(--ink);
+      stroke-width: 2.2px;
+      transition: transform 0.2s, stroke 0.2s;
+    }
+
+    /* Im Chat-Modus sind Server anonyme Netzknoten */
+    body.mode-chat .server-label,
+    body.mode-chat .server-icon-badge {
+      display: none;
+    }
+    body.mode-chat .node.server .server-card {
+      stroke: var(--ink-muted);
+      stroke-dasharray: 4 3;
+    }
+
+    /* ONLINE / OFFLINE ANZEIGEN */
+    .status-led {
+      transition: fill 0.25s, filter 0.25s;
+    }
+
+    .status-led.offline {
+      fill: var(--vermillion) !important;
+      filter: drop-shadow(0 0 4px var(--vermillion));
+    }
+
+    .node.is-offline {
+      opacity: 0.55;
+      filter: grayscale(0.6);
+      transition: opacity 0.3s, filter 0.3s;
+    }
+
+    .node.is-offline .client-selection-ring {
+      stroke: var(--vermillion);
+    }
+
+    /* Animiertes SVG-Paket */
+    #svg-packet {
+      pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+    }
+
+    /* ==========================================================================
+       STEP-BY-STEP DEBUGGER FLOATING BAR
+       ========================================================================== */
+    #step-debugger-bar {
+      position: absolute;
+      top: 16px;
+      left: calc(50% - 130px);
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 2px solid var(--blue);
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 25;
+      animation: slideDown 0.25s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translate(-50%, -10px); }
+      to { transform: translate(-50%, 0); }
+    }
+
+    #step-debugger-bar.hidden {
+      display: none;
+    }
+
+    .debug-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--blue);
+      background: var(--blue-light);
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .debug-info {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .btn-step {
+      border: 1px solid var(--surface-border);
+      background: var(--surface-subtle);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .btn-step:hover:not(:disabled) {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .btn-step:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-step.btn-step-primary {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .btn-step.btn-step-primary:hover:not(:disabled) {
+      background: #005a8e;
+    }
+
+    /* ==========================================================================
+       DOCK SIDE-PANEL (INTERAKTION MIT CLIENTS)
+       ========================================================================== */
+    #side-panel {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 320px;
+      max-height: calc(100% - 24px);
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 15;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+    }
+
+    #side-panel.closed {
+      transform: translateX(110%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-client-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--blue-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .panel-subtitle {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+
+    .panel-close {
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-close:hover {
+      background: var(--surface-border);
+      color: var(--ink);
+    }
+
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .panel-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .panel-tab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      background: var(--surface);
+    }
+
+    .panel-content {
+      padding: 14px 16px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px var(--blue-light);
+    }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    .quick-chip {
+      font-size: 0.75rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .quick-chip:hover {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .btn-send {
+      width: 100%;
+      background: var(--blue);
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-send:hover:not(:disabled) {
+      background: #005a8e;
+      transform: translateY(-1px);
+    }
+
+    .btn-send:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* MINI-BROWSER */
+    .mini-browser {
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--surface);
+      margin-top: 6px;
+    }
+
+    .browser-bar {
+      background: var(--surface-subtle);
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .browser-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--surface-border);
+    }
+
+    .browser-url {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .browser-viewport {
+      padding: 12px;
+      min-height: 140px;
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+
+    .browser-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 120px;
+      color: var(--ink-muted);
+      text-align: center;
+      gap: 6px;
+    }
+
+    /* ==========================================================================
+       SCHWEBENDE SPRECHBLASE (CHAT ÜBER EMPFÄNGER)
+       ========================================================================== */
+    #receiver-speech-bubble {
+      position: absolute;
+      width: 270px;
+      background: var(--surface);
+      border: 2px solid var(--blue);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 10px 12px;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -100%) scale(0.9);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    #receiver-speech-bubble.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -100%) scale(1);
+    }
+
+    #receiver-speech-bubble.bubble-below {
+      transform: translate(-50%, 0) scale(0.9);
+    }
+
+    #receiver-speech-bubble.bubble-below.visible {
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    #receiver-speech-bubble::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: var(--arrow-x, 50%);
+      transform: translateX(-50%);
+      border-width: 8px 8px 0 8px;
+      border-style: solid;
+      border-color: var(--blue) transparent transparent transparent;
+    }
+
+    #receiver-speech-bubble.bubble-below::after {
+      top: auto;
+      bottom: 100%;
+      border-width: 0 8px 8px 8px;
+      border-color: transparent transparent var(--blue) transparent;
+    }
+
+    .bubble-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    .bubble-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bubble-close {
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bubble-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .bubble-item {
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .bubble-item.received {
+      background: var(--blue-light);
+      align-self: flex-start;
+      border-bottom-left-radius: 1px;
+    }
+
+    .bubble-item.sent {
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      align-self: flex-end;
+      border-bottom-right-radius: 1px;
+    }
+
+    .bubble-sender-name {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+
+    .bubble-timer-bar {
+      height: 3px;
+      background: var(--blue);
+      width: 100%;
+      margin-top: 6px;
+      border-radius: 2px;
+      transition: width 6s linear;
+    }
+
+    /* ==========================================================================
+       DIDAKTISCHE FUSSZEILE (STEP TRACKER)
+       ========================================================================== */
+    footer {
+      background: var(--surface);
+      border-top: 2px solid var(--surface-border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .footer-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .footer-status-pill.active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .steps-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .step-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--surface-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-md);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .step-card.current {
+      background: var(--blue);
+      color: #ffffff;
+      border-color: var(--blue);
+      box-shadow: 0 2px 6px rgba(0, 114, 178, 0.35);
+    }
+
+    .step-card.done {
+      background: var(--green-light);
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .step-arrow {
+      color: var(--ink-muted);
+      font-size: 0.75rem;
+    }
+
+    .footer-detail-hint {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      margin-left: auto;
+    }
+
+    /* ==========================================================================
+       MODALS (SETTINGS & TOPOLOGY)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(23, 33, 43, 0.4);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1 !important;
+      pointer-events: auto;
+      transition: none;
+    }
+
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 440px;
+      max-width: 90vw;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .slider-row label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 2;
+      accent-color: var(--blue);
+    }
+
+    .slider-value {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 24px;
+      text-align: right;
+      color: var(--blue);
+    }
+
+    .presets-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .preset-chip {
+      border: 1px solid var(--surface-border);
+      background: var(--surface-subtle);
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--ink);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+    }
+
+    .preset-chip:hover {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .modal-footer {
+      padding: 12px 18px;
+      background: var(--surface-subtle);
+      border-top: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Switch toggle */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .switch-row:last-child {
+      border-bottom: none;
+    }
+
+    .switch-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--line);
+      transition: .2s;
+      border-radius: 22px;
+    }
+
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-switch {
+      background-color: var(--blue);
+    }
+
+    input:checked + .slider-switch:before {
+      transform: translateX(18px);
+    }
+  </style>
+</head>
+<body class="mode-chat">
+
+  <!-- ========================================================================
+       KOPFZEILE (NAVIGATION & STEUERUNG)
+       ======================================================================== -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </div>
+      <div>
+        <h1>Wie funktioniert das Internet?</h1>
+      </div>
+      <span class="brand-badge" id="mode-badge">
+        <span class="icon" id="badge-icon"></span>
+        <span id="badge-text">Chat-Modus</span>
+      </span>
+    </div>
+
+    <div class="controls-bar">
+      <!-- Topologie Generator Button -->
+      <button class="btn-action-text" id="btn-open-topology" title="Netzwerk-Aufbau anpassen">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="6" height="6" rx="1"></rect>
+            <rect x="16" y="2" width="6" height="6" rx="1"></rect>
+            <rect x="9" y="16" width="6" height="6" rx="1"></rect>
+            <line x1="5" y1="8" x2="12" y2="16"></line>
+            <line x1="19" y1="8" x2="12" y2="16"></line>
+          </svg>
+        </span>
+        <span>Topologie</span>
+      </button>
+
+      <!-- Schritt-Modus (Debugger) Schalter -->
+      <button class="btn-action-text" id="btn-toggle-step-mode" title="Schritt-für-Schritt Debug-Modus ein/ausschalten">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+        </span>
+        <span>Schritt-Modus</span>
+      </button>
+
+      <!-- Störungsmodus Schalter -->
+      <div class="control-group">
+        <label title="Simuliere Leitungsausfälle">
+          <span class="icon" style="color:var(--vermillion);">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </span>
+          Leitungsausfall:
+        </label>
+        <div class="btn-toggle-group" id="group-disturbance">
+          <button class="btn-toggle active" data-dist="off" title="Alle Leitungen intakt">Normal</button>
+          <button class="btn-toggle" data-dist="manual" title="Klicke auf eine Leitung zum Kappen">Klick (Manuell)</button>
+          <button class="btn-toggle" data-dist="auto" title="Zufällige Leitungen fallen kurzzeitig aus">Zufall</button>
+        </div>
+      </div>
+
+      <!-- Tempo Regler -->
+      <div class="control-group">
+        <label>Tempo:</label>
+        <div class="btn-toggle-group" id="group-speed">
+          <button class="btn-toggle" data-speed="slow" title="Langsam">0.5x</button>
+          <button class="btn-toggle active" data-speed="normal" title="Normal">1x</button>
+          <button class="btn-toggle" data-speed="fast" title="Schnell">2x</button>
+        </div>
+      </div>
+
+      <!-- Diskretes Einstellungs-Zahnrad (Audio) -->
+      <button class="btn-icon" id="btn-settings-toggle" title="Ton-Einstellungen" aria-label="Einstellungen">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       HAUPTBEREICH (SIMULATIONS-BÜHNE + SEITEN-PANEL)
+       ======================================================================== -->
+  <main>
+    <div id="network-stage">
+      <svg id="network-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet">
+        <!-- Hintergrund-Grid -->
+        <defs>
+          <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1.2" fill="var(--surface-border)" opacity="0.6" />
+          </pattern>
+        </defs>
+
+        <!-- Viewport Group mit Pan & Zoom -->
+        <g id="viewport-group">
+          <!-- Dynamischer Grid-Hintergrund -->
+          <rect id="bg-grid-rect" x="-3000" y="-3000" width="7000" height="7000" fill="url(#grid-pattern)" />
+
+          <!-- KANTEN / LEITUNGEN (Gruppe) -->
+          <g id="edges-group"></g>
+
+          <!-- KNOTEN (Gruppe) -->
+          <g id="nodes-group"></g>
+
+          <!-- Animiertes Datenpaket (Vektor-Objekt direkt im SVG) -->
+          <g id="svg-packet" style="display: none; pointer-events: none;">
+            <g id="svg-packet-graphic"></g>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Zoom & Stage Nav Controls -->
+      <div class="stage-nav-controls">
+        <button class="btn-icon" id="btn-zoom-in" title="Vergrößern (+)">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </span>
+        </button>
+        <button class="btn-icon" id="btn-zoom-out" title="Verkleinern (-)">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </span>
+        </button>
+        <button class="btn-icon" id="btn-zoom-reset" title="Ansicht zentrieren">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Schritt-Modus Steuerung (wird bei aktivem Debug-Modus während der Simulation eingeblendet) -->
+      <div id="step-debugger-bar" class="hidden">
+        <span class="debug-badge">Schritt-Modus</span>
+        <span class="debug-info" id="debug-hop-info">Bereit</span>
+        <button class="btn-step" id="btn-step-prev" disabled>
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+          </span>
+          <span>Zurück</span>
+        </button>
+        <button class="btn-step btn-step-primary" id="btn-step-next">
+          <span>Weiter</span>
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+          </span>
+        </button>
+        <button class="btn-step" id="btn-step-auto">
+          <span>Bis zum Ende</span>
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Schwebende Sprechblase über Empfänger-Client -->
+      <div id="receiver-speech-bubble">
+        <div class="bubble-header">
+          <span class="bubble-title" id="bubble-title">Post erhalten</span>
+          <button class="bubble-close" id="bubble-close" aria-label="Schließen">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="bubble-messages" id="bubble-messages"></div>
+        <div class="bubble-timer-bar" id="bubble-timer"></div>
+      </div>
+    </div>
+
+    <!-- SEITEN-PANEL (AUSKLAPPBAR BEI CLIENT-KLICK) -->
+    <aside id="side-panel">
+      <div class="panel-header">
+        <div class="panel-client-info">
+          <div class="panel-avatar" id="panel-avatar"></div>
+          <div>
+            <div class="panel-title" id="panel-name">Client</div>
+            <div class="panel-subtitle" id="panel-device">Gerät im Netzwerk</div>
+          </div>
+        </div>
+        <button class="panel-close" id="panel-close" title="Schließen" aria-label="Schließen">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </span>
+        </button>
+      </div>
+
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tab-chat">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          </span>
+          <span>Chat-Nachricht</span>
+        </button>
+        <button class="panel-tab" id="tab-web">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </span>
+          <span>Webseite abrufen</span>
+        </button>
+      </div>
+
+      <div class="panel-content">
+        <!-- ANSICHT 1: CHAT -->
+        <div id="view-chat">
+          <div class="form-group">
+            <label class="form-label" for="select-recipient">Empfänger wählen:</label>
+            <select id="select-recipient"></select>
+          </div>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label class="form-label" for="input-message">Nachricht:</label>
+            <input type="text" id="input-message" value="Hallo! Wollen wir lernen?" maxlength="70" placeholder="Deine Nachricht...">
+            <div class="quick-chips">
+              <span class="quick-chip" data-text="Hallo! Wie geht's dir?">Hallo!</span>
+              <span class="quick-chip" data-text="Treffen wir uns in der großen Pause?">Pause</span>
+              <span class="quick-chip" data-text="Lass uns zusammen die Hausaufgabe ansehen!">Hausaufgabe</span>
+            </div>
+          </div>
+
+          <button class="btn-send" id="btn-send-message" style="margin-top: 16px;">
+            <span class="icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </span>
+            <span>Nachricht absenden</span>
+          </button>
+        </div>
+
+        <!-- ANSICHT 2: WEB -->
+        <div id="view-web" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="select-server">Webserver auswählen:</label>
+            <select id="select-server"></select>
+          </div>
+
+          <button class="btn-send" id="btn-request-web" style="margin-top: 10px;">
+            <span class="icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </span>
+            <span>Webseite anfordern</span>
+          </button>
+
+          <!-- Integrierter Mini-Browser -->
+          <div class="mini-browser">
+            <div class="browser-bar">
+              <div class="browser-dots">
+                <span class="browser-dot"></span>
+                <span class="browser-dot"></span>
+                <span class="browser-dot"></span>
+              </div>
+              <div class="browser-url" id="browser-url">bereit...</div>
+            </div>
+            <div class="browser-viewport" id="browser-content">
+              <div class="browser-placeholder">
+                <span class="icon" style="width:2em; height:2em; color:var(--ink-muted);">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </span>
+                <span>Wähle oben einen Server und klicke auf "Webseite anfordern".</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ========================================================================
+       DIDAKTISCHE FUSSZEILE (STEP TRACKER: SCHRITTE SEQUENTIELL EINBLENDEN)
+       ======================================================================== -->
+  <footer>
+    <div class="footer-status-pill" id="footer-status">Bereit</div>
+    <div class="steps-container" id="steps-container">
+      <div class="step-card current">
+        <span>Klicke auf einen Client, um zu starten</span>
+      </div>
+    </div>
+    <div class="footer-detail-hint" id="footer-detail-hint">Tipp: Wähle einen Absender-PC aus</div>
+  </footer>
+
+  <!-- ========================================================================
+       MODAL 1: TOPOLOGIE GENERATOR
+       ======================================================================== -->
+  <div class="modal-overlay" id="topology-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="6" height="6" rx="1"></rect>
+              <rect x="16" y="2" width="6" height="6" rx="1"></rect>
+              <rect x="9" y="16" width="6" height="6" rx="1"></rect>
+              <line x1="5" y1="8" x2="12" y2="16"></line>
+              <line x1="19" y1="8" x2="12" y2="16"></line>
+            </svg>
+          </span>
+          <span>Netzwerk-Topologie konfigurieren</span>
+        </h2>
+        <button class="panel-close" id="topology-close" aria-label="Schließen">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="select-topo-type">Topologie-Muster:</label>
+          <select id="select-topo-type">
+            <option value="mesh" selected>Vermascht (Internet-Struktur mit Ausweichwegen)</option>
+            <option value="star">Stern (Zentraler Hauptknoten / Switch)</option>
+            <option value="ring">Ring (Kreisförmig verbundene Router)</option>
+            <option value="tree">Baum (Hierarchisches Netzwerk)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <div class="slider-row">
+            <label for="range-clients">Anzahl Clients (2–8):</label>
+            <input type="range" id="range-clients" min="2" max="8" value="4">
+            <span class="slider-value" id="val-clients">4</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="slider-row">
+            <label for="range-routers">Anzahl Netzknoten / Router (0–20):</label>
+            <input type="range" id="range-routers" min="0" max="20" value="5">
+            <span class="slider-value" id="val-routers">5</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="slider-row">
+            <label for="range-servers">Anzahl Webserver (0–4):</label>
+            <input type="range" id="range-servers" min="0" max="4" value="3">
+            <span class="slider-value" id="val-servers">3</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Schnell-Vorlagen:</label>
+          <div class="presets-row">
+            <button class="preset-chip" data-preset="standard">Standard (4 Clients, 5 Router, 3 Server)</button>
+            <button class="preset-chip" data-preset="direct">P2P Direkt (2 PCs, 0 Router)</button>
+            <button class="preset-chip" data-preset="star-classroom">Klassenraum (6 PCs, Stern)</button>
+            <button class="preset-chip" data-preset="big-net">Großes Netz (6 PCs, 12 Router)</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-step" id="btn-cancel-topology">Abbrechen</button>
+        <button class="btn-step btn-step-primary" id="btn-apply-topology">Netzwerk neu erzeugen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: EINSTELLUNGEN (AUDIO)
+       ======================================================================== -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card" style="width: 360px;">
+      <div class="modal-header">
+        <h2>
+          <span class="icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </span>
+          <span>Ton-Effekte</span>
+        </h2>
+        <button class="panel-close" id="settings-close" aria-label="Schließen">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.8rem; color:var(--ink-muted);">Sehr dezente Audioeffekte zur didaktischen Begleitung.</p>
+
+        <div class="switch-row">
+          <span class="switch-label">
+            <span class="icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            </span>
+            Hauptschalter Ton:
+          </span>
+          <label class="switch">
+            <input type="checkbox" id="check-sound-master">
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <span class="switch-label">Senden (sanftes Plopp):</span>
+          <label class="switch">
+            <input type="checkbox" id="check-sound-send" checked disabled>
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <span class="switch-label">Weiterleiten (luftiges Wusch):</span>
+          <label class="switch">
+            <input type="checkbox" id="check-sound-hop" checked disabled>
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="switch-row">
+          <span class="switch-label">Ankommen (leises Ping):</span>
+          <label class="switch">
+            <input type="checkbox" id="check-sound-arrive" checked disabled>
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       JAVASCRIPT LOGIK
+       ======================================================================== -->
+  <script>
+    /* ==========================================================================
+       SVG VEKTOR-PFADE (DEUTLICHE UNTERSCHEIDUNG TABLET QUERFORMAT & SMARTPHONE HOCHFORMAT)
+       ========================================================================== */
+    const SVG_PATHS = {
+      globe: `<circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>`,
+      chat: `<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>`,
+      server: `<rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line>`,
+      router: `<circle cx="12" cy="12" r="9"></circle><path d="M12 7v10M7 12h10"></path>`,
+      laptop: `<rect x="3" y="4" width="18" height="12" rx="2"></rect><path d="M2 20h20"></path>`,
+      desktop: `<rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>`,
+      // Tablet: Horizontal / Querformat (deutlich breiter als hoch)
+      tablet: `<rect x="2" y="3.5" width="20" height="16" rx="2.5" ry="2.5"></rect><line x1="12" y1="6.5" x2="12.01" y2="6.5" stroke-width="2.5"></line><line x1="5" y1="16.5" x2="19" y2="16.5" stroke-width="1.5" opacity="0.4"></line>`,
+      // Smartphone: Vertikal / Hochformat (deutlich schmaler als hoch)
+      smartphone: `<rect x="6.5" y="4" width="11" height="16" rx="2" ry="2.5"></rect><line x1="9.5" y1="17.5" x2="14.5" y2="17.5" stroke-width="1.5"></line><line x1="12" y1="6.5" x2="12" y2="6.5" stroke-width="2"></line>`,
+      school: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>`,
+      search: `<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>`,
+      book: `<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>`,
+      weather: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
+      check: `<polyline points="20 6 9 17 4 12"></polyline>`,
+      branch: `<circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>`,
+      lightning: `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>`
+    };
+
+    function getIconSvgHtml(key, size = 18, color = "currentColor", strokeWidth = 2) {
+      const p = SVG_PATHS[key] || SVG_PATHS.laptop;
+      return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+    }
+
+    /* ==========================================================================
+       TOPOLOGIE-DATEN & GENERATOR MIT ZENTRALEN SERVERN & GROSSZÜGIGEM SPACING
+       ========================================================================== */
+    const CLIENT_PRESETS = [
+      { name: "Mia", device: "Laptop", iconKey: "laptop" },
+      { name: "Leo", device: "Schul-PC", iconKey: "desktop" },
+      { name: "Noah", device: "Tablet", iconKey: "tablet" },
+      { name: "Emma", device: "Smartphone", iconKey: "smartphone" },
+      { name: "Ben", device: "Laptop", iconKey: "laptop" },
+      { name: "Sophie", device: "Tablet", iconKey: "tablet" },
+      { name: "Jonas", device: "Schul-PC", iconKey: "desktop" },
+      { name: "Lea", device: "Smartphone", iconKey: "smartphone" }
+    ];
+
+    const SERVER_PRESETS = [
+      { id: "server-schule", name: "Schul-Website", iconKey: "school", url: "https://schul-web.de" },
+      { id: "server-suchmaschine", name: "Suchmaschine", iconKey: "search", url: "https://such-fuchs.de" },
+      { id: "server-lexikon", name: "Online-Lexikon", iconKey: "book", url: "https://kinder-lexikon.de" },
+      { id: "server-wetter", name: "Wetterdienst", iconKey: "weather", url: "https://wetter-frosch.de" }
+    ];
+
+    let TOPOLOGY = {
+      clients: [],
+      routers: [],
+      servers: [],
+      edges: []
+    };
+
+    const nodeMap = new Map();
+    const chatHistories = {};
+
+    function getChatKey(idA, idB) {
+      return [idA, idB].sort().join("::");
+    }
+
+    function addChatMessage(senderId, receiverId, text) {
+      const key = getChatKey(senderId, receiverId);
+      if (!chatHistories[key]) chatHistories[key] = [];
+      chatHistories[key].push({
+        senderId,
+        text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      if (chatHistories[key].length > 5) chatHistories[key].shift();
+    }
+
+    /* Topologie-Generator: Didaktische Vielfalt, Server innen & außen, keine Sackgassen-Router */
+    function generateTopology(type, numClients, numRouters, numServers) {
+      const clients = [];
+      const routers = [];
+      const servers = [];
+      const edges = [];
+
+      const minX = 75;
+      const maxX = 640;
+      const minY = 120;
+      const maxY = 500;
+      const centerX = 360;
+      const centerY = 310;
+
+      // 1. Clients an den Außenflanken (links & rechts)
+      for (let i = 0; i < numClients; i++) {
+        const cPreset = CLIENT_PRESETS[i % CLIENT_PRESETS.length];
+        const isLeft = (i % 2 === 0);
+        const colIndex = Math.floor(i / 2);
+        const totalInCol = Math.ceil(numClients / 2);
+        const yGap = (maxY - minY) / Math.max(1, totalInCol - 1);
+        const y = totalInCol === 1 ? centerY : minY + colIndex * yGap;
+        const x = isLeft ? minX : maxX;
+
+        clients.push({
+          id: `client-${i + 1}`,
+          name: cPreset.name,
+          device: cPreset.device,
+          iconKey: cPreset.iconKey,
+          x: Math.round(x),
+          y: Math.round(y)
+        });
+      }
+
+      // 2. Router nach Topologie anordnen (Großzügig & ohne Sackgassen-Router)
+      if (numRouters > 0) {
+        if (type === "star") {
+          // Stern: Zentraler Router + Außenkreis
+          routers.push({ id: "router-1", x: centerX, y: centerY });
+          for (let i = 1; i < numRouters; i++) {
+            const angle = ((i - 1) / (numRouters - 1)) * 2 * Math.PI;
+            const rx = 165;
+            const ry = 130;
+            routers.push({
+              id: `router-${i + 1}`,
+              x: Math.round(centerX + Math.cos(angle) * rx),
+              y: Math.round(centerY + Math.sin(angle) * ry)
+            });
+            // Verbindung zum Stern-Zentrum
+            edges.push({ from: "router-1", to: `router-${i + 1}` });
+          }
+          // Redundanz: Außen-Router untereinander quervernetzen (kein Router mit nur 1 Link!)
+          if (numRouters >= 3) {
+            for (let i = 1; i < numRouters; i++) {
+              const nextOuter = (i % (numRouters - 1)) + 1;
+              edges.push({ from: `router-${i + 1}`, to: `router-${nextOuter + 1}` });
+            }
+          }
+        } else if (type === "ring") {
+          // Ring: Skaliert im Radius für perfekte Übersichtlichkeit
+          const rx = Math.min(230, 130 + numRouters * 6.5);
+          const ry = Math.min(170, 95 + numRouters * 5.0);
+          for (let i = 0; i < numRouters; i++) {
+            const angle = (i / numRouters) * 2 * Math.PI - Math.PI / 2;
+            routers.push({
+              id: `router-${i + 1}`,
+              x: Math.round(centerX + Math.cos(angle) * rx),
+              y: Math.round(centerY + Math.sin(angle) * ry)
+            });
+          }
+          for (let i = 0; i < numRouters; i++) {
+            edges.push({ from: routers[i].id, to: routers[(i + 1) % numRouters].id });
+          }
+        } else if (type === "tree") {
+          // Baum: Mehrere Ebenen mit Quer-Verbindungen (Dual-Uplinks)
+          routers.push({ id: "router-1", x: centerX, y: 85 });
+          const remaining = numRouters - 1;
+          const level1Count = Math.min(remaining, Math.max(2, Math.floor(remaining * 0.35)));
+          for (let i = 0; i < level1Count; i++) {
+            const x = centerX - 130 + i * (260 / Math.max(1, level1Count - 1));
+            routers.push({ id: `router-${i + 2}`, x: Math.round(x), y: 205 });
+            edges.push({ from: "router-1", to: `router-${i + 2}` });
+          }
+          // Level-1 Router untereinander verbinden
+          if (level1Count >= 2) {
+            for (let i = 0; i < level1Count - 1; i++) {
+              edges.push({ from: `router-${i + 2}`, to: `router-${i + 3}` });
+            }
+          }
+          const level2Count = remaining - level1Count;
+          for (let i = 0; i < level2Count; i++) {
+            const p1 = routers[1 + (i % level1Count)].id;
+            const p2 = routers[1 + ((i + 1) % level1Count)].id;
+            const x = level2Count > 1 ? 160 + i * (400 / Math.max(1, level2Count - 1)) : centerX;
+            const y = (level2Count > 8 && i % 2 === 1) ? 460 : 350;
+            const childId = `router-${level1Count + 2 + i}`;
+            routers.push({ id: childId, x: Math.round(x), y: Math.round(y) });
+            edges.push({ from: p1, to: childId });
+            // Zweite Verbindung (Redundanz, verhindert einzelne Router-Verbindungen)
+            if (p1 !== p2) {
+              edges.push({ from: p2, to: childId });
+            } else if (level2Count > 1) {
+              const nextSib = `router-${level1Count + 2 + ((i + 1) % level2Count)}`;
+              edges.push({ from: childId, to: nextSib });
+            }
+          }
+        } else {
+          // Vermascht (Mesh): Locker und mit 2+ Nachbarn
+          const cols = Math.min(numRouters, Math.ceil(Math.sqrt(numRouters * 1.5)));
+          const rows = Math.ceil(numRouters / cols);
+          const xStep = 320 / Math.max(1, cols - 1 || 1);
+          const yStep = 260 / Math.max(1, rows - 1 || 1);
+
+          for (let i = 0; i < numRouters; i++) {
+            const c = i % cols;
+            const r = Math.floor(i / cols);
+            const jitterX = Math.sin(i * 3.7) * 14;
+            const jitterY = Math.cos(i * 4.1) * 14;
+            const x = cols === 1 ? centerX : 200 + c * xStep + jitterX;
+            const y = rows === 1 ? centerY : 160 + r * yStep + jitterY;
+            routers.push({ id: `router-${i + 1}`, x: Math.round(x), y: Math.round(y) });
+          }
+
+          for (let i = 0; i < routers.length; i++) {
+            const neighbors = routers.filter(o => o.id !== routers[i].id)
+              .map(o => ({ node: o, dist: Math.hypot(o.x - routers[i].x, o.y - routers[i].y) }))
+              .sort((a,b) => a.dist - b.dist);
+
+            if (neighbors.length > 0) {
+              const k1 = getEdgeKey(routers[i].id, neighbors[0].node.id);
+              if (!edges.some(e => getEdgeKey(e.from, e.to) === k1)) {
+                edges.push({ from: routers[i].id, to: neighbors[0].node.id });
+              }
+            }
+            if (neighbors.length > 1) {
+              const k2 = getEdgeKey(routers[i].id, neighbors[1].node.id);
+              if (!edges.some(e => getEdgeKey(e.from, e.to) === k2)) {
+                edges.push({ from: routers[i].id, to: neighbors[1].node.id });
+              }
+            }
+          }
+        }
+
+        // Sicherstellen: Bei >= 3 Routern hat JEDER Router mindestens 2 Router-Verbindungen
+        if (routers.length >= 3) {
+          routers.forEach(r => {
+            const rEdges = edges.filter(e => 
+              (e.from === r.id && routers.some(o => o.id === e.to)) ||
+              (e.to === r.id && routers.some(o => o.id === e.from))
+            );
+            if (rEdges.length < 2) {
+              const connected = new Set(rEdges.map(e => e.from === r.id ? e.to : e.from));
+              const candidates = routers
+                .filter(o => o.id !== r.id && !connected.has(o.id))
+                .sort((a, b) => Math.hypot(a.x - r.x, a.y - r.y) - Math.hypot(b.x - r.x, b.y - r.y));
+              if (candidates.length > 0) {
+                edges.push({ from: r.id, to: candidates[0].id });
+              }
+            }
+          });
+        }
+      }
+
+      // 3. Server positionieren: Bei Stern, Baum und Ring flexibel INNEN oder AUSSEN
+      for (let i = 0; i < numServers; i++) {
+        const sPreset = SERVER_PRESETS[i % SERVER_PRESETS.length];
+        let sx = centerX;
+        let sy = centerY;
+        const isInside = (i % 2 === 0); // Wechselt ab: innen und außen
+
+        if (type === "ring") {
+          const rx = Math.min(230, 130 + numRouters * 6.5);
+          const ry = Math.min(170, 95 + numRouters * 5.0);
+          if (isInside) {
+            // Innenraum des Rings
+            const rIn = numServers > 1 ? 50 : 0;
+            const angle = (i / Math.max(1, numServers)) * 2 * Math.PI;
+            sx = centerX + Math.cos(angle) * rIn;
+            sy = centerY + Math.sin(angle) * rIn;
+          } else {
+            // Außerhalb des Rings
+            const angle = ((i + 0.5) / Math.max(1, numServers)) * 2 * Math.PI - Math.PI / 2;
+            sx = centerX + Math.cos(angle) * (rx + 68);
+            sy = centerY + Math.sin(angle) * (ry + 58);
+          }
+        } else if (type === "star") {
+          if (isInside) {
+            // Zwischen Stern-Zentrum und Außen-Routern
+            const angle = ((i + 0.5) / Math.max(1, numServers)) * 2 * Math.PI;
+            sx = centerX + Math.cos(angle) * 82;
+            sy = centerY + Math.sin(angle) * 72;
+          } else {
+            // Außerhalb des Sterns
+            const angle = (i / Math.max(1, numServers)) * 2 * Math.PI - Math.PI / 2;
+            sx = centerX + Math.cos(angle) * 235;
+            sy = centerY + Math.sin(angle) * 190;
+          }
+        } else if (type === "tree") {
+          if (isInside) {
+            // Zwischen den Baum-Ebenen
+            sy = (i % 4 === 0) ? 145 : 275;
+            sx = centerX + (i % 2 === 0 ? -70 : 70) * (Math.floor(i / 2) + 1);
+          } else {
+            // Außen: über der Baumkrone oder unter den Blättern
+            sy = (i % 4 === 1) ? 65 : 515;
+            sx = centerX - 120 + i * 80;
+          }
+        } else {
+          // Vermascht (Mesh): Zentral und verteilt
+          const meshServerPos = [
+            { x: centerX, y: centerY - 90 },
+            { x: centerX - 90, y: centerY + 70 },
+            { x: centerX + 90, y: centerY + 70 },
+            { x: centerX, y: centerY + 180 }
+          ];
+          const pos = meshServerPos[i] || { x: centerX, y: 70 };
+          sx = pos.x;
+          sy = pos.y;
+        }
+
+        servers.push({
+          id: sPreset.id,
+          name: sPreset.name,
+          iconKey: sPreset.iconKey,
+          url: sPreset.url,
+          x: Math.round(sx),
+          y: Math.round(sy)
+        });
+      }
+
+      // 4. Kollisionsvermeidung: Physik-Relaxation garantiert, dass Server NIE Router überdecken
+      const minDistServerRouter = 62;
+      const minDistServerServer = 64;
+      const minDistRouterRouter = 44;
+
+      for (let iter = 0; iter < 30; iter++) {
+        // Server vs. Router
+        for (const s of servers) {
+          for (const r of routers) {
+            const dx = s.x - r.x;
+            const dy = s.y - r.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            if (dist < minDistServerRouter) {
+              const push = (minDistServerRouter - dist) / 2;
+              const nx = dx / dist;
+              const ny = dy / dist;
+              s.x = Math.max(130, Math.min(610, s.x + nx * push));
+              s.y = Math.max(55, Math.min(525, s.y + ny * push));
+              r.x = Math.max(130, Math.min(610, r.x - nx * push));
+              r.y = Math.max(55, Math.min(525, r.y - ny * push));
+            }
+          }
+        }
+        // Server vs. Server
+        for (let i = 0; i < servers.length; i++) {
+          for (let j = i + 1; j < servers.length; j++) {
+            const s1 = servers[i];
+            const s2 = servers[j];
+            const dx = s1.x - s2.x;
+            const dy = s1.y - s2.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            if (dist < minDistServerServer) {
+              const push = (minDistServerServer - dist) / 2;
+              const nx = dx / dist;
+              const ny = dy / dist;
+              s1.x = Math.max(130, Math.min(610, s1.x + nx * push));
+              s1.y = Math.max(55, Math.min(525, s1.y + ny * push));
+              s2.x = Math.max(130, Math.min(610, s2.x - nx * push));
+              s2.y = Math.max(55, Math.min(525, s2.y - ny * push));
+            }
+          }
+        }
+        // Router vs. Router
+        for (let i = 0; i < routers.length; i++) {
+          for (let j = i + 1; j < routers.length; j++) {
+            const r1 = routers[i];
+            const r2 = routers[j];
+            const dx = r1.x - r2.x;
+            const dy = r1.y - r2.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            if (dist < minDistRouterRouter) {
+              const push = (minDistRouterRouter - dist) / 2;
+              const nx = dx / dist;
+              const ny = dy / dist;
+              r1.x = Math.max(120, Math.min(620, r1.x + nx * push));
+              r1.y = Math.max(55, Math.min(525, r1.y + ny * push));
+              r2.x = Math.max(120, Math.min(620, r2.x - nx * push));
+              r2.y = Math.max(55, Math.min(525, r2.y - ny * push));
+            }
+          }
+        }
+      }
+
+      // Ganze Zahlen für saubere SVG-Rendertreue
+      servers.forEach(s => { s.x = Math.round(s.x); s.y = Math.round(s.y); });
+      routers.forEach(r => { r.x = Math.round(r.x); r.y = Math.round(r.y); });
+
+      // 5. Clients verbinden: Clients verbinden sich mit Routern (nie untereinander)
+      if (routers.length > 0) {
+        clients.forEach(c => {
+          const nearest = [...routers].sort((a,b) => Math.hypot(a.x - c.x, a.y - c.y) - Math.hypot(b.x - c.x, b.y - c.y));
+          edges.push({ from: c.id, to: nearest[0].id });
+          if (nearest.length > 1 && (numClients <= 4 || Math.random() > 0.3)) {
+            edges.push({ from: c.id, to: nearest[1].id });
+          }
+        });
+      } else {
+        // 0 Router: Direktverbindung untereinander (P2P)
+        for (let i = 0; i < clients.length - 1; i++) {
+          edges.push({ from: clients[i].id, to: clients[i + 1].id });
+        }
+        if (clients.length > 2) {
+          edges.push({ from: clients[clients.length - 1].id, to: clients[0].id });
+        }
+      }
+
+      // 6. Server verbinden: Stets dual-homed (2 Router-Verbindungen für echte Duplex-Wegewahl)
+      servers.forEach(s => {
+        if (routers.length > 0) {
+          const nearest = [...routers].sort((a,b) => Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y));
+          edges.push({ from: s.id, to: nearest[0].id });
+          if (nearest.length > 1) {
+            edges.push({ from: s.id, to: nearest[1].id });
+          }
+        } else if (clients.length > 0) {
+          edges.push({ from: s.id, to: clients[0].id });
+        }
+      });
+
+      return { clients, routers, servers, edges };
+    }
+
+    /* ==========================================================================
+       SIMULATIONS-ZUSTAND & GLOBALE VARIABLEN
+       ========================================================================== */
+    const state = {
+      mode: "chat",             // "chat" | "web"
+      selectedClientId: "client-1",
+      lastBubbleReceiver: null,
+      isSimulating: false,
+      isPaused: false,
+      speedFactor: 1.0,
+      disturbanceMode: "off",   // "off" | "manual" | "auto"
+      stepMode: false,          // Schritt-für-Schritt Debug-Modus
+      brokenEdges: new Set(),
+      autoGlitchTimer: null,
+      glitchRecoveryTimers: [],
+      audio: {
+        master: false,
+        send: true,
+        hop: true,
+        arrive: true
+      },
+      panZoom: {
+        x: 0,
+        y: 0,
+        scale: 1.0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0
+      }
+    };
+
+    // DOM-Referenzen
+    const stage = document.getElementById("network-stage");
+    const svg = document.getElementById("network-svg");
+    const viewportGroup = document.getElementById("viewport-group");
+    const edgesGroup = document.getElementById("edges-group");
+    const nodesGroup = document.getElementById("nodes-group");
+    const svgPacket = document.getElementById("svg-packet");
+    const svgPacketGraphic = document.getElementById("svg-packet-graphic");
+
+    const sidePanel = document.getElementById("side-panel");
+    const panelName = document.getElementById("panel-name");
+    const panelDevice = document.getElementById("panel-device");
+    const panelAvatar = document.getElementById("panel-avatar");
+    const selectRecipient = document.getElementById("select-recipient");
+    const selectServer = document.getElementById("select-server");
+    const inputMessage = document.getElementById("input-message");
+    const btnSendMessage = document.getElementById("btn-send-message");
+    const btnRequestWeb = document.getElementById("btn-request-web");
+
+    const tabChat = document.getElementById("tab-chat");
+    const tabWeb = document.getElementById("tab-web");
+    const viewChat = document.getElementById("view-chat");
+    const viewWeb = document.getElementById("view-web");
+
+    const speechBubble = document.getElementById("receiver-speech-bubble");
+    const bubbleTitle = document.getElementById("bubble-title");
+    const bubbleMessages = document.getElementById("bubble-messages");
+    const bubbleTimer = document.getElementById("bubble-timer");
+    let bubbleFadeTimeout = null;
+
+    const browserUrl = document.getElementById("browser-url");
+    const browserContent = document.getElementById("browser-content");
+
+    const stepsContainer = document.getElementById("steps-container");
+    const footerStatus = document.getElementById("footer-status");
+    const footerDetailHint = document.getElementById("footer-detail-hint");
+
+    const settingsModal = document.getElementById("settings-modal");
+    const btnSettingsToggle = document.getElementById("btn-settings-toggle");
+    const topologyModal = document.getElementById("topology-modal");
+    const btnOpenTopology = document.getElementById("btn-open-topology");
+    const btnToggleStepMode = document.getElementById("btn-toggle-step-mode");
+    const stepDebuggerBar = document.getElementById("step-debugger-bar");
+    const debugHopInfo = document.getElementById("debug-hop-info");
+    const btnStepPrev = document.getElementById("btn-step-prev");
+    const btnStepNext = document.getElementById("btn-step-next");
+    const btnStepAuto = document.getElementById("btn-step-auto");
+
+    /* ==========================================================================
+       AUDIO SYNTHESIZER (WEB AUDIO API)
+       ========================================================================== */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) audioCtx = new AudioClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSound(type) {
+      if (!state.audio.master) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+
+      if (type === "send" && state.audio.send) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(460, now);
+        osc.frequency.exponentialRampToValueAtTime(780, now + 0.035);
+        osc.frequency.exponentialRampToValueAtTime(160, now + 0.12);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      } else if (type === "hop" && state.audio.hop) {
+        try {
+          const bufferSize = Math.floor(audioCtx.sampleRate * 0.22);
+          const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = "bandpass";
+          filter.Q.value = 2.0;
+          filter.frequency.setValueAtTime(1200, now);
+          filter.frequency.exponentialRampToValueAtTime(320, now + 0.2);
+
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          noise.start(now);
+          noise.stop(now + 0.23);
+        } catch (e) {}
+      } else if (type === "arrive" && state.audio.arrive) {
+        [659.25, 987.77].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, now + idx * 0.045);
+
+          gain.gain.setValueAtTime(0.001, now + idx * 0.045);
+          gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.045 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.35);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.045);
+          osc.stop(now + idx * 0.045 + 0.38);
+        });
+      }
+    }
+
+    /* ==========================================================================
+       PAN & ZOOM ENGINE
+       ========================================================================== */
+    function updateBubblePosition() {
+      if (state.lastBubbleReceiver && speechBubble.classList.contains("visible")) {
+        const r = state.lastBubbleReceiver;
+        const screenX = state.panZoom.x + r.x * state.panZoom.scale;
+        const screenY = state.panZoom.y + r.y * state.panZoom.scale;
+        const stageRect = stage.getBoundingClientRect();
+        const bubbleWidth = 270;
+        const minX = (bubbleWidth / 2) + 12;
+        const maxX = stageRect.width - (bubbleWidth / 2) - 12;
+        const clampedX = Math.max(minX, Math.min(maxX, screenX));
+
+        speechBubble.style.left = `${clampedX}px`;
+        const isBelow = (screenY < 180);
+        speechBubble.classList.toggle("bubble-below", isBelow);
+        speechBubble.style.top = isBelow ? `${screenY + 36 * state.panZoom.scale}px` : `${screenY - 32 * state.panZoom.scale}px`;
+
+        const arrowRaw = screenX - (clampedX - bubbleWidth / 2);
+        speechBubble.style.setProperty("--arrow-x", `${Math.max(20, Math.min(bubbleWidth - 20, arrowRaw))}px`);
+      }
+    }
+
+    function updateViewportTransform() {
+      viewportGroup.setAttribute(
+        "transform",
+        `translate(${state.panZoom.x}, ${state.panZoom.y}) scale(${state.panZoom.scale})`
+      );
+      updateBubblePosition();
+    }
+
+    function initPanZoom() {
+      const rect = stage.getBoundingClientRect();
+      const initialScale = Math.min(rect.width / 1000, rect.height / 620, 1.05);
+      state.panZoom.scale = Math.max(0.7, initialScale);
+      state.panZoom.x = 15;
+      state.panZoom.y = 10;
+      updateViewportTransform();
+
+      stage.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".node") || e.target.closest(".edge-hitbox") || e.target.closest("button") || e.target.closest("aside") || e.target.closest("#receiver-speech-bubble")) {
+          return;
+        }
+        state.panZoom.isDragging = true;
+        state.panZoom.dragStartX = e.clientX - state.panZoom.x;
+        state.panZoom.dragStartY = e.clientY - state.panZoom.y;
+        stage.classList.add("dragging");
+        stage.setPointerCapture(e.pointerId);
+      });
+
+      stage.addEventListener("pointermove", (e) => {
+        if (!state.panZoom.isDragging) return;
+        state.panZoom.x = e.clientX - state.panZoom.dragStartX;
+        state.panZoom.y = e.clientY - state.panZoom.dragStartY;
+        updateViewportTransform();
+      });
+
+      const stopDrag = (e) => {
+        if (state.panZoom.isDragging) {
+          state.panZoom.isDragging = false;
+          stage.classList.remove("dragging");
+          try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+      };
+
+      stage.addEventListener("pointerup", stopDrag);
+      stage.addEventListener("pointercancel", stopDrag);
+
+      stage.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const rect = stage.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+        const newScale = Math.max(0.4, Math.min(2.5, state.panZoom.scale * zoomFactor));
+
+        state.panZoom.x = mouseX - (mouseX - state.panZoom.x) * (newScale / state.panZoom.scale);
+        state.panZoom.y = mouseY - (mouseY - state.panZoom.y) * (newScale / state.panZoom.scale);
+        state.panZoom.scale = newScale;
+        updateViewportTransform();
+      }, { passive: false });
+
+      document.getElementById("btn-zoom-in").addEventListener("click", () => {
+        const rect = stage.getBoundingClientRect();
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const newScale = Math.min(2.5, state.panZoom.scale * 1.25);
+        state.panZoom.x = cx - (cx - state.panZoom.x) * (newScale / state.panZoom.scale);
+        state.panZoom.y = cy - (cy - state.panZoom.y) * (newScale / state.panZoom.scale);
+        state.panZoom.scale = newScale;
+        updateViewportTransform();
+      });
+
+      document.getElementById("btn-zoom-out").addEventListener("click", () => {
+        const rect = stage.getBoundingClientRect();
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const newScale = Math.max(0.4, state.panZoom.scale * 0.8);
+        state.panZoom.x = cx - (cx - state.panZoom.x) * (newScale / state.panZoom.scale);
+        state.panZoom.y = cy - (cy - state.panZoom.y) * (newScale / state.panZoom.scale);
+        state.panZoom.scale = newScale;
+        updateViewportTransform();
+      });
+
+      document.getElementById("btn-zoom-reset").addEventListener("click", () => {
+        const rect = stage.getBoundingClientRect();
+        const initialScale = Math.min(rect.width / 1000, rect.height / 620, 1.05);
+        state.panZoom.scale = Math.max(0.7, initialScale);
+        state.panZoom.x = 15;
+        state.panZoom.y = 10;
+        updateViewportTransform();
+      });
+    }
+
+    /* ==========================================================================
+       ONLINE / OFFLINE STATUS-INDIKATOREN
+       ========================================================================== */
+    function updateOnlineIndicators() {
+      // 1. Clients
+      TOPOLOGY.clients.forEach(c => {
+        const connectedEdges = TOPOLOGY.edges.filter(e => e.from === c.id || e.to === c.id);
+        const hasWorkingEdge = connectedEdges.some(e => !isEdgeBroken(e.from, e.to));
+        const led = document.getElementById(`led-${c.id}`);
+        const nodeEl = document.getElementById(`node-${c.id}`);
+
+        if (led) {
+          if (hasWorkingEdge) {
+            led.setAttribute("fill", "var(--green)");
+            led.classList.remove("offline");
+            if (nodeEl) nodeEl.classList.remove("is-offline");
+          } else {
+            led.setAttribute("fill", "var(--vermillion)");
+            led.classList.add("offline");
+            if (nodeEl) nodeEl.classList.add("is-offline");
+          }
+        }
+      });
+
+      // 2. Servers
+      TOPOLOGY.servers.forEach(s => {
+        const connectedEdges = TOPOLOGY.edges.filter(e => e.from === s.id || e.to === s.id);
+        const hasWorkingEdge = connectedEdges.some(e => !isEdgeBroken(e.from, e.to));
+        const led = document.getElementById(`led-${s.id}`);
+        const nodeEl = document.getElementById(`node-${s.id}`);
+
+        if (led) {
+          if (hasWorkingEdge) {
+            led.setAttribute("fill", "var(--green)");
+            led.classList.remove("offline");
+            if (nodeEl) nodeEl.classList.remove("is-offline");
+          } else {
+            led.setAttribute("fill", "var(--vermillion)");
+            led.classList.add("offline");
+            if (nodeEl) nodeEl.classList.add("is-offline");
+          }
+        }
+      });
+    }
+
+    /* ==========================================================================
+       RENDERING: KANTEN & KNOTEN (REINE SVG ELEMENTE)
+       ========================================================================== */
+    function getEdgeKey(u, v) {
+      return [u, v].sort().join("--");
+    }
+
+    function isEdgeBroken(u, v) {
+      return state.brokenEdges.has(getEdgeKey(u, v));
+    }
+
+    function toggleEdgeBroken(u, v) {
+      const key = getEdgeKey(u, v);
+      if (state.brokenEdges.has(key)) {
+        state.brokenEdges.delete(key);
+      } else {
+        state.brokenEdges.add(key);
+        // Im Zufallsmodus heilt sich auch eine manuell deaktivierte Kante selbstständig
+        if (state.disturbanceMode === "auto") {
+          const recoveryTime = 4000 + Math.random() * 3000;
+          const timer = setTimeout(() => {
+            if (state.disturbanceMode === "auto") {
+              state.brokenEdges.delete(key);
+              updateEdgeVisuals();
+              updateOnlineIndicators();
+            }
+          }, recoveryTime);
+          state.glitchRecoveryTimers.push(timer);
+        }
+      }
+      updateEdgeVisuals();
+      updateOnlineIndicators();
+    }
+
+    function updateEdgeVisuals() {
+      document.querySelectorAll(".edge").forEach(g => {
+        const u = g.dataset.from;
+        const v = g.dataset.to;
+        if (isEdgeBroken(u, v)) {
+          g.classList.add("broken");
+        } else {
+          g.classList.remove("broken");
+        }
+      });
+    }
+
+    function renderEdges() {
+      edgesGroup.innerHTML = "";
+      TOPOLOGY.edges.forEach(edge => {
+        const n1 = nodeMap.get(edge.from);
+        const n2 = nodeMap.get(edge.to);
+        if (!n1 || !n2) return;
+
+        const key = getEdgeKey(edge.from, edge.to);
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.classList.add("edge");
+        g.dataset.from = edge.from;
+        g.dataset.to = edge.to;
+        g.dataset.key = key;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", n1.x);
+        line.setAttribute("y1", n1.y);
+        line.setAttribute("x2", n2.x);
+        line.setAttribute("y2", n2.y);
+        line.classList.add("edge-line");
+
+        const pulse = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        pulse.setAttribute("x1", n1.x);
+        pulse.setAttribute("y1", n1.y);
+        pulse.setAttribute("x2", n2.x);
+        pulse.setAttribute("y2", n2.y);
+        pulse.classList.add("edge-pulse");
+
+        const hitbox = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        hitbox.setAttribute("x1", n1.x);
+        hitbox.setAttribute("y1", n1.y);
+        hitbox.setAttribute("x2", n2.x);
+        hitbox.setAttribute("y2", n2.y);
+        hitbox.classList.add("edge-hitbox");
+
+        const mx = (n1.x + n2.x) / 2;
+        const my = (n1.y + n2.y) / 2;
+        const brokenGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        brokenGroup.classList.add("edge-broken-icon");
+        brokenGroup.innerHTML = `
+          <circle cx="${mx}" cy="${my}" r="11" fill="var(--vermillion)" />
+          <g transform="translate(${mx - 6}, ${my - 6}) scale(0.5)" fill="#ffffff" stroke="none">
+            ${SVG_PATHS.lightning}
+          </g>
+        `;
+
+        hitbox.addEventListener("click", () => {
+          toggleEdgeBroken(edge.from, edge.to);
+        });
+
+        if (isEdgeBroken(edge.from, edge.to)) {
+          g.classList.add("broken");
+        }
+
+        g.appendChild(line);
+        g.appendChild(pulse);
+        g.appendChild(brokenGroup);
+        g.appendChild(hitbox);
+        edgesGroup.appendChild(g);
+      });
+    }
+
+    function renderNodes() {
+      nodesGroup.innerHTML = "";
+
+      // 1. ROUTER (Namenlos & ohne LEDs, kompakt und übersichtlich)
+      const rRadius = TOPOLOGY.routers.length > 14 ? 11 : (TOPOLOGY.routers.length > 8 ? 13 : 15);
+      const crossArm = Math.round(rRadius * 0.48);
+      const dotOffset = Math.round(rRadius * 0.35);
+      TOPOLOGY.routers.forEach(r => {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.classList.add("node", "router");
+        g.id = `node-${r.id}`;
+        g.dataset.id = r.id;
+
+        g.innerHTML = `
+          <circle cx="${r.x}" cy="${r.y + 1.5}" r="${rRadius}" fill="rgba(0,0,0,0.08)" />
+          <circle cx="${r.x}" cy="${r.y}" r="${rRadius}" class="router-core" />
+          <path d="M ${r.x - crossArm} ${r.y} L ${r.x + crossArm} ${r.y} M ${r.x} ${r.y - crossArm} L ${r.x} ${r.y + crossArm}" 
+                stroke="var(--ink-muted)" stroke-width="1.8" stroke-linecap="round" />
+          <circle cx="${r.x - dotOffset}" cy="${r.y}" r="1.5" fill="var(--ink-muted)" />
+          <circle cx="${r.x + dotOffset}" cy="${r.y}" r="1.5" fill="var(--ink-muted)" />
+          <circle cx="${r.x}" cy="${r.y - dotOffset}" r="1.5" fill="var(--ink-muted)" />
+          <circle cx="${r.x}" cy="${r.y + dotOffset}" r="1.5" fill="var(--ink-muted)" />
+        `;
+        nodesGroup.appendChild(g);
+      });
+
+      // 2. SERVER (mit funktionaler Status-LED)
+      TOPOLOGY.servers.forEach(s => {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.classList.add("node", "server");
+        g.id = `node-${s.id}`;
+        g.dataset.id = s.id;
+
+        const serverIconPath = SVG_PATHS[s.iconKey] || SVG_PATHS.server;
+
+        g.innerHTML = `
+          <rect x="${s.x - 28}" y="${s.y - 20}" width="56" height="46" rx="8" fill="rgba(0,0,0,0.08)" />
+          <rect x="${s.x - 28}" y="${s.y - 24}" width="56" height="46" rx="8" class="server-card" />
+          <line x1="${s.x - 20}" y1="${s.y - 14}" x2="${s.x + 10}" y2="${s.y - 14}" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" />
+          <circle cx="${s.x + 16}" cy="${s.y - 14}" r="2.5" fill="var(--green)" />
+          <line x1="${s.x - 20}" y1="${s.y - 5}" x2="${s.x + 10}" y2="${s.y - 5}" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" />
+          <circle cx="${s.x + 16}" cy="${s.y - 5}" r="2.5" fill="var(--sky)" />
+          <line x1="${s.x - 20}" y1="${s.y + 4}" x2="${s.x + 10}" y2="${s.y + 4}" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" />
+          <circle cx="${s.x + 16}" cy="${s.y + 4}" r="2.5" fill="var(--orange)" />
+          <line x1="${s.x - 20}" y1="${s.y + 13}" x2="${s.x + 10}" y2="${s.y + 13}" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" />
+          <circle cx="${s.x + 16}" cy="${s.y + 13}" r="2.5" fill="var(--blue)" />
+
+          <!-- Funktionale Server-Online-LED -->
+          <circle cx="${s.x - 21}" cy="${s.y - 18}" r="3.5" fill="var(--green)" class="status-led server-led" id="led-${s.id}" />
+
+          <g class="server-icon-badge">
+            <circle cx="${s.x + 22}" cy="${s.y - 20}" r="12" fill="var(--blue-light)" stroke="var(--blue)" stroke-width="1.5" />
+            <g transform="translate(${s.x + 14}, ${s.y - 28}) scale(0.65)" stroke="var(--blue)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              ${serverIconPath}
+            </g>
+          </g>
+
+          <text x="${s.x}" y="${s.y + 36}" class="node-label server-label">${s.name}</text>
+        `;
+        nodesGroup.appendChild(g);
+      });
+
+      // 3. CLIENTS (mit klarer Unterscheidung Tablet horizontal / Smartphone vertikal & Status-LED)
+      TOPOLOGY.clients.forEach(c => {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.classList.add("node", "client");
+        g.id = `node-${c.id}`;
+        g.dataset.id = c.id;
+
+        const devicePath = SVG_PATHS[c.iconKey] || SVG_PATHS.laptop;
+
+        g.innerHTML = `
+          <circle cx="${c.x}" cy="${c.y}" r="38" class="client-selection-ring" />
+          <g class="client-card-inner">
+            <rect x="${c.x - 28}" y="${c.y - 24}" width="56" height="48" rx="12" fill="rgba(0,0,0,0.08)" />
+            <rect x="${c.x - 28}" y="${c.y - 28}" width="56" height="48" rx="12" fill="var(--surface)" stroke="var(--blue)" stroke-width="2.2" />
+            <rect x="${c.x - 21}" y="${c.y - 22}" width="42" height="32" rx="7" fill="var(--blue-light)" />
+            <g transform="translate(${c.x - 10}, ${c.y - 12}) scale(0.85)" stroke="var(--blue)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              ${devicePath}
+            </g>
+            <!-- Funktionale Client-Online-LED -->
+            <circle cx="${c.x + 17}" cy="${c.y + 11}" r="3.5" fill="var(--green)" class="status-led client-led" id="led-${c.id}" />
+          </g>
+
+          <text x="${c.x}" y="${c.y + 36}" class="node-label client-name">${c.name}</text>
+          <text x="${c.x}" y="${c.y + 49}" class="node-sublabel client-role">${c.device}</text>
+        `;
+
+        g.addEventListener("click", () => {
+          selectClient(c.id);
+        });
+
+        nodesGroup.appendChild(g);
+      });
+
+      updateOnlineIndicators();
+    }
+
+    /* ==========================================================================
+       CLIENT-SELEKTION & SEITENPANEL
+       ========================================================================== */
+    function selectClient(clientId) {
+      state.selectedClientId = clientId;
+      const client = nodeMap.get(clientId);
+      if (!client) return;
+
+      document.querySelectorAll(".node.client").forEach(el => {
+        el.classList.toggle("selected", el.dataset.id === clientId);
+      });
+
+      panelName.textContent = client.name;
+      panelDevice.textContent = `${client.device} im Netzwerk`;
+      panelAvatar.innerHTML = getIconSvgHtml(client.iconKey, 20, "var(--blue)", 2.2);
+
+      // Empfänger-Dropdown befüllen
+      selectRecipient.innerHTML = "";
+      TOPOLOGY.clients.filter(c => c.id !== clientId).forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = `${c.name} (${c.device})`;
+        selectRecipient.appendChild(opt);
+      });
+
+      // Server-Dropdown befüllen
+      selectServer.innerHTML = "";
+      TOPOLOGY.servers.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.url.replace("https://", "")})`;
+        selectServer.appendChild(opt);
+      });
+
+      sidePanel.classList.remove("closed");
+      footerDetailHint.textContent = `Absender ${client.name} gewählt. Wähle Empfänger im rechten Panel.`;
+    }
+
+    /* ==========================================================================
+       PFADFINDUNG (KEINE TRANSIT-CLIENTS, VARIATION DURCH 2./3.-BESTE WEGE)
+       ========================================================================== */
+    function findCandidatePaths(startId, targetId) {
+      const adj = new Map();
+      nodeMap.forEach((_, id) => adj.set(id, []));
+
+      TOPOLOGY.edges.forEach(e => {
+        if (!isEdgeBroken(e.from, e.to)) {
+          // 1. Keine Transit-Clients: Ein Client darf NIE als Zwischenstation dienen
+          if (TOPOLOGY.routers.length > 0) {
+            const isTransitClient = (id) => id.startsWith("client-") && id !== startId && id !== targetId;
+            if (isTransitClient(e.from) || isTransitClient(e.to)) return;
+          }
+
+          // 2. Im Web-Modus nicht unnötig über fremde Webserver routen
+          if (state.mode === "web") {
+            const isOtherServer = (id) => TOPOLOGY.servers.some(s => s.id === id && s.id !== targetId && s.id !== startId);
+            if (isOtherServer(e.from) || isOtherServer(e.to)) return;
+          }
+
+          adj.get(e.from).push(e.to);
+          adj.get(e.to).push(e.from);
+        }
+      });
+
+      const queue = [[startId]];
+      const validPaths = [];
+      let shortestHopCount = Infinity;
+
+      while (queue.length > 0) {
+        const path = queue.shift();
+        const u = path[path.length - 1];
+
+        // Nicht tiefer suchen als kürzester Weg + 4 Hops (volle Duplex-Abdeckung ohne künstliche Begrenzung)
+        if (path.length > shortestHopCount + 4 || path.length > nodeMap.size + 2) continue;
+
+        if (u === targetId) {
+          validPaths.push(path);
+          if (path.length < shortestHopCount) shortestHopCount = path.length;
+          if (validPaths.length >= 8) break;
+          continue;
+        }
+
+        const neighbors = adj.get(u) || [];
+        for (const v of neighbors) {
+          if (!path.includes(v)) {
+            // Verhindere Transit-Clients auch bei der Pfadausdehnung
+            if (TOPOLOGY.routers.length > 0 && v.startsWith("client-") && v !== targetId) continue;
+            queue.push([...path, v]);
+          }
+        }
+      }
+
+      validPaths.sort((a, b) => a.length - b.length);
+      return validPaths;
+    }
+
+    // Wählt zwischen dem besten, 2.-besten und 3.-besten Weg (für didaktische Vielfalt)
+    function findPath(startId, targetId, preferVariation = true) {
+      const paths = findCandidatePaths(startId, targetId);
+      if (!paths || paths.length === 0) return null;
+
+      if (!preferVariation || paths.length === 1) {
+        return paths[0];
+      }
+
+      const r = Math.random();
+      if (paths.length === 2) {
+        // 65% kürzester Weg, 35% alternativer 2.-bester Weg
+        return r < 0.65 ? paths[0] : paths[1];
+      } else {
+        // 55% kürzester, 30% zweiter, 15% dritter
+        return r < 0.55 ? paths[0] : (r < 0.85 ? paths[1] : paths[2]);
+      }
+    }
+
+    /* ==========================================================================
+       DIDAKTISCHE FUSSZEILE (STEP TRACKER)
+       ========================================================================== */
+    function renderStepCards(steps) {
+      stepsContainer.innerHTML = "";
+      steps.forEach((step, idx) => {
+        if (idx > 0) {
+          const arrow = document.createElement("span");
+          arrow.classList.add("step-arrow");
+          arrow.textContent = "➔";
+          stepsContainer.appendChild(arrow);
+        }
+
+        const isCurrent = (idx === steps.length - 1);
+        const card = document.createElement("div");
+        card.classList.add("step-card");
+        if (!isCurrent) card.classList.add("done");
+        if (isCurrent) card.classList.add("current");
+
+        const textSpan = document.createElement("span");
+        textSpan.innerHTML = step.title;
+
+        card.appendChild(textSpan);
+        stepsContainer.appendChild(card);
+      });
+
+      const curCard = stepsContainer.querySelector(".step-card.current");
+      if (curCard) curCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    /* ==========================================================================
+       PAKET-ANIMATION (SVG VEKTOR-OBJEKT, KEIN GELBER PUNKT)
+       ========================================================================== */
+    function setSvgPacketPosition(x, y) {
+      if (svgPacket) {
+        svgPacket.setAttribute("transform", `translate(${x}, ${y})`);
+      }
+    }
+
+    function showSvgPacket(show) {
+      if (svgPacket) {
+        svgPacket.style.display = show ? "block" : "none";
+      }
+    }
+
+    function setSvgPacketType(type) {
+      if (!svgPacketGraphic) return;
+      if (type === "chat") {
+        svgPacketGraphic.innerHTML = `
+          <circle cx="0" cy="0" r="22" fill="var(--blue)" opacity="0.2" />
+          <rect x="-17" y="-12" width="34" height="24" rx="4" fill="#ffffff" stroke="var(--blue)" stroke-width="2.5" />
+          <path d="M -17 -12 L 0 1 L 17 -12" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M -17 12 L -6 -1" fill="none" stroke="var(--blue)" stroke-width="1.5" opacity="0.4" stroke-linecap="round" />
+          <path d="M 17 12 L 6 -1" fill="none" stroke="var(--blue)" stroke-width="1.5" opacity="0.4" stroke-linecap="round" />
+          <rect x="7" y="-9" width="7" height="5" rx="1" fill="var(--orange)" />
+        `;
+      } else if (type === "web-req") {
+        svgPacketGraphic.innerHTML = `
+          <circle cx="0" cy="0" r="22" fill="var(--blue)" opacity="0.2" />
+          <rect x="-17" y="-12" width="34" height="24" rx="4" fill="#ffffff" stroke="var(--blue)" stroke-width="2.5" />
+          <path d="M -17 -12 L 0 1 L 17 -12" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" />
+          <circle cx="0" cy="2" r="4.5" fill="none" stroke="var(--blue)" stroke-width="1.8" />
+          <line x1="3" y1="5.5" x2="6.5" y2="9" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" />
+        `;
+      } else if (type === "web-res") {
+        svgPacketGraphic.innerHTML = `
+          <circle cx="0" cy="0" r="22" fill="var(--orange)" opacity="0.25" />
+          <path d="M -12 -16 L 5 -16 L 12 -9 L 12 16 L -12 16 Z" fill="#ffffff" stroke="var(--orange)" stroke-width="2.4" stroke-linejoin="round" />
+          <path d="M 5 -16 L 5 -9 L 12 -9" fill="var(--orange-light)" stroke="var(--orange)" stroke-width="1.8" stroke-linejoin="round" />
+          <line x1="-7" y1="-8" x2="1" y2="-8" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" />
+          <line x1="-7" y1="-2" x2="7" y2="-2" stroke="var(--ink-muted)" stroke-width="1.8" stroke-linecap="round" />
+          <line x1="-7" y1="4" x2="7" y2="4" stroke="var(--ink-muted)" stroke-width="1.8" stroke-linecap="round" />
+          <line x1="-7" y1="10" x2="3" y2="10" stroke="var(--ink-muted)" stroke-width="1.8" stroke-linecap="round" />
+        `;
+      }
+    }
+
+    function waitSimTime(ms) {
+      return new Promise(resolve => {
+        let remaining = ms / state.speedFactor;
+        const interval = 25;
+        const check = () => {
+          if (!state.isPaused) remaining -= interval;
+          if (remaining <= 0) {
+            resolve();
+          } else {
+            setTimeout(check, interval);
+          }
+        };
+        setTimeout(check, interval);
+      });
+    }
+
+    async function animateSvgHop(fromId, toId) {
+      const fromNode = nodeMap.get(fromId);
+      const toNode = nodeMap.get(toId);
+      const edgeKey = getEdgeKey(fromId, toId);
+
+      const edgeEl = document.querySelector(`.edge[data-key="${edgeKey}"]`);
+      if (edgeEl) edgeEl.classList.add("transmitting");
+
+      const hopDuration = 550;
+      const startTime = performance.now();
+
+      playSound("hop");
+
+      const targetNodeEl = document.getElementById(`node-${toId}`);
+      if (targetNodeEl && targetNodeEl.classList.contains("router")) {
+        targetNodeEl.classList.add("active");
+        setTimeout(() => targetNodeEl.classList.remove("active"), 400);
+      }
+
+      await new Promise(resolve => {
+        function tick(now) {
+          if (state.isPaused) {
+            requestAnimationFrame(tick);
+            return;
+          }
+
+          const elapsed = (now - startTime) * state.speedFactor;
+          const progress = Math.min(elapsed / hopDuration, 1);
+          const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+          const curX = fromNode.x + (toNode.x - fromNode.x) * ease;
+          const curY = fromNode.y + (toNode.y - fromNode.y) * ease;
+
+          setSvgPacketPosition(curX, curY);
+
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            resolve();
+          }
+        }
+        requestAnimationFrame(tick);
+      });
+
+      if (edgeEl) edgeEl.classList.remove("transmitting");
+    }
+
+    /* ==========================================================================
+       SCHRITT-MODUS (DEBUGGER) INTERAKTION
+       ========================================================================== */
+    let debugResolver = null;
+
+    function waitForUserStep(infoText, canStepPrev) {
+      debugHopInfo.textContent = infoText;
+      btnStepPrev.disabled = !canStepPrev;
+      stepDebuggerBar.classList.remove("hidden");
+
+      return new Promise(resolve => {
+        debugResolver = resolve;
+      });
+    }
+
+    btnStepNext.addEventListener("click", () => {
+      if (debugResolver) {
+        const res = debugResolver;
+        debugResolver = null;
+        res("next");
+      }
+    });
+
+    btnStepPrev.addEventListener("click", () => {
+      if (debugResolver) {
+        const res = debugResolver;
+        debugResolver = null;
+        res("prev");
+      }
+    });
+
+    btnStepAuto.addEventListener("click", () => {
+      if (debugResolver) {
+        const res = debugResolver;
+        debugResolver = null;
+        res("auto");
+      }
+    });
+
+    /* ==========================================================================
+       SIMULATION 1: CHAT-NACHRICHT SENDEN
+       ========================================================================== */
+    async function executeChatSimulation() {
+      if (state.isSimulating) return;
+
+      const senderId = state.selectedClientId;
+      const receiverId = selectRecipient.value;
+      const message = inputMessage.value.trim() || "Hallo! 👋";
+
+      const sender = nodeMap.get(senderId);
+      const receiver = nodeMap.get(receiverId);
+
+      const initialPath = findPath(senderId, receiverId, true);
+      if (!initialPath) {
+        footerStatus.textContent = "Blockiert ⚠️";
+        footerStatus.className = "footer-status-pill";
+        footerDetailHint.textContent = `Kein freier Weg von ${sender.name} zu ${receiver.name}!`;
+        alert(`Kein Weg gefunden: Alle Leitungen zwischen ${sender.name} und ${receiver.name} sind unterbrochen! Repariere eine Leitung.`);
+        return;
+      }
+
+      state.isSimulating = true;
+      btnSendMessage.disabled = true;
+      btnRequestWeb.disabled = true;
+      footerStatus.textContent = "Sendet...";
+      footerStatus.className = "footer-status-pill active";
+      footerDetailHint.textContent = `Paket wandert von ${sender.name} zu ${receiver.name}...`;
+
+      const steps = [
+        { title: `1. ${sender.name} verpackt Nachricht in Datenpaket` }
+      ];
+      renderStepCards(steps);
+
+      setSvgPacketPosition(sender.x, sender.y);
+      setSvgPacketType("chat");
+      showSvgPacket(true);
+
+      playSound("send");
+      await waitSimTime(400);
+
+      const historyPath = [senderId];
+      let curr = senderId;
+      let isAutoRun = !state.stepMode;
+      let hopCount = 0;
+
+      while (curr !== receiverId) {
+        const remainingPath = findPath(curr, receiverId, false);
+        if (!remainingPath || remainingPath.length < 2) {
+          footerStatus.textContent = "Blockiert ⚡";
+          footerStatus.className = "footer-status-pill";
+          footerDetailHint.textContent = `Weg blockiert! Keine offene Leitung zum Ziel.`;
+          steps.push({ title: `Gestoppt: Leitung zu ${receiver.name} unterbrochen!` });
+          renderStepCards(steps);
+          stepDebuggerBar.classList.add("hidden");
+          break;
+        }
+
+        const next = remainingPath[1];
+
+        if (!isAutoRun) {
+          const action = await waitForUserStep(
+            `Nächster Hop: Weiterleitung zu Netzknoten (${hopCount + 1})`,
+            historyPath.length > 1
+          );
+
+          if (action === "auto") {
+            isAutoRun = true;
+            stepDebuggerBar.classList.add("hidden");
+          } else if (action === "prev") {
+            if (historyPath.length > 1) {
+              const prevNode = historyPath[historyPath.length - 2];
+              historyPath.pop();
+              await animateSvgHop(curr, prevNode);
+              curr = prevNode;
+              hopCount = Math.max(0, hopCount - 1);
+              continue;
+            }
+          }
+        }
+
+        hopCount++;
+        if (steps.length === 1) {
+          steps.push({ title: `2. Weiterleitung über Netzknoten (Hop ${hopCount})` });
+        } else {
+          steps[1] = { title: `2. Weiterleitung über Netzknoten (Hop ${hopCount})` };
+        }
+        renderStepCards(steps);
+
+        await animateSvgHop(curr, next);
+        curr = next;
+        historyPath.push(curr);
+      }
+
+      stepDebuggerBar.classList.add("hidden");
+
+      if (curr === receiverId) {
+        playSound("arrive");
+        steps.push({ title: `3. Angekommen bei ${receiver.name}!` });
+        renderStepCards(steps);
+
+        footerStatus.textContent = "Zugestellt!";
+        footerStatus.className = "footer-status-pill";
+        footerDetailHint.textContent = `Nachricht erfolgreich bei ${receiver.name} angekommen.`;
+
+        addChatMessage(senderId, receiverId, message);
+        showSpeechBubble(receiver, sender);
+      }
+
+      await waitSimTime(600);
+      showSvgPacket(false);
+      state.isSimulating = false;
+      btnSendMessage.disabled = false;
+      btnRequestWeb.disabled = false;
+    }
+
+    /* ==========================================================================
+       SCHWEBENDE SPRECHBLASE (EXAKT AM EMPFÄNGERGERÄT ZENTRIERT)
+       ========================================================================== */
+    function showSpeechBubble(receiver, sender) {
+      if (!receiver) return;
+      state.lastBubbleReceiver = receiver;
+
+      const screenX = state.panZoom.x + receiver.x * state.panZoom.scale;
+      const screenY = state.panZoom.y + receiver.y * state.panZoom.scale;
+      const stageRect = stage.getBoundingClientRect();
+      const bubbleWidth = 270;
+
+      const minX = (bubbleWidth / 2) + 12;
+      const maxX = stageRect.width - (bubbleWidth / 2) - 12;
+      const clampedX = Math.max(minX, Math.min(maxX, screenX));
+
+      speechBubble.style.left = `${clampedX}px`;
+
+      const isBelow = (screenY < 180);
+      speechBubble.classList.toggle("bubble-below", isBelow);
+      if (isBelow) {
+        speechBubble.style.top = `${screenY + 36 * state.panZoom.scale}px`;
+      } else {
+        speechBubble.style.top = `${screenY - 32 * state.panZoom.scale}px`;
+      }
+
+      const bubbleLeft = clampedX - (bubbleWidth / 2);
+      const arrowRaw = screenX - bubbleLeft;
+      const clampedArrow = Math.max(20, Math.min(bubbleWidth - 20, arrowRaw));
+      speechBubble.style.setProperty("--arrow-x", `${clampedArrow}px`);
+
+      bubbleTitle.innerHTML = `<span class="icon">${getIconSvgHtml("chat", 14, "var(--blue)")}</span> Post von ${sender.name}`;
+
+      const key = getChatKey(receiver.id, sender.id);
+      const messages = chatHistories[key] || [];
+
+      bubbleMessages.innerHTML = "";
+      messages.forEach(msg => {
+        const item = document.createElement("div");
+        item.classList.add("bubble-item");
+        if (msg.senderId === receiver.id) {
+          item.classList.add("sent");
+          item.innerHTML = `<div class="bubble-sender-name">Du (${receiver.name}):</div><div>${escapeHtml(msg.text)}</div>`;
+        } else {
+          item.classList.add("received");
+          item.innerHTML = `<div class="bubble-sender-name">${sender.name}:</div><div>${escapeHtml(msg.text)}</div>`;
+        }
+        bubbleMessages.appendChild(item);
+      });
+
+      speechBubble.classList.add("visible");
+      bubbleMessages.scrollTop = bubbleMessages.scrollHeight;
+
+      if (bubbleFadeTimeout) clearTimeout(bubbleFadeTimeout);
+      bubbleTimer.style.transition = "none";
+      bubbleTimer.style.width = "100%";
+
+      setTimeout(() => {
+        bubbleTimer.style.transition = "width 6s linear";
+        bubbleTimer.style.width = "0%";
+      }, 50);
+
+      bubbleFadeTimeout = setTimeout(() => {
+        speechBubble.classList.remove("visible");
+      }, 6000);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    /* ==========================================================================
+       SIMULATION 2: WEBSEITENABRUF (CLIENT -> SERVER -> CLIENT)
+       ========================================================================== */
+    async function executeWebSimulation() {
+      if (state.isSimulating) return;
+
+      const clientId = state.selectedClientId;
+      const serverId = selectServer.value;
+      const client = nodeMap.get(clientId);
+      const server = nodeMap.get(serverId);
+
+      const testForward = findPath(clientId, serverId, true);
+      const testReturn = findPath(serverId, clientId, true);
+
+      if (!testForward || !testReturn) {
+        footerStatus.textContent = "Server nicht erreichbar ⚠️";
+        footerStatus.className = "footer-status-pill";
+        footerDetailHint.textContent = `Verbindung zu ${server.name} unterbrochen.`;
+        alert(`Server nicht erreichbar: Keine offene Verbindung zwischen ${client.name} und ${server.name}!`);
+        return;
+      }
+
+      state.isSimulating = true;
+      btnSendMessage.disabled = true;
+      btnRequestWeb.disabled = true;
+
+      // URL SOFORT BEI KNOPFDRUCK ANZEIGEN
+      browserUrl.textContent = server.url;
+
+      footerStatus.textContent = "Lade Webseite...";
+      footerStatus.className = "footer-status-pill active";
+      footerDetailHint.textContent = `Webseiten-Anfrage an ${server.name} unterwegs...`;
+
+      browserContent.innerHTML = `
+        <div class="browser-placeholder">
+          <span class="icon" style="animation:spin 1s linear infinite; width:2em; height:2em; color:var(--blue);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+          </span>
+          <span>Webseite wird angefordert...</span>
+        </div>
+      `;
+
+      const steps = [
+        { title: `1. ${client.name} sendet Web-Anfrage` }
+      ];
+      renderStepCards(steps);
+
+      // --- PHASE 1: HINWEG (ANFRAGE AN SERVER) ---
+      setSvgPacketPosition(client.x, client.y);
+      setSvgPacketType("web-req");
+      showSvgPacket(true);
+
+      playSound("send");
+      await waitSimTime(400);
+
+      let curr = clientId;
+      let isAutoRun = !state.stepMode;
+      let hopCount = 0;
+      let blocked = false;
+
+      while (curr !== serverId) {
+        const path = findPath(curr, serverId, false);
+        if (!path || path.length < 2) {
+          footerStatus.textContent = "Blockiert ⚡";
+          footerStatus.className = "footer-status-pill";
+          footerDetailHint.textContent = `Weg zum Server blockiert!`;
+          steps.push({ title: `Gestoppt: Keine Verbindung zu ${server.name}!` });
+          renderStepCards(steps);
+          blocked = true;
+          break;
+        }
+
+        const next = path[1];
+
+        if (!isAutoRun) {
+          const action = await waitForUserStep(`Anfrage: Hop ${hopCount + 1} Richtung Server`, false);
+          if (action === "auto") {
+            isAutoRun = true;
+            stepDebuggerBar.classList.add("hidden");
+          }
+        }
+
+        hopCount++;
+        if (steps.length === 1) {
+          steps.push({ title: `2. Anfrage reist über Netzknoten (Hop ${hopCount})` });
+        } else {
+          steps[1] = { title: `2. Anfrage reist über Netzknoten (Hop ${hopCount})` };
+        }
+        renderStepCards(steps);
+
+        await animateSvgHop(curr, next);
+        curr = next;
+      }
+
+      if (blocked) {
+        stepDebuggerBar.classList.add("hidden");
+        await waitSimTime(800);
+        showSvgPacket(false);
+        state.isSimulating = false;
+        btnSendMessage.disabled = false;
+        btnRequestWeb.disabled = false;
+        return;
+      }
+
+      // --- PHASE 2: SERVER VERARBEITET ANFRAGE ---
+      playSound("arrive");
+      steps.push({ title: `3. ${server.name} empfängt & verarbeitet Anfrage` });
+      renderStepCards(steps);
+
+      const serverEl = document.getElementById(`node-${server.id}`);
+      if (serverEl) serverEl.style.filter = "drop-shadow(0 0 16px var(--orange))";
+      await waitSimTime(600);
+      if (serverEl) serverEl.style.filter = "";
+
+      // --- PHASE 3: RÜCKWEG (ANTWORT ZUM CLIENT) ---
+      playSound("send");
+      setSvgPacketType("web-res");
+      steps.push({ title: `4. Server schickt Webseiten-Paket zurück` });
+      renderStepCards(steps);
+      await waitSimTime(350);
+
+      curr = serverId;
+      let returnHopCount = 0;
+
+      while (curr !== clientId) {
+        const path = findPath(curr, clientId, false);
+        if (!path || path.length < 2) {
+          footerStatus.textContent = "Antwort blockiert ⚡";
+          footerStatus.className = "footer-status-pill";
+          footerDetailHint.textContent = `Rückweg zu ${client.name} unterbrochen!`;
+          steps.push({ title: `Gestoppt: Rückweg blockiert!` });
+          renderStepCards(steps);
+          blocked = true;
+          break;
+        }
+
+        const next = path[1];
+
+        if (!isAutoRun) {
+          const action = await waitForUserStep(`Antwort: Hop ${returnHopCount + 1} zurück zu ${client.name}`, false);
+          if (action === "auto") {
+            isAutoRun = true;
+            stepDebuggerBar.classList.add("hidden");
+          }
+        }
+
+        returnHopCount++;
+        steps[3] = { title: `4. Server schickt Webseiten-Paket zurück (Hop ${returnHopCount})` };
+        renderStepCards(steps);
+
+        await animateSvgHop(curr, next);
+        curr = next;
+      }
+
+      stepDebuggerBar.classList.add("hidden");
+
+      if (!blocked && curr === clientId) {
+        playSound("arrive");
+        steps.push({ title: `5. Webseite wird im Browser angezeigt!` });
+        renderStepCards(steps);
+
+        footerStatus.textContent = "Webseite geladen!";
+        footerStatus.className = "footer-status-pill";
+        footerDetailHint.textContent = `Die Webseite von ${server.name} wurde erfolgreich übertragen.`;
+
+        renderServerWebpage(server.id);
+      }
+
+      await waitSimTime(600);
+      showSvgPacket(false);
+      state.isSimulating = false;
+      btnSendMessage.disabled = false;
+      btnRequestWeb.disabled = false;
+    }
+
+    function renderServerWebpage(serverId) {
+      if (serverId === "server-schule") {
+        browserContent.innerHTML = `
+          <div style="padding:4px;">
+            <h3 style="color:var(--blue); font-size:0.95rem; margin-bottom:4px;">Goethe-Schule Online</h3>
+            <p style="font-size:0.75rem; color:var(--ink-muted); margin-bottom:8px;">Gemeinsam lernen, entdecken & forschen</p>
+            <div style="background:var(--blue-light); padding:8px; border-radius:6px; font-size:0.78rem; margin-bottom:6px;">
+              <strong>Schulfest am Freitag!</strong><br>
+              Ab 14:00 Uhr gibt es Waffeln, Spiele und die Roboter-Ausstellung!
+            </div>
+            <div style="background:var(--surface-subtle); border:1px solid var(--surface-border); padding:6px; border-radius:6px; font-size:0.75rem;">
+              <strong>Mensa heute:</strong> Bio-Pizza Margherita mit buntem Salat.
+            </div>
+          </div>
+        `;
+      } else if (serverId === "server-suchmaschine") {
+        browserContent.innerHTML = `
+          <div style="padding:4px;">
+            <h3 style="color:var(--orange); font-size:0.95rem; margin-bottom:8px;">Findefuchs – Kindersuche</h3>
+            <div style="border-bottom:1px solid var(--surface-border); padding-bottom:6px; margin-bottom:6px;">
+              <strong style="color:var(--blue); font-size:0.8rem;">Wie funktioniert das Internet?</strong>
+              <p style="font-size:0.74rem; color:var(--ink);">Computer verbinden sich über Router und Kabel zu einem weltweiten Datennetz.</p>
+            </div>
+            <div>
+              <strong style="color:var(--blue); font-size:0.8rem;">Warum heißen Daten Pakete?</strong>
+              <p style="font-size:0.74rem; color:var(--ink);">Große Webseiten werden in kleine Päckchen zerlegt und einzeln übertragen.</p>
+            </div>
+          </div>
+        `;
+      } else if (serverId === "server-lexikon") {
+        browserContent.innerHTML = `
+          <div style="padding:4px;">
+            <h3 style="color:var(--green); font-size:0.95rem; margin-bottom:6px;">Klexikon: Rechnernetz</h3>
+            <p style="font-size:0.75rem; margin-bottom:8px;">Ein <strong>Netzwerk</strong> entsteht, wenn zwei oder mehr Computer Daten austauschen.</p>
+            <div style="background:var(--green-light); border-left:3px solid var(--green); padding:6px 8px; font-size:0.74rem;">
+              <strong>Wissenswert:</strong><br>
+              Router sind wie Verkehrsschilder: Sie schauen auf das Ziel jedes Datenpakets und wählen den schnellsten freien Weg.
+            </div>
+          </div>
+        `;
+      } else if (serverId === "server-wetter") {
+        browserContent.innerHTML = `
+          <div style="padding:4px;">
+            <h3 style="color:var(--sky); font-size:0.95rem; margin-bottom:6px;">Wetterdienst Online</h3>
+            <p style="font-size:0.75rem; color:var(--ink-muted); margin-bottom:8px;">Aktuelle Vorhersage für heute</p>
+            <div style="background:var(--surface-subtle); border:1px solid var(--surface-border); padding:8px; border-radius:6px; font-size:0.78rem;">
+              <strong>Heiter & sonnig, 21°C</strong><br>
+              Perfektes Wetter für die große Pause auf dem Schulhof!
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    /* ==========================================================================
+       DYNAMISCHER ZUFALLSAUSFALL (1 BIS MEHRERE LEITUNGEN, MAX (#KANTEN/2)+1)
+       ========================================================================== */
+    function setupAutoGlitch() {
+      if (state.autoGlitchTimer) {
+        clearInterval(state.autoGlitchTimer);
+        state.autoGlitchTimer = null;
+      }
+      if (state.glitchRecoveryTimers) {
+        state.glitchRecoveryTimers.forEach(t => clearTimeout(t));
+        state.glitchRecoveryTimers = [];
+      } else {
+        state.glitchRecoveryTimers = [];
+      }
+
+      if (state.disturbanceMode === "auto") {
+        // Bestehende manuell deaktivierte Kanten heilen sich im Zufallsmodus ebenfalls schrittweise selbst
+        state.brokenEdges.forEach(key => {
+          const recoveryTime = 2500 + Math.random() * 3000;
+          const timer = setTimeout(() => {
+            if (state.disturbanceMode === "auto") {
+              state.brokenEdges.delete(key);
+              updateEdgeVisuals();
+              updateOnlineIndicators();
+            }
+          }, recoveryTime);
+          state.glitchRecoveryTimers.push(timer);
+        });
+
+        state.autoGlitchTimer = setInterval(() => {
+          if (state.isSimulating) return;
+
+          const totalEdges = TOPOLOGY.edges.length;
+          if (totalEdges === 0) return;
+          const maxBroken = Math.min(Math.floor(totalEdges / 2) + 1, totalEdges);
+
+          const currentBrokenCount = state.brokenEdges.size;
+          const allowedToBreak = maxBroken - currentBrokenCount;
+          if (allowedToBreak <= 0) return;
+
+          const numToBreak = Math.min(allowedToBreak, Math.floor(Math.random() * 3) + 1);
+
+          const workingEdges = TOPOLOGY.edges.filter(e => !isEdgeBroken(e.from, e.to));
+          if (workingEdges.length === 0) return;
+
+          const shuffled = [...workingEdges].sort(() => Math.random() - 0.5);
+          const chosen = shuffled.slice(0, numToBreak);
+
+          chosen.forEach(edge => {
+            const key = getEdgeKey(edge.from, edge.to);
+            state.brokenEdges.add(key);
+
+            const recoveryTime = 3500 + Math.random() * 3500;
+            const timer = setTimeout(() => {
+              if (state.disturbanceMode === "auto") {
+                state.brokenEdges.delete(key);
+                updateEdgeVisuals();
+                updateOnlineIndicators();
+              }
+            }, recoveryTime);
+            state.glitchRecoveryTimers.push(timer);
+          });
+
+          updateEdgeVisuals();
+          updateOnlineIndicators();
+
+        }, 3200 + Math.random() * 2000);
+      } else if (state.disturbanceMode === "off") {
+        state.brokenEdges.clear();
+        updateEdgeVisuals();
+        updateOnlineIndicators();
+      }
+    }
+
+    /* ==========================================================================
+       EVENT LISTENER & INITIALISIERUNG
+       ========================================================================== */
+    function setMode(mode) {
+      state.mode = mode;
+      document.body.className = `mode-${mode}`;
+      if (state.disturbanceMode === "manual") document.body.classList.add("dist-manual");
+
+      document.getElementById("badge-text").textContent = mode === "chat" ? "Chat-Modus" : "Web-Modus";
+      document.getElementById("badge-icon").innerHTML = getIconSvgHtml(mode === "chat" ? "chat" : "globe", 14, "var(--blue)");
+
+      tabChat.classList.toggle("active", mode === "chat");
+      tabWeb.classList.toggle("active", mode === "web");
+      viewChat.style.display = mode === "chat" ? "block" : "none";
+      viewWeb.style.display = mode === "web" ? "block" : "none";
+      updateOnlineIndicators();
+    }
+
+    tabChat.addEventListener("click", () => setMode("chat"));
+    tabWeb.addEventListener("click", () => setMode("web"));
+
+    document.querySelectorAll("#group-disturbance .btn-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#group-disturbance .btn-toggle").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.disturbanceMode = btn.dataset.dist;
+        document.body.classList.toggle("dist-manual", state.disturbanceMode === "manual");
+        setupAutoGlitch();
+      });
+    });
+
+    document.querySelectorAll("#group-speed .btn-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#group-speed .btn-toggle").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const speed = btn.dataset.speed;
+        state.speedFactor = speed === "slow" ? 0.5 : speed === "fast" ? 2.0 : 1.0;
+      });
+    });
+
+    btnToggleStepMode.addEventListener("click", () => {
+      state.stepMode = !state.stepMode;
+      btnToggleStepMode.classList.toggle("active", state.stepMode);
+      btnToggleStepMode.querySelector("span:last-child").textContent = state.stepMode ? "Schritt-Modus AN" : "Schritt-Modus";
+    });
+
+    btnSettingsToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      settingsModal.classList.toggle("open");
+    });
+    document.getElementById("settings-close").addEventListener("click", () => {
+      settingsModal.classList.remove("open");
+    });
+
+    const checkSoundMaster = document.getElementById("check-sound-master");
+    const checkSoundSend = document.getElementById("check-sound-send");
+    const checkSoundHop = document.getElementById("check-sound-hop");
+    const checkSoundArrive = document.getElementById("check-sound-arrive");
+
+    checkSoundMaster.addEventListener("change", () => {
+      state.audio.master = checkSoundMaster.checked;
+      checkSoundSend.disabled = !state.audio.master;
+      checkSoundHop.disabled = !state.audio.master;
+      checkSoundArrive.disabled = !state.audio.master;
+      if (state.audio.master) initAudio();
+    });
+
+    checkSoundSend.addEventListener("change", () => { state.audio.send = checkSoundSend.checked; });
+    checkSoundHop.addEventListener("change", () => { state.audio.hop = checkSoundHop.checked; });
+    checkSoundArrive.addEventListener("change", () => { state.audio.arrive = checkSoundArrive.checked; });
+
+    btnOpenTopology.addEventListener("click", () => {
+      topologyModal.classList.add("open");
+    });
+    document.getElementById("topology-close").addEventListener("click", () => {
+      topologyModal.classList.remove("open");
+    });
+    document.getElementById("btn-cancel-topology").addEventListener("click", () => {
+      topologyModal.classList.remove("open");
+    });
+
+    const rangeClients = document.getElementById("range-clients");
+    const rangeRouters = document.getElementById("range-routers");
+    const rangeServers = document.getElementById("range-servers");
+    const valClients = document.getElementById("val-clients");
+    const valRouters = document.getElementById("val-routers");
+    const valServers = document.getElementById("val-servers");
+    const selectTopoType = document.getElementById("select-topo-type");
+
+    rangeClients.addEventListener("input", () => { valClients.textContent = rangeClients.value; });
+    rangeRouters.addEventListener("input", () => { valRouters.textContent = rangeRouters.value; });
+    rangeServers.addEventListener("input", () => { valServers.textContent = rangeServers.value; });
+
+    document.querySelectorAll(".preset-chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const p = btn.dataset.preset;
+        if (p === "standard") {
+          selectTopoType.value = "mesh";
+          rangeClients.value = 4;
+          rangeRouters.value = 5;
+          rangeServers.value = 3;
+        } else if (p === "direct") {
+          selectTopoType.value = "mesh";
+          rangeClients.value = 2;
+          rangeRouters.value = 0;
+          rangeServers.value = 0;
+        } else if (p === "star-classroom") {
+          selectTopoType.value = "star";
+          rangeClients.value = 6;
+          rangeRouters.value = 1;
+          rangeServers.value = 2;
+        } else if (p === "big-net") {
+          selectTopoType.value = "mesh";
+          rangeClients.value = 6;
+          rangeRouters.value = 12;
+          rangeServers.value = 4;
+        }
+        valClients.textContent = rangeClients.value;
+        valRouters.textContent = rangeRouters.value;
+        valServers.textContent = rangeServers.value;
+      });
+    });
+
+    function applyNewTopology(type, numC, numR, numS) {
+      TOPOLOGY = generateTopology(type, numC, numR, numS);
+      nodeMap.clear();
+      [...TOPOLOGY.clients, ...TOPOLOGY.routers, ...TOPOLOGY.servers].forEach(n => nodeMap.set(n.id, n));
+      state.brokenEdges.clear();
+
+      renderEdges();
+      renderNodes();
+
+      const defaultClient = TOPOLOGY.clients[0] ? TOPOLOGY.clients[0].id : null;
+      if (defaultClient) {
+        selectClient(defaultClient);
+      } else {
+        sidePanel.classList.add("closed");
+      }
+      updateOnlineIndicators();
+    }
+
+    document.getElementById("btn-apply-topology").addEventListener("click", () => {
+      applyNewTopology(
+        selectTopoType.value,
+        parseInt(rangeClients.value, 10),
+        parseInt(rangeRouters.value, 10),
+        parseInt(rangeServers.value, 10)
+      );
+      topologyModal.classList.remove("open");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target === topologyModal) topologyModal.classList.remove("open");
+      if (e.target === settingsModal) settingsModal.classList.remove("open");
+    });
+
+    document.getElementById("panel-close").addEventListener("click", () => {
+      sidePanel.classList.add("closed");
+      document.querySelectorAll(".node.client").forEach(el => el.classList.remove("selected"));
+    });
+
+    document.getElementById("bubble-close").addEventListener("click", () => {
+      speechBubble.classList.remove("visible");
+      if (bubbleFadeTimeout) clearTimeout(bubbleFadeTimeout);
+    });
+
+    document.querySelectorAll(".quick-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        inputMessage.value = chip.dataset.text;
+      });
+    });
+
+    btnSendMessage.addEventListener("click", executeChatSimulation);
+    btnRequestWeb.addEventListener("click", executeWebSimulation);
+
+    function initApp() {
+      setMode("chat");
+      applyNewTopology("mesh", 4, 5, 3);
+      initPanZoom();
+
+      const hash = window.location.hash;
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("topo")) {
+        applyNewTopology(urlParams.get("topo"), 4, 6, 3);
+      }
+      if (urlParams.get("mode") === "web" || hash === "#web") {
+        setMode("web");
+      }
+      if (urlParams.get("modal") === "topology" || hash === "#topology") {
+        topologyModal.classList.add("open");
+      }
+      if (urlParams.get("modal") === "settings" || hash === "#settings") {
+        settingsModal.classList.add("open");
+      }
+      if (urlParams.get("debug") === "step" || hash === "#step") {
+        btnToggleStepMode.click();
+        stepDebuggerBar.classList.remove("hidden");
+        debugHopInfo.textContent = "Nächster Hop: Weiterleitung zu Netzknoten (1)";
+        btnStepPrev.disabled = true;
+      }
+      if (urlParams.get("test") === "offline") {
+        // Break all edges connected to client-0 to demonstrate offline indicator
+        state.edges.forEach(e => {
+          if (e.from === "client-0" || e.to === "client-0") e.broken = true;
+        });
+        renderNetwork();
+        updateOnlineIndicators();
+      }
+      if (urlParams.get("test") === "bubble") {
+        setTimeout(() => {
+          showSpeechBubble("client-1", "Hallo Lea! Wie geht's?", "chat");
+        }, 100);
+      }
+    }
+
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", initApp);
+    } else {
+      initApp();
+    }
+
+    window.addEventListener("resize", () => {
+      updateViewportTransform();
+    });
+  </script>
+</body>
+</html>
