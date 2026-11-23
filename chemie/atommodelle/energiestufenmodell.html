@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Energiestufenmodell & Linienspektren</title>
+<meta name="description" content="Energiestufenmodell und Spektroskopie: Schalen als diskrete Energieniveaus, synchrone Quantensprünge, Flammenfärbung von Na, Li, K, Ca, Sr, Ba, Cu und Linienspektren.">
+<meta name="material:typ" content="Vorführung">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC, Beamer">
+<meta name="material:stichworte" content="Energiestufenmodell, Flammenfärbung, Spektrum, Quantensprung, Photon, Absorption, Emission, Natrium, Lithium, Barium, Kupfer">
+<meta name="material:reihenfolge" content="4">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .hidden { display: none !important; }
+  
+  /* Native Browser-Vollbild */
+  #app-container:fullscreen {
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+  }
+  #app-container:fullscreen header {
+    display: none;
+  }
+  #app-container:fullscreen main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem !important;
+  }
+  #app-container:fullscreen footer {
+    display: none;
+  }
+
+  /* Fallback Pseudo-Vollbild */
+  #app-container.pseudo-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+  }
+  #app-container.pseudo-fullscreen main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 1rem !important;
+  }
+  #app-container.pseudo-fullscreen header {
+    display: none !important;
+  }
+  #app-container.pseudo-fullscreen footer {
+    display: none !important;
+  }
+
+  .elem-btn {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .elem-btn:hover {
+    border-color: #2563eb;
+    background: #f8fafc;
+  }
+  .elem-btn.active {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #0f172a;
+    box-shadow: 0 0 0 2px #3b82f6;
+  }
+</style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans text-gray-800 flex flex-col">
+
+<div id="app-container" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 w-full flex-1 flex flex-col transition-all relative">
+  
+  <!-- Vollbild Button -->
+  <button id="fullscreen-btn" class="absolute top-4 right-4 z-50 p-2 text-gray-500 hover:text-gray-800 bg-white/80 hover:bg-white rounded-lg shadow-sm backdrop-blur transition-all border border-gray-200" title="Vollbild umschalten">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+    </svg>
+  </button>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 px-6 pt-6 pb-4 relative shrink-0">
+    <div class="max-w-3xl mx-auto text-center">
+      <span class="text-xs uppercase tracking-wider font-semibold text-purple-600 block mb-1">Quantensprünge & Spektroskopie</span>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+        Energiestufenmodell & Linienspektren
+      </h1>
+      <p class="text-sm text-gray-600 leading-relaxed">
+        Die Schalen des Bohrschen Modells entsprechen <strong>diskreten Energiestufen</strong> der Elektronen.
+        Beim Rücksprung auf ein tieferes Niveau wird die Energiedifferenz ΔE = h · f als Lichtquant (Photon)
+        charakteristischer Wellenlänge abgestrahlt – die physikalische Grundlage der Flammenfärbung und Spektralanalyse.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="p-6 flex-1 flex flex-col relative z-0">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Links: Doppel-Canvas (Schalen & Energiestufen) + Spektrometer (7 Spalten) -->
+      <div class="lg:col-span-7 flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-3.5 bg-gray-50 border-b border-gray-200 flex flex-wrap justify-between items-center gap-2">
+          <span class="font-bold text-gray-900 text-sm">Räumliches Schalenbild ↔ Energiestufenleiter</span>
+          <span id="lblState" class="font-semibold text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Grundzustand (E₁)
+          </span>
+        </div>
+
+        <div id="canvas-container" class="w-full bg-[#f8fafc] border-b border-gray-200 relative aspect-[16/10] min-h-[360px]">
+          <canvas id="cv" class="block w-full h-full"></canvas>
+        </div>
+
+        <!-- Spektrometer-Leiste -->
+        <div class="p-3.5 bg-gray-50 border-t border-gray-200">
+          <div class="flex justify-between items-center text-xs font-semibold text-gray-700 mb-2">
+            <span class="flex items-center gap-1.5">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12h20M2 6h20M2 18h20"/></svg>
+              Detektorschirm: Gemessenes Linienspektrum (Optischer Fingerabdruck)
+            </span>
+            <button id="btnClearSpec" class="text-blue-600 hover:text-blue-800 text-xs font-medium underline">Spektrum leeren</button>
+          </div>
+          <div class="relative w-full h-7 rounded-md overflow-hidden border border-gray-300 bg-[#05080c]" id="specStrip">
+            <div id="specLinesLayer" class="absolute inset-0 pointer-events-none"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-gray-500 mt-1 font-mono">
+            <span>380 nm</span>
+            <span>480 nm</span>
+            <span>530 nm</span>
+            <span>590 nm</span>
+            <span>650 nm</span>
+            <span>780 nm</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rechts: Steuerung & Flammenfärbung (5 Spalten) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+        
+        <!-- 1. Element-Auswahl -->
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+          <h2 class="font-bold text-gray-800 text-sm mb-2.5 flex items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            1. Element auswählen
+          </h2>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <button class="elem-btn active" data-el="Na">Natrium (Na)</button>
+            <button class="elem-btn" data-el="Li">Lithium (Li)</button>
+            <button class="elem-btn" data-el="K">Kalium (K)</button>
+            <button class="elem-btn" data-el="Ca">Calcium (Ca)</button>
+            <button class="elem-btn" data-el="Sr">Strontium (Sr)</button>
+            <button class="elem-btn" data-el="Ba">Barium (Ba)</button>
+            <button class="elem-btn" data-el="Cu">Kupfer (Cu)</button>
+            <button class="elem-btn" data-el="H">Wasserstoff (H)</button>
+          </div>
+
+          <div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-inner" id="flamePreview">
+            <div class="w-9 h-9 rounded-full border-2 border-white/60 shadow-md shrink-0" id="flameSwatch" style="color: #FFCC00; background: #FFCC00;"></div>
+            <div>
+              <strong id="flameName" class="text-sm font-bold text-gray-900 block">Intensiv gelbe Flammenfärbung</strong>
+              <span id="flameDetail" class="text-xs text-gray-500">Natrium-D-Doppellinie bei 589 nm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Experimentelle Anregung -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+          <h2 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            2. Elektron anregen (Quantensprung)
+          </h2>
+
+          <button id="btnFlameExcite" class="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg font-bold text-white transition-all bg-amber-500 hover:bg-amber-600 shadow-sm text-sm">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            In Bunsenbrenner halten (Flammenfärbung)
+          </button>
+
+          <div>
+            <span class="text-xs font-semibold text-gray-600 block mb-1.5">Gezieltes Lichtquant einstrahlen:</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="photonBtns"></div>
+          </div>
+        </div>
+
+        <!-- 3. Didaktische Erklärung -->
+        <div class="bg-blue-50 border border-blue-200 text-blue-900 p-4 rounded-xl shadow-sm text-xs space-y-2.5">
+          <h3 class="font-bold text-sm flex items-center gap-1.5 text-blue-900">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Didaktische Erklärung
+          </h3>
+          <p class="leading-relaxed">
+            <strong>Absorption:</strong> Thermische Energie oder ein eingestrahltes Photon passender Energie (ΔE = h · f) hebt ein Elektron gezielt in ein höheres Niveau.<br>
+            <strong>Spontane Emission:</strong> Nach wenigen Nanosekunden fällt das Elektron zurück und emittiert ein Photon exakt der Energie ΔE. Die Wellenlänge λ = (h · c) / ΔE bestimmt die sichtbare Farbe!
+          </p>
+
+          <details class="bg-white/80 p-2.5 rounded-lg border border-blue-200 leading-relaxed">
+            <summary class="font-bold cursor-pointer text-blue-900 select-none">
+              Warum leuchtet Natrium immer gelb (589 nm)?
+            </summary>
+            <div class="mt-2 text-blue-950 space-y-1.5 pt-1 border-t border-blue-100">
+              <p>
+                <strong>1. Flammentemperatur:</strong> Im Brenner (~1700 °C) reicht die thermische Energie vor allem für das niedrigste angeregte Niveau (3p bei 2,1 eV). Höhere Niveaus werden nach der Boltzmann-Verteilung millionenfach seltener besetzt.
+              </p>
+              <p>
+                <strong>2. Unsichtbare UV/IR-Linien:</strong> Übergänge höherer Niveaus liegen oft im UV (z. B. 330 nm) oder IR (1138 nm) und bleiben für das menschliche Auge unsichtbar.
+              </p>
+              <p>
+                <strong>3. Kaskaden-Rücksprung:</strong> Selbst aus höheren Niveaus relaxieren Elektronen über das 3p-Niveau. Der finale Schritt 3p → 3s setzt immer das charakteristische gelbe 589-nm-Quant frei!
+              </p>
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Dezente Navigation zu verwandten Simulationen -->
+    <footer class="mt-8 pt-4 border-t border-gray-200 text-xs text-gray-400 flex flex-wrap justify-between items-center gap-2 shrink-0">
+      <span class="font-medium text-gray-500">Atommodelle:</span>
+      <div class="flex flex-wrap gap-x-3 gap-y-1">
+        <a href="rutherford-streuversuch.html" class="hover:text-blue-600 transition-colors">Rutherford-Streuversuch</a>
+        <span>·</span>
+        <a href="bohr-schalenmodell.html" class="hover:text-blue-600 transition-colors">Bohr-Schalenmodell</a>
+        <span>·</span>
+        <a href="atom-baukasten.html" class="hover:text-blue-600 transition-colors">Atom-Baukasten</a>
+        <span>·</span>
+        <a href="energiestufenmodell.html" class="text-blue-600 font-semibold">Energiestufenmodell</a>
+        <span>·</span>
+        <a href="ionisierungsenergie.html" class="hover:text-blue-600 transition-colors">Ionisierungsenergie</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- ==================== JAVASCRIPT LOGIC ==================== -->
+<script>
+(function() {
+  'use strict';
+
+  function wavelengthToColor(wl) {
+    if (wl < 380) return '#a855f7';
+    if (wl > 750) return '#991b1b';
+    let r = 0, g = 0, b = 0;
+    if (wl >= 380 && wl < 440) {
+      r = -(wl - 440) / (440 - 380);
+      b = 1.0;
+    } else if (wl >= 440 && wl < 490) {
+      g = (wl - 440) / (490 - 440);
+      b = 1.0;
+    } else if (wl >= 490 && wl < 510) {
+      g = 1.0;
+      b = -(wl - 510) / (510 - 490);
+    } else if (wl >= 510 && wl < 580) {
+      r = (wl - 510) / (580 - 510);
+      g = 1.0;
+    } else if (wl >= 580 && wl < 645) {
+      r = 1.0;
+      g = -(wl - 645) / (645 - 580);
+    } else if (wl >= 645 && wl <= 750) {
+      r = 1.0;
+    }
+    let factor = 1.0;
+    if (wl >= 380 && wl < 420) factor = 0.35 + 0.65 * (wl - 380) / (420 - 380);
+    else if (wl >= 700 && wl <= 750) factor = 0.35 + 0.65 * (750 - wl) / (750 - 700);
+    const R = Math.round(r * factor * 255);
+    const G = Math.round(g * factor * 255);
+    const B = Math.round(b * factor * 255);
+    return `rgb(${R},${G},${B})`;
+  }
+
+  const ELEMENTS_DATA = {
+    Na: {
+      name: 'Natrium',
+      flameColor: '#FFCC00',
+      flameLabel: 'Intensiv gelbe Flammenfärbung',
+      flameDetail: 'Kräftige Natrium-D-Linie bei 589 nm (3p → 3s)',
+      levels: [
+        { n: 1, label: 'E₁ (3s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (3p)', yRel: 0.48, energy: '2.10 eV' },
+        { n: 3, label: 'E₃ (4s)', yRel: 0.28, energy: '3.19 eV' },
+        { n: 4, label: 'E₄ (4d)', yRel: 0.14, energy: '4.28 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 589, name: '589 nm (Gelb, Na-D)' },
+        { from: 3, to: 1, lambda: 389, name: '389 nm (Violett)' },
+        { from: 3, to: 2, lambda: 1138, name: '1138 nm (Infrarot)' },
+        { from: 4, to: 2, lambda: 568, name: '568 nm (Gelbgrün)' },
+        { from: 4, to: 1, lambda: 290, name: '290 nm (UV)' }
+      ]
+    },
+    Li: {
+      name: 'Lithium',
+      flameColor: '#E6223A',
+      flameLabel: 'Karminrote Flammenfärbung',
+      flameDetail: 'Kräftige rote Resonanzlinie bei 671 nm (2p → 2s)',
+      levels: [
+        { n: 1, label: 'E₁ (2s)', yRel: 0.84, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (2p)', yRel: 0.50, energy: '1.85 eV' },
+        { n: 3, label: 'E₃ (3s)', yRel: 0.30, energy: '3.37 eV' },
+        { n: 4, label: 'E₄ (3d)', yRel: 0.16, energy: '3.88 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 671, name: '671 nm (Karminrot)' },
+        { from: 3, to: 2, lambda: 813, name: '813 nm (Infrarot)' },
+        { from: 3, to: 1, lambda: 368, name: '368 nm (UV)' },
+        { from: 4, to: 2, lambda: 610, name: '610 nm (Orange)' }
+      ]
+    },
+    K: {
+      name: 'Kalium',
+      flameColor: '#9955CC',
+      flameLabel: 'Fahlviolette Flammenfärbung',
+      flameDetail: 'Doppellinien bei 766 nm (Dunkelrot) und 404 nm (Violett)',
+      levels: [
+        { n: 1, label: 'E₁ (4s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (4p)', yRel: 0.52, energy: '1.61 eV' },
+        { n: 3, label: 'E₃ (5s)', yRel: 0.32, energy: '2.60 eV' },
+        { n: 4, label: 'E₄ (5p)', yRel: 0.18, energy: '3.06 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 766, name: '766 nm (Dunkelrot)' },
+        { from: 3, to: 2, lambda: 1252, name: '1252 nm (Infrarot)' },
+        { from: 4, to: 1, lambda: 404, name: '404 nm (Violett)' }
+      ]
+    },
+    Ca: {
+      name: 'Calcium',
+      flameColor: '#FF6600',
+      flameLabel: 'Ziegelrote Flammenfärbung',
+      flameDetail: 'Banden bei 622 nm (Orange-Rot) und 553 nm (Grünlich)',
+      levels: [
+        { n: 1, label: 'E₁ (4s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (4p)', yRel: 0.49, energy: '2.00 eV' },
+        { n: 3, label: 'E₃ (5s)', yRel: 0.28, energy: '2.90 eV' },
+        { n: 4, label: 'E₄ (4d)', yRel: 0.15, energy: '3.40 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 622, name: '622 nm (Ziegelrot)' },
+        { from: 3, to: 1, lambda: 553, name: '553 nm (Grünlich)' },
+        { from: 4, to: 2, lambda: 885, name: '885 nm (Infrarot)' },
+        { from: 4, to: 1, lambda: 423, name: '423 nm (Blauviolett)' }
+      ]
+    },
+    Sr: {
+      name: 'Strontium',
+      flameColor: '#CC1122',
+      flameLabel: 'Tiefrote Flammenfärbung (Signalrot)',
+      flameDetail: 'Starke rote Resonanzlinien bei 606 nm und 660 nm',
+      levels: [
+        { n: 1, label: 'E₁ (5s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (5p)', yRel: 0.50, energy: '1.88 eV' },
+        { n: 3, label: 'E₃ (6s)', yRel: 0.30, energy: '2.70 eV' },
+        { n: 4, label: 'E₄ (5d)', yRel: 0.16, energy: '3.20 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 660, name: '660 nm (Tiefrot)' },
+        { from: 3, to: 2, lambda: 606, name: '606 nm (Orange-Rot)' },
+        { from: 4, to: 1, lambda: 460, name: '460 nm (Blau)' }
+      ]
+    },
+    Ba: {
+      name: 'Barium',
+      flameColor: '#88DD33',
+      flameLabel: 'Fahlgrüne / Apfelgrüne Flamme',
+      flameDetail: 'Charakteristische Bariumlinien bei 524 nm und 514 nm',
+      levels: [
+        { n: 1, label: 'E₁ (6s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (6p)', yRel: 0.52, energy: '1.40 eV' },
+        { n: 3, label: 'E₃ (7s)', yRel: 0.32, energy: '2.40 eV' },
+        { n: 4, label: 'E₄ (6d)', yRel: 0.17, energy: '2.90 eV' }
+      ],
+      transitions: [
+        { from: 3, to: 2, lambda: 524, name: '524 nm (Apfelgrün)' },
+        { from: 4, to: 2, lambda: 514, name: '514 nm (Grün)' },
+        { from: 4, to: 1, lambda: 428, name: '428 nm (Violett)' }
+      ]
+    },
+    Cu: {
+      name: 'Kupfer',
+      flameColor: '#00CC88',
+      flameLabel: 'Grün-blaue Flammenfärbung',
+      flameDetail: 'Kupferhalogenid-Banden bei 510 nm, 521 nm und 578 nm',
+      levels: [
+        { n: 1, label: 'E₁ (4s)', yRel: 0.82, energy: '0.0 eV' },
+        { n: 2, label: 'E₂ (4p)', yRel: 0.50, energy: '2.10 eV' },
+        { n: 3, label: 'E₃ (5s)', yRel: 0.30, energy: '3.10 eV' },
+        { n: 4, label: 'E₄ (4d)', yRel: 0.16, energy: '3.80 eV' }
+      ],
+      transitions: [
+        { from: 2, to: 1, lambda: 510, name: '510 nm (Grün)' },
+        { from: 3, to: 2, lambda: 521, name: '521 nm (Smaragdgrün)' },
+        { from: 4, to: 2, lambda: 578, name: '578 nm (Gelbgrün)' }
+      ]
+    },
+    H: {
+      name: 'Wasserstoff',
+      flameColor: '#88BBDD',
+      flameLabel: 'Balmer-Serie (Sichtbares Spektrum)',
+      flameDetail: 'Hα (656 nm Rot), Hβ (486 nm Cyan), Hγ (434 nm Blau)',
+      levels: [
+        { n: 1, label: 'n=1', yRel: 0.86, energy: '−13.60 eV' },
+        { n: 2, label: 'n=2', yRel: 0.54, energy: '−3.40 eV' },
+        { n: 3, label: 'n=3', yRel: 0.32, energy: '−1.51 eV' },
+        { n: 4, label: 'n=4', yRel: 0.18, energy: '−0.85 eV' }
+      ],
+      transitions: [
+        { from: 3, to: 2, lambda: 656, name: '656 nm (Hα Rot)' },
+        { from: 4, to: 2, lambda: 486, name: '486 nm (Hβ Cyan)' },
+        { from: 2, to: 1, lambda: 121, name: '121 nm (Lyman-α UV)' }
+      ]
+    }
+  };
+
+  Object.values(ELEMENTS_DATA).forEach(el => {
+    el.transitions.forEach(t => {
+      t.color = wavelengthToColor(t.lambda);
+    });
+  });
+
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const appContainer = document.getElementById('app-container');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const lblState = document.getElementById('lblState');
+  const specLinesLayer = document.getElementById('specLinesLayer');
+  const btnClearSpec = document.getElementById('btnClearSpec');
+  const flameSwatch = document.getElementById('flameSwatch');
+  const flameName = document.getElementById('flameName');
+  const flameDetail = document.getElementById('flameDetail');
+  const btnFlameExcite = document.getElementById('btnFlameExcite');
+  const photonBtnsContainer = document.getElementById('photonBtns');
+
+  let currentKey = 'Na';
+  let currentLevel = 1;
+  let targetLevel = 1;
+  let electronAngle = 0;
+  let animState = 'idle';
+  let animProgress = 0;
+  let activeTransition = null;
+  let recordedLines = new Set();
+  let emittedPhotons = [];
+  let incomingPhoton = null;
+
+  let W = 700, H = 420;
+  function resize() {
+    const rect = cv.parentElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    W = rect.width;
+    H = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener('resize', resize);
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      if (appContainer.requestFullscreen) {
+        appContainer.requestFullscreen().catch(() => {
+          appContainer.classList.toggle('pseudo-fullscreen');
+          updateFullscreenBtn();
+        });
+      } else {
+        appContainer.classList.toggle('pseudo-fullscreen');
+        updateFullscreenBtn();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  }
+
+  function updateFullscreenBtn() {
+    const isFs = !!document.fullscreenElement || appContainer.classList.contains('pseudo-fullscreen');
+    if (isFs) {
+      fullscreenBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>`;
+    } else {
+      fullscreenBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>`;
+    }
+    setTimeout(resize, 60);
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', updateFullscreenBtn);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.activeElement.tagName !== 'INPUT') toggleFullscreen();
+    }
+  });
+
+  function selectElement(key) {
+    currentKey = key;
+    const data = ELEMENTS_DATA[key];
+    currentLevel = 1;
+    targetLevel = 1;
+    animState = 'idle';
+    activeTransition = null;
+    emittedPhotons = [];
+    incomingPhoton = null;
+
+    document.querySelectorAll('.elem-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-el') === key);
+    });
+
+    flameSwatch.style.color = data.flameColor;
+    flameSwatch.style.background = data.flameColor;
+    flameName.textContent = data.flameLabel;
+    flameDetail.textContent = data.flameDetail;
+    lblState.textContent = 'Grundzustand (E₁)';
+    lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+
+    buildPhotonButtons();
+  }
+
+  function buildPhotonButtons() {
+    photonBtnsContainer.innerHTML = '';
+    const data = ELEMENTS_DATA[currentKey];
+    const e1 = parseFloat(data.levels[0].energy);
+
+    data.levels.slice(1).forEach(lvl => {
+      const eTarget = parseFloat(lvl.energy);
+      const deltaE = Math.abs(eTarget - e1);
+      const wl = Math.round(1239.84 / deltaE);
+      const photonColor = wavelengthToColor(wl);
+
+      const btn = document.createElement('button');
+      btn.className = 'photon-btn p-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 text-xs font-semibold text-gray-800 transition-colors flex items-center justify-between text-left';
+      btn.style.borderLeft = `4px solid ${photonColor}`;
+      btn.innerHTML = `<span>Quant: ${lvl.label}</span><span class="text-[11px] font-mono text-gray-500">${wl} nm</span>`;
+      btn.title = `Absorption eines Photons mit ${wl} nm (${deltaE.toFixed(2)} eV)`;
+      btn.addEventListener('click', () => exciteWithPhoton(lvl.n));
+      photonBtnsContainer.appendChild(btn);
+    });
+  }
+
+  function setButtonsDisabled(disabled) {
+    btnFlameExcite.disabled = disabled;
+    if (disabled) btnFlameExcite.classList.add('opacity-50', 'cursor-not-allowed');
+    else btnFlameExcite.classList.remove('opacity-50', 'cursor-not-allowed');
+    document.querySelectorAll('.photon-btn').forEach(b => {
+      b.disabled = disabled;
+      if (disabled) b.classList.add('opacity-50', 'cursor-not-allowed');
+      else b.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+  }
+
+  function exciteWithPhoton(toN) {
+    if (animState !== 'idle') return;
+    setButtonsDisabled(true);
+
+    const data = ELEMENTS_DATA[currentKey];
+    targetLevel = toN;
+    const targetLvl = data.levels[toN - 1];
+    const e1 = parseFloat(data.levels[0].energy);
+    const deltaE = Math.abs(parseFloat(targetLvl.energy) - e1);
+    const wl = Math.round(1239.84 / deltaE);
+    const photonColor = wavelengthToColor(wl);
+
+    lblState.textContent = `Lichtquant (${wl} nm) trifft ein ...`;
+    lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+
+    incomingPhoton = {
+      x: 10,
+      y: H * 0.5,
+      vx: 320,
+      targetLevel: toN,
+      color: photonColor,
+      lambda: wl,
+      name: `${wl} nm`
+    };
+  }
+
+  let incomingHeatWaves = [];
+  let isFlameMode = false;
+
+  function exciteFlameAll() {
+    if (animState !== 'idle' || incomingHeatWaves.length > 0) return;
+    setButtonsDisabled(true);
+    isFlameMode = true;
+
+    const data = ELEMENTS_DATA[currentKey];
+    lblState.textContent = 'Bunsenbrenner: Wärmeenergie strömt zum Atom ...';
+    lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+
+    targetLevel = data.levels.length;
+    // Thermische Wellenfronten bewegen sich vom Brenner unten links ZUM Atomkern
+    incomingHeatWaves = [
+      { progress: 0, speed: 1.15, delay: 0 },
+      { progress: 0, speed: 1.15, delay: 0.2 },
+      { progress: 0, speed: 1.15, delay: 0.4 }
+    ];
+  }
+
+  function recordSpectralLine(lambda, color) {
+    if (lambda < 380 || lambda > 780) return;
+    if (recordedLines.has(lambda)) return;
+    recordedLines.add(lambda);
+    const pct = Math.max(0, Math.min(100, ((lambda - 380) / (780 - 380)) * 100));
+    const line = document.createElement('div');
+    line.style.position = 'absolute';
+    line.style.left = `${pct}%`;
+    line.style.top = '0';
+    line.style.bottom = '0';
+    line.style.width = '3px';
+    line.style.background = color;
+    line.style.boxShadow = `0 0 6px ${color}`;
+    specLinesLayer.appendChild(line);
+  }
+
+  function renderScene(dt) {
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, W, H);
+
+    const data = ELEMENTS_DATA[currentKey];
+    const leftCX = W * 0.28;
+    const leftCY = H * 0.5;
+    const rightX = W * 0.58;
+    const rightW = W * 0.36;
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.52, 20);
+    ctx.lineTo(W * 0.52, H - 20);
+    ctx.stroke();
+
+    const shellRadii = [35, 65, 95, 125];
+
+    shellRadii.forEach((r, idx) => {
+      const isCur = (idx + 1 === currentLevel);
+      ctx.strokeStyle = isCur ? 'rgba(2, 132, 199, 0.7)' : 'rgba(148, 163, 184, 0.45)';
+      ctx.lineWidth = isCur ? 2 : 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(leftCX, leftCY, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = isCur ? '#0284c7' : '#64748b';
+      ctx.font = '10px sans-serif';
+      ctx.fillText(`n=${idx+1}`, leftCX + r - 10, leftCY - 4);
+    });
+
+    const nucGrad = ctx.createRadialGradient(leftCX - 2, leftCY - 2, 2, leftCX, leftCY, 16);
+    nucGrad.addColorStop(0, '#ea580c');
+    nucGrad.addColorStop(1, '#c2410c');
+    ctx.fillStyle = nucGrad;
+    ctx.beginPath();
+    ctx.arc(leftCX, leftCY, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(currentKey, leftCX, leftCY);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+
+    electronAngle += 1.2 * dt;
+    let drawR = shellRadii[currentLevel - 1];
+
+    if (animState === 'exciting') {
+      const startR = shellRadii[currentLevel - 1];
+      const endR = shellRadii[targetLevel - 1];
+      drawR = startR + (endR - startR) * animProgress;
+    } else if (animState === 'relaxing') {
+      const startR = shellRadii[targetLevel - 1];
+      const endR = shellRadii[currentLevel - 1];
+      drawR = startR + (endR - startR) * animProgress;
+    }
+
+    const ex = leftCX + Math.cos(electronAngle) * drawR;
+    const ey = leftCY + Math.sin(electronAngle) * drawR;
+
+    ctx.fillStyle = 'rgba(2, 132, 199, 0.25)';
+    ctx.beginPath();
+    ctx.arc(ex, ey, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(ex, ey, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('Energiestufen (Termschema)', rightX, 32);
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(rightX, 55);
+    ctx.lineTo(rightX + rightW, 55);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('E∞ = 0 eV (Ionisierung)', rightX + rightW - 120, 50);
+
+    data.levels.forEach(lvl => {
+      const ly = 55 + lvl.yRel * (H - 95);
+      const isCur = (lvl.n === currentLevel);
+
+      ctx.strokeStyle = isCur ? '#059669' : '#94a3b8';
+      ctx.lineWidth = isCur ? 3.5 : 2;
+      ctx.beginPath();
+      ctx.moveTo(rightX, ly);
+      ctx.lineTo(rightX + rightW, ly);
+      ctx.stroke();
+
+      ctx.fillStyle = isCur ? '#059669' : '#475569';
+      ctx.font = isCur ? 'bold 12px sans-serif' : '11px sans-serif';
+      ctx.fillText(lvl.label, rightX + 6, ly - 6);
+
+      ctx.textAlign = 'right';
+      ctx.fillText(lvl.energy, rightX + rightW - 6, ly - 6);
+      ctx.textAlign = 'left';
+
+      if (isCur && animState === 'idle') {
+        const dotX = rightX + rightW * 0.5;
+        ctx.fillStyle = '#0284c7';
+        ctx.beginPath();
+        ctx.arc(dotX, ly, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    // Bunsenbrenner & thermische Wärmewellen (fließen ZUM Atom)
+    if (incomingHeatWaves.length > 0) {
+      const bX = leftCX - 70;
+      const bY = H - 20;
+
+      // Brenner-Sockel & Flamme
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(bX - 8, bY + 2, 16, 18);
+      const flicker = Math.sin(performance.now() * 0.02) * 2;
+      ctx.fillStyle = data.flameColor || '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(bX - 6, bY + 2);
+      ctx.quadraticCurveTo(bX - 8, bY - 14 + flicker, bX, bY - 22 + flicker);
+      ctx.quadraticCurveTo(bX + 8, bY - 14 + flicker, bX + 6, bY + 2);
+      ctx.closePath();
+      ctx.fill();
+
+      let allWavesArrived = true;
+      incomingHeatWaves.forEach(w => {
+        if (w.delay > 0) {
+          w.delay -= dt;
+          allWavesArrived = false;
+        } else {
+          w.progress += w.speed * dt;
+          if (w.progress < 1) {
+            allWavesArrived = false;
+            const curX = bX + (leftCX - bX) * w.progress;
+            const curY = (bY - 15) + (leftCY - (bY - 15)) * w.progress;
+            const arcR = 14 + w.progress * 24;
+
+            ctx.save();
+            ctx.strokeStyle = `rgba(217, 119, 6, ${0.85 * (1 - w.progress * 0.4)})`;
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            ctx.arc(curX, curY, arcR, -Math.PI * 0.8, 0.2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+          }
+        }
+      });
+
+      if (allWavesArrived) {
+        incomingHeatWaves = [];
+        animState = 'exciting';
+        animProgress = 0;
+        lblState.textContent = 'Thermische Anregung des Elektrons ...';
+      }
+    }
+
+    if (incomingPhoton) {
+      incomingPhoton.x += incomingPhoton.vx * dt;
+
+      ctx.strokeStyle = incomingPhoton.color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let s = -16; s <= 16; s += 2) {
+        const py = incomingPhoton.y + Math.sin((incomingPhoton.x + s) * 0.28) * 5;
+        if (s === -16) ctx.moveTo(incomingPhoton.x + s, py);
+        else ctx.lineTo(incomingPhoton.x + s, py);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.fillText(`${incomingPhoton.name}`, incomingPhoton.x - 14, incomingPhoton.y - 12);
+
+      if (incomingPhoton.x >= leftCX - 15) {
+        incomingPhoton = null;
+        animState = 'exciting';
+        animProgress = 0;
+      }
+    }
+
+    if (animState === 'exciting') {
+      animProgress += dt * 2.2;
+      const y1 = 55 + data.levels[currentLevel - 1].yRel * (H - 95);
+      const y2 = 55 + data.levels[targetLevel - 1].yRel * (H - 95);
+      const arrowY = y1 + (y2 - y1) * Math.min(1, animProgress);
+
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(rightX + rightW * 0.5, y1);
+      ctx.lineTo(rightX + rightW * 0.5, arrowY);
+      ctx.stroke();
+
+      if (animProgress >= 1) {
+        currentLevel = targetLevel;
+        animState = 'excited';
+        lblState.textContent = `Angeregt (${data.levels[currentLevel - 1].label})!`;
+        lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+
+        setTimeout(() => {
+          if (animState === 'excited' && currentLevel > 1) {
+            relax();
+          }
+        }, 900);
+      }
+    } else if (animState === 'relaxing') {
+      animProgress += dt * 2.4;
+      const fromN = targetLevel;
+      const toN = currentLevel;
+      const y1 = 55 + data.levels[fromN - 1].yRel * (H - 95);
+      const y2 = 55 + data.levels[toN - 1].yRel * (H - 95);
+      const arrowY = y1 + (y2 - y1) * Math.min(1, animProgress);
+
+      const color = activeTransition ? activeTransition.color : '#FFCC00';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(rightX + rightW * 0.5, y1);
+      ctx.lineTo(rightX + rightW * 0.5, arrowY);
+      ctx.stroke();
+
+      if (animProgress >= 1) {
+        if (activeTransition) {
+          emittedPhotons.push({
+            x: ex,
+            y: ey,
+            vx: 250,
+            vy: -45,
+            color: activeTransition.color,
+            name: activeTransition.name
+          });
+          recordSpectralLine(activeTransition.lambda, activeTransition.color);
+        }
+
+        if (currentLevel > 1) {
+          animState = 'excited';
+          lblState.textContent = `Kaskade: Zwischenniveau (${data.levels[currentLevel - 1].label}) ...`;
+          lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+          setTimeout(() => {
+            if (animState === 'excited' && currentLevel > 1) {
+              relax();
+            }
+          }, 800);
+        } else {
+          animState = 'idle';
+          lblState.textContent = 'Grundzustand (E₁) erreicht';
+          lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+          setButtonsDisabled(false);
+
+          if (isFlameMode) {
+            data.transitions.forEach((t, i) => {
+              setTimeout(() => {
+                recordSpectralLine(t.lambda, t.color);
+                emittedPhotons.push({
+                  x: leftCX + 15,
+                  y: leftCY + (i - (data.transitions.length - 1) / 2) * 16,
+                  vx: 250,
+                  vy: -40 + i * 16,
+                  color: t.color,
+                  name: t.name
+                });
+              }, i * 200);
+            });
+            isFlameMode = false;
+          }
+        }
+      }
+    }
+
+    for (let i = emittedPhotons.length - 1; i >= 0; i--) {
+      const ph = emittedPhotons[i];
+      ph.x += ph.vx * dt;
+      ph.y += ph.vy * dt;
+
+      ctx.strokeStyle = ph.color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let s = -16; s <= 16; s += 2) {
+        const py = ph.y + Math.sin((ph.x + s) * 0.28) * 5;
+        if (s === -16) ctx.moveTo(ph.x + s, py);
+        else ctx.lineTo(ph.x + s, py);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.fillText(`${ph.name}`, ph.x - 14, ph.y - 12);
+
+      if (ph.x > W + 60 || ph.y < -30) emittedPhotons.splice(i, 1);
+    }
+  }
+
+  function relax() {
+    targetLevel = currentLevel;
+    const data = ELEMENTS_DATA[currentKey];
+
+    const trans = data.transitions.find(t => t.from === targetLevel);
+    if (trans) {
+      currentLevel = trans.to;
+      activeTransition = trans;
+    } else {
+      currentLevel = 1;
+      const eFrom = parseFloat(data.levels[targetLevel - 1].energy);
+      const eTo = parseFloat(data.levels[0].energy);
+      const deltaE = Math.abs(eFrom - eTo);
+      const wl = Math.round(1239.84 / deltaE);
+      activeTransition = {
+        from: targetLevel,
+        to: 1,
+        lambda: wl,
+        color: wavelengthToColor(wl),
+        name: `${wl} nm`
+      };
+    }
+
+    animState = 'relaxing';
+    animProgress = 0;
+    lblState.textContent = `Emission: ${activeTransition.name}!`;
+    lblState.className = 'font-semibold text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200';
+  }
+
+  let lastTime = performance.now();
+  function loop(time) {
+    const dt = Math.min(0.05, (time - lastTime) / 1000);
+    lastTime = time;
+    renderScene(dt);
+    requestAnimationFrame(loop);
+  }
+
+  document.querySelectorAll('.elem-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectElement(btn.getAttribute('data-el')));
+  });
+
+  btnFlameExcite.addEventListener('click', exciteFlameAll);
+
+  btnClearSpec.addEventListener('click', () => {
+    recordedLines.clear();
+    specLinesLayer.innerHTML = '';
+  });
+
+  selectElement('Na');
+  resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atom-Baukasten: Baue das Atom</title>
+<meta name="description" content="Interaktiver Atom-Baukasten für Schüler: Baue Atome und Ionen aus Protonen, Neutronen und Schalen-Elektronen zusammen mit Zufallsaufgaben und Tipp-Steuerung.">
+<meta name="material:typ" content="Schülertool">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC">
+<meta name="material:stichworte" content="Atomaufbau, Schalenmodell, Protonen, Neutronen, Elektronen, K-Schale, L-Schale, Ionen, Baukasten">
+<meta name="material:reihenfolge" content="3">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .hidden { display: none !important; }
+  
+  /* Native Browser-Vollbild */
+  #app-container:fullscreen {
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+  }
+  #app-container:fullscreen header {
+    display: none;
+  }
+  #app-container:fullscreen main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem !important;
+  }
+  #app-container:fullscreen footer {
+    display: none;
+  }
+
+  /* Fallback Pseudo-Vollbild */
+  #app-container.pseudo-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+  }
+  #app-container.pseudo-fullscreen main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 1rem !important;
+  }
+  #app-container.pseudo-fullscreen header {
+    display: none !important;
+  }
+  #app-container.pseudo-fullscreen footer {
+    display: none !important;
+  }
+
+  .btn-pm {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #1f2937;
+    font-weight: 700;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    user-select: none;
+  }
+  .btn-pm:hover {
+    background: #f3f4f6;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+</style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans text-gray-800 flex flex-col">
+
+<div id="app-container" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 w-full flex-1 flex flex-col transition-all relative">
+  
+  <!-- Vollbild Button -->
+  <button id="fullscreen-btn" class="absolute top-4 right-4 z-50 p-2 text-gray-500 hover:text-gray-800 bg-white/80 hover:bg-white rounded-lg shadow-sm backdrop-blur transition-all border border-gray-200" title="Vollbild umschalten">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+    </svg>
+  </button>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 px-6 pt-6 pb-4 relative shrink-0">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="text-xs uppercase tracking-wider font-semibold text-emerald-600 block mb-1">Schüler-Challenge · Interaktives Werkzeug</span>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+          Interaktiver Atom-Baukasten
+        </h1>
+      </div>
+      <button id="btnRandomTask" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-sm transition-colors border border-gray-200 shadow-sm">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        Zufällige Aufgabe
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="p-6 flex-1 flex flex-col relative z-0">
+    
+    <!-- Aktuelle Aufgabe (Aufgaben-Karte) -->
+    <div class="bg-blue-50 border border-blue-200 text-blue-950 p-4 rounded-xl shadow-sm mb-6">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <span class="text-xs uppercase tracking-wider font-bold text-blue-700">Aktuelle Challenge</span>
+        <div class="text-xs text-blue-600 font-mono" id="taskData">Gegeben: Atommasse <strong>A = 16 u</strong>, Ladung: <strong>neutral (0)</strong></div>
+      </div>
+      <h2 id="taskTitle" class="text-xl md:text-2xl font-bold text-blue-900 mt-1 mb-2">Sauerstoff-Atom (O)</h2>
+      
+      <details class="text-xs" id="hintDetails">
+        <summary class="font-bold cursor-pointer text-blue-800 select-none hover:underline">
+          💡 Hinweis zum Periodensystem anzeigen
+        </summary>
+        <div class="mt-2 p-2.5 bg-white/80 rounded-lg border border-blue-200 text-blue-900 leading-relaxed" id="hintText">
+          Sauerstoff steht in der 2. Periode (2 Schalen) und der VI. Hauptgruppe (6 Valenzelektronen).
+        </div>
+      </details>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Links: Interaktive Leinwand (7 Spalten) -->
+      <div class="lg:col-span-7 flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-3.5 bg-gray-50 border-b border-gray-200 flex flex-wrap justify-between items-center gap-2">
+          <span id="stageTitle" class="font-bold text-gray-900 text-sm">Werkbank</span>
+          <span class="text-xs text-gray-500 font-medium">
+            Tipp: Klick auf Kern = p⁺ / n, Klick auf Schale = e⁻
+          </span>
+        </div>
+
+        <div id="canvas-container" class="w-full bg-[#f8fafc] border-b border-gray-200 relative aspect-square max-h-[500px]">
+          <canvas id="cv" class="block w-full h-full cursor-pointer touch-none"></canvas>
+        </div>
+      </div>
+
+      <!-- Rechts: Teile-Kästen & Steuerung (5 Spalten) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+        
+        <!-- 1. Atomkern (Nukleonen) -->
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm space-y-2.5">
+          <h2 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            1. Atomkern (Nukleonen)
+          </h2>
+
+          <div class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200">
+            <div class="flex items-center gap-2 font-semibold text-xs text-gray-800">
+              <span class="w-6 h-6 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center">+</span>
+              <span>Protonen (p⁺)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="btn-pm" id="btnSubP">−</button>
+              <span id="lblCountP" class="font-mono font-bold text-base min-w-[2ch] text-center text-gray-900">0</span>
+              <button class="btn-pm" id="btnAddP">+</button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200">
+            <div class="flex items-center gap-2 font-semibold text-xs text-gray-800">
+              <span class="w-6 h-6 rounded-full bg-gray-500 text-white font-bold text-xs flex items-center justify-center">n</span>
+              <span>Neutronen (n)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="btn-pm" id="btnSubN">−</button>
+              <span id="lblCountN" class="font-mono font-bold text-base min-w-[2ch] text-center text-gray-900">0</span>
+              <button class="btn-pm" id="btnAddN">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Atomhülle (Schalen-Elektronen) -->
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm space-y-2.5">
+          <h2 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            2. Atomhülle (Elektronen e⁻)
+          </h2>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div class="p-2.5 bg-white rounded-lg border border-gray-200 flex flex-col items-center">
+              <span class="text-[11px] font-semibold text-gray-500">K-Schale</span>
+              <span id="lblShellK" class="font-bold text-sm text-sky-600 my-1">0 / 2</span>
+              <div class="flex gap-1">
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnSubEK">−</button>
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnAddEK">+</button>
+              </div>
+            </div>
+
+            <div class="p-2.5 bg-white rounded-lg border border-gray-200 flex flex-col items-center">
+              <span class="text-[11px] font-semibold text-gray-500">L-Schale</span>
+              <span id="lblShellL" class="font-bold text-sm text-sky-600 my-1">0 / 8</span>
+              <div class="flex gap-1">
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnSubEL">−</button>
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnAddEL">+</button>
+              </div>
+            </div>
+
+            <div class="p-2.5 bg-white rounded-lg border border-gray-200 flex flex-col items-center">
+              <span class="text-[11px] font-semibold text-gray-500">M-Schale</span>
+              <span id="lblShellM" class="font-bold text-sm text-amber-600 my-1">0 / 8</span>
+              <div class="flex gap-1">
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnSubEM">−</button>
+                <button class="btn-pm !w-7 !h-7 !text-sm" id="btnAddEM">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Live-Analyse -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+          <h2 class="font-bold text-gray-800 text-sm mb-2.5">3. Live-Analyse & Bilanz</h2>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="p-2 rounded-lg border border-orange-200 bg-orange-50 flex flex-col items-center justify-center">
+              <span class="text-[11px] text-orange-700 font-medium">Kernladung Z</span>
+              <span id="statZ" class="text-lg font-bold text-orange-900">0</span>
+            </div>
+            <div class="p-2 rounded-lg border border-gray-200 bg-gray-50 flex flex-col items-center justify-center">
+              <span class="text-[11px] text-gray-600 font-medium">Massenzahl A</span>
+              <span id="statA" class="text-lg font-bold text-gray-800">0</span>
+            </div>
+            <div class="p-2 rounded-lg border border-blue-200 bg-blue-50 flex flex-col items-center justify-center">
+              <span class="text-[11px] text-blue-700 font-medium">Gesamtladung</span>
+              <span id="statCharge" class="text-lg font-bold text-blue-900">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback & Aktionen -->
+        <div id="feedbackBox" class="p-3.5 rounded-xl border border-gray-200 bg-gray-50 text-xs text-gray-700 leading-relaxed shadow-sm">
+          <span id="feedbackText">Nutze Klicks auf die Leinwand oder die Knöpfe, um das gesuchte Teilchen aufzubauen.</span>
+        </div>
+
+        <div class="flex gap-2">
+          <button id="btnResetBench" class="px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-colors shadow-sm">
+            Zurücksetzen
+          </button>
+          <button id="btnNextTask" class="flex-1 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5">
+            <span>Nächste Aufgabe</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Dezente Navigation zu verwandten Simulationen -->
+    <footer class="mt-8 pt-4 border-t border-gray-200 text-xs text-gray-400 flex flex-wrap justify-between items-center gap-2 shrink-0">
+      <span class="font-medium text-gray-500">Atommodelle:</span>
+      <div class="flex flex-wrap gap-x-3 gap-y-1">
+        <a href="rutherford-streuversuch.html" class="hover:text-blue-600 transition-colors">Rutherford-Streuversuch</a>
+        <span>·</span>
+        <a href="bohr-schalenmodell.html" class="hover:text-blue-600 transition-colors">Bohr-Schalenmodell</a>
+        <span>·</span>
+        <a href="atom-baukasten.html" class="text-blue-600 font-semibold">Atom-Baukasten</a>
+        <span>·</span>
+        <a href="energiestufenmodell.html" class="hover:text-blue-600 transition-colors">Energiestufenmodell</a>
+        <span>·</span>
+        <a href="ionisierungsenergie.html" class="hover:text-blue-600 transition-colors">Ionisierungsenergie</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- ==================== JAVASCRIPT LOGIC ==================== -->
+<script>
+(function() {
+  'use strict';
+
+  const TASK_POOL = [
+    { title: 'Helium-Atom (He)', sym: 'He', mass: 4, charge: 0, p: 2, n: 2, k: 2, l: 0, m: 0, hint: 'Helium ist ein Edelgas (VIII. Hauptgruppe) mit voll besetzter K-Schale (2 e⁻).' },
+    { title: 'Lithium-Atom (Li)', sym: 'Li', mass: 7, charge: 0, p: 3, n: 4, k: 2, l: 1, m: 0, hint: 'Lithium steht in der I. Hauptgruppe (Alkalimetalle): 1 Valenzelektron auf der L-Schale.' },
+    { title: 'Beryllium-Atom (Be)', sym: 'Be', mass: 9, charge: 0, p: 4, n: 5, k: 2, l: 2, m: 0, hint: 'Beryllium steht in der II. Hauptgruppe (Erdalkalimetalle): 2 Valenzelektronen auf L.' },
+    { title: 'Kohlenstoff-Atom (C)', sym: 'C', mass: 12, charge: 0, p: 6, n: 6, k: 2, l: 4, m: 0, hint: 'Kohlenstoff steht in der IV. Hauptgruppe: 4 Außenelektronen auf L.' },
+    { title: 'Stickstoff-Atom (N)', sym: 'N', mass: 14, charge: 0, p: 7, n: 7, k: 2, l: 5, m: 0, hint: 'Stickstoff steht in der V. Hauptgruppe: 5 Außenelektronen auf L.' },
+    { title: 'Sauerstoff-Atom (O)', sym: 'O', mass: 16, charge: 0, p: 8, n: 8, k: 2, l: 6, m: 0, hint: 'Sauerstoff steht in der VI. Hauptgruppe (Chalkogene): 6 Außenelektronen auf L.' },
+    { title: 'Fluor-Atom (F)', sym: 'F', mass: 19, charge: 0, p: 9, n: 10, k: 2, l: 7, m: 0, hint: 'Fluor steht in der VII. Hauptgruppe (Halogene): 7 Außenelektronen auf L.' },
+    { title: 'Neon-Atom (Ne)', sym: 'Ne', mass: 20, charge: 0, p: 10, n: 10, k: 2, l: 8, m: 0, hint: 'Neon ist ein Edelgas mit vollbesetzter L-Schale (Oktett mit 8 e⁻).' },
+    { title: 'Natrium-Atom (Na)', sym: 'Na', mass: 23, charge: 0, p: 11, n: 12, k: 2, l: 8, m: 1, hint: 'Natrium steht in der 3. Periode, I. Hauptgruppe: K=2, L=8, M=1.' },
+    { title: 'Magnesium-Atom (Mg)', sym: 'Mg', mass: 24, charge: 0, p: 12, n: 12, k: 2, l: 8, m: 2, hint: 'Magnesium steht in der II. Hauptgruppe: K=2, L=8, M=2.' },
+    { title: 'Aluminium-Atom (Al)', sym: 'Al', mass: 27, charge: 0, p: 13, n: 14, k: 2, l: 8, m: 3, hint: 'Aluminium steht in der III. Hauptgruppe: K=2, L=8, M=3.' },
+    { title: 'Schwefel-Atom (S)', sym: 'S', mass: 32, charge: 0, p: 16, n: 16, k: 2, l: 8, m: 6, hint: 'Schwefel steht in der VI. Hauptgruppe: K=2, L=8, M=6.' },
+    { title: 'Chlor-Atom (Cl)', sym: 'Cl', mass: 35, charge: 0, p: 17, n: 18, k: 2, l: 8, m: 7, hint: 'Chlor steht in der VII. Hauptgruppe: K=2, L=8, M=7.' },
+    { title: 'Natrium-Kation (Na⁺)', sym: 'Na⁺', mass: 23, charge: 1, p: 11, n: 12, k: 2, l: 8, m: 0, hint: 'Na⁺ entsteht durch Abgabe des Valenzelektrons der M-Schale (Ladung: +1, 10 e⁻ gesamt).' },
+    { title: 'Magnesium-Kation (Mg²⁺)', sym: 'Mg²⁺', mass: 24, charge: 2, p: 12, n: 12, k: 2, l: 8, m: 0, hint: 'Mg²⁺ entsteht durch Abgabe beider Außenelektronen (Ladung: +2, 10 e⁻ gesamt).' },
+    { title: 'Oxid-Anion (O²⁻)', sym: 'O²⁻', mass: 16, charge: -2, p: 8, n: 8, k: 2, l: 8, m: 0, hint: 'O²⁻ entsteht durch Aufnahme von 2 Elektronen zur vollen L-Schale (Ladung: −2, 10 e⁻ gesamt).' },
+    { title: 'Fluorid-Anion (F⁻)', sym: 'F⁻', mass: 19, charge: -1, p: 9, n: 10, k: 2, l: 8, m: 0, hint: 'F⁻ entsteht durch Aufnahme von 1 Elektron zur vollen L-Schale (Ladung: −1, 10 e⁻ gesamt).' },
+    { title: 'Chlorid-Anion (Cl⁻)', sym: 'Cl⁻', mass: 35, charge: -1, p: 17, n: 18, k: 2, l: 8, m: 8, hint: 'Cl⁻ entsteht durch Aufnahme von 1 Elektron zur vollen M-Schale (Ladung: −1, 18 e⁻ gesamt).' }
+  ];
+
+  let currentTask = TASK_POOL[0];
+  let currentP = 0;
+  let currentN = 0;
+  let currentK = 0;
+  let currentL = 0;
+  let currentM = 0;
+  let lastTapTime = 0;
+
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const appContainer = document.getElementById('app-container');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const taskTitle = document.getElementById('taskTitle');
+  const taskData = document.getElementById('taskData');
+  const hintText = document.getElementById('hintText');
+  const hintDetails = document.getElementById('hintDetails');
+  const stageTitle = document.getElementById('stageTitle');
+
+  const lblCountP = document.getElementById('lblCountP');
+  const lblCountN = document.getElementById('lblCountN');
+  const lblShellK = document.getElementById('lblShellK');
+  const lblShellL = document.getElementById('lblShellL');
+  const lblShellM = document.getElementById('lblShellM');
+
+  const statZ = document.getElementById('statZ');
+  const statA = document.getElementById('statA');
+  const statCharge = document.getElementById('statCharge');
+
+  const feedbackBox = document.getElementById('feedbackBox');
+  const feedbackText = document.getElementById('feedbackText');
+  const btnNextTask = document.getElementById('btnNextTask');
+  const btnRandomTask = document.getElementById('btnRandomTask');
+  const btnResetBench = document.getElementById('btnResetBench');
+
+  const btnAddP = document.getElementById('btnAddP');
+  const btnSubP = document.getElementById('btnSubP');
+  const btnAddN = document.getElementById('btnAddN');
+  const btnSubN = document.getElementById('btnSubN');
+  const btnAddEK = document.getElementById('btnAddEK');
+  const btnSubEK = document.getElementById('btnSubEK');
+  const btnAddEL = document.getElementById('btnAddEL');
+  const btnSubEL = document.getElementById('btnSubEL');
+  const btnAddEM = document.getElementById('btnAddEM');
+  const btnSubEM = document.getElementById('btnSubEM');
+
+  let W = 460, H = 460;
+  function resize() {
+    const rect = cv.parentElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    W = rect.width;
+    H = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener('resize', resize);
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      if (appContainer.requestFullscreen) {
+        appContainer.requestFullscreen().catch(() => {
+          appContainer.classList.toggle('pseudo-fullscreen');
+          updateFullscreenBtn();
+        });
+      } else {
+        appContainer.classList.toggle('pseudo-fullscreen');
+        updateFullscreenBtn();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  }
+
+  function updateFullscreenBtn() {
+    const isFs = !!document.fullscreenElement || appContainer.classList.contains('pseudo-fullscreen');
+    if (isFs) {
+      fullscreenBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>`;
+    } else {
+      fullscreenBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>`;
+    }
+    setTimeout(resize, 60);
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', updateFullscreenBtn);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.activeElement.tagName !== 'INPUT') toggleFullscreen();
+    }
+  });
+
+  function loadRandomTask() {
+    let next;
+    do {
+      next = TASK_POOL[Math.floor(Math.random() * TASK_POOL.length)];
+    } while (next === currentTask && TASK_POOL.length > 1);
+
+    currentTask = next;
+    taskTitle.textContent = currentTask.title;
+    const chargeStr = currentTask.charge === 0 ? 'neutral (0)' : (currentTask.charge > 0 ? `+${currentTask.charge}` : `${currentTask.charge}`);
+    taskData.innerHTML = `Gegeben: Atommasse <strong>A = ${currentTask.mass} u</strong>, Ladung: <strong>${chargeStr}</strong>`;
+    hintText.textContent = currentTask.hint;
+    hintDetails.open = false;
+    stageTitle.textContent = `Ziel: ${currentTask.sym}`;
+
+    currentP = 0; currentN = 0; currentK = 0; currentL = 0; currentM = 0;
+    updateUI();
+  }
+
+  function updateUI() {
+    lblCountP.textContent = currentP;
+    lblCountN.textContent = currentN;
+    lblShellK.textContent = `${currentK} / 2`;
+    lblShellL.textContent = `${currentL} / 8`;
+    lblShellM.textContent = `${currentM} / 8`;
+
+    statZ.textContent = currentP;
+    const calcA = currentP + currentN;
+    statA.textContent = calcA;
+
+    const totalE = currentK + currentL + currentM;
+    const charge = currentP - totalE;
+    statCharge.textContent = charge > 0 ? `+${charge}` : (charge < 0 ? `${charge}` : '0 (neutral)');
+
+    const isCorrect = (
+      currentP === currentTask.p &&
+      currentN === currentTask.n &&
+      currentK === currentTask.k &&
+      currentL === currentTask.l &&
+      currentM === currentTask.m &&
+      charge === currentTask.charge
+    );
+
+    if (isCorrect) {
+      feedbackBox.className = 'p-3.5 rounded-xl border border-emerald-300 bg-emerald-50 text-xs text-emerald-900 leading-relaxed shadow-sm';
+      feedbackText.innerHTML = `<strong>Richtig gelöst!</strong> Das ${currentTask.title} ist perfekt und stabil aufgebaut. Klicke auf „Nächste Aufgabe“ für die nächste Herausforderung!`;
+    } else {
+      feedbackBox.className = 'p-3.5 rounded-xl border border-gray-200 bg-gray-50 text-xs text-gray-700 leading-relaxed shadow-sm';
+      if (calcA !== currentTask.mass && currentP === currentTask.p) {
+        feedbackText.textContent = `Die Massenzahl A = p⁺ + n beträgt aktuell ${calcA} u (Ziel: ${currentTask.mass} u). Passe die Neutronen an.`;
+      } else if (charge !== currentTask.charge && currentP === currentTask.p) {
+        feedbackText.textContent = `Die Ladung beträgt aktuell ${charge > 0 ? '+'+charge : charge} (Ziel: ${currentTask.charge > 0 ? '+'+currentTask.charge : currentTask.charge}). Passe die Schalen-Elektronen an.`;
+      } else if (currentP !== currentTask.p) {
+        feedbackText.textContent = `Orientiere dich an der Atommasse (${currentTask.mass} u) und dem PSE, um die richtige Kernladungszahl Z zu finden.`;
+      } else {
+        feedbackText.textContent = `Überprüfe die Schalenbesetzung der Elektronen.`;
+      }
+    }
+  }
+
+  function drawBench() {
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+    const maxR = Math.min(W, H) * 0.44;
+
+    const rK = maxR * 0.40;
+    const rL = maxR * 0.70;
+    const rM = maxR * 0.96;
+
+    const shells = [
+      { r: rK, name: 'K', count: currentK, max: 2, color: '#0284c7' },
+      { r: rL, name: 'L', count: currentL, max: 8, color: '#0284c7' },
+      { r: rM, name: 'M', count: currentM, max: 8, color: '#d97706' }
+    ];
+
+    shells.forEach(s => {
+      ctx.strokeStyle = s.count > 0 ? (s.name === 'M' ? 'rgba(217, 119, 6, 0.65)' : 'rgba(2, 132, 199, 0.65)') : 'rgba(148, 163, 184, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(cx, cy, s.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = s.count > 0 ? s.color : '#94a3b8';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText(`${s.name}-Schale`, cx + s.r - 26, cy - 8);
+
+      for (let i = 0; i < s.count; i++) {
+        const ang = (i / s.max) * Math.PI * 2 - Math.PI / 2;
+        const ex = cx + Math.cos(ang) * s.r;
+        const ey = cy + Math.sin(ang) * s.r;
+
+        ctx.fillStyle = s.name === 'M' ? 'rgba(217, 119, 6, 0.25)' : 'rgba(2, 132, 199, 0.25)';
+        ctx.beginPath();
+        ctx.arc(ex, ey, 9, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('−', ex, ey);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+      }
+    });
+
+    const nucleusR = Math.max(26, Math.min(42, 18 + (currentP + currentN) * 0.65));
+    const grad = ctx.createRadialGradient(cx - 3, cy - 3, 2, cx, cy, nucleusR);
+    grad.addColorStop(0, '#ea580c');
+    grad.addColorStop(1, '#c2410c');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, nucleusR, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (currentP > 0) {
+      ctx.fillText(`+${currentP} p⁺`, cx, cy - 6);
+      ctx.font = '10px sans-serif';
+      ctx.fillText(`${currentN} n`, cx, cy + 9);
+    } else {
+      ctx.fillText('Kern (Klick)', cx, cy);
+    }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function loop() {
+    drawBench();
+    requestAnimationFrame(loop);
+  }
+
+  function handleCanvasClick(clientX, clientY, isRightClick = false) {
+    const rect = cv.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+    const dist = Math.hypot(x - cx, y - cy);
+    const maxR = Math.min(W, H) * 0.44;
+    const nucleusR = Math.max(26, Math.min(42, 18 + (currentP + currentN) * 0.65));
+
+    if (dist <= nucleusR) {
+      const now = Date.now();
+      const isDoubleTap = (now - lastTapTime < 320);
+      lastTapTime = now;
+
+      if (isRightClick || isDoubleTap) {
+        if (currentN < 22) currentN++;
+      } else {
+        if (currentP < 20) currentP++;
+      }
+      updateUI();
+      return;
+    }
+
+    const rK = maxR * 0.40;
+    const rL = maxR * 0.70;
+    const rM = maxR * 0.96;
+
+    if (Math.abs(dist - rK) < 22) {
+      if (currentK < 2) { currentK++; updateUI(); }
+    } else if (Math.abs(dist - rL) < 24) {
+      if (currentK < 2) {
+        feedbackBox.className = 'p-3.5 rounded-xl border border-amber-300 bg-amber-50 text-xs text-amber-900 leading-relaxed shadow-sm';
+        feedbackText.textContent = 'Hinweis: Zuerst muss die innere K-Schale mit 2 e⁻ gefüllt sein!';
+      } else if (currentL < 8) {
+        currentL++;
+        updateUI();
+      }
+    } else if (Math.abs(dist - rM) < 26) {
+      if (currentL < 8) {
+        feedbackBox.className = 'p-3.5 rounded-xl border border-amber-300 bg-amber-50 text-xs text-amber-900 leading-relaxed shadow-sm';
+        feedbackText.textContent = 'Hinweis: Zuerst muss die L-Schale voll besetzt sein (8 e⁻)!';
+      } else if (currentM < 8) {
+        currentM++;
+        updateUI();
+      }
+    }
+  }
+
+  cv.addEventListener('pointerdown', (e) => {
+    if (e.button === 2) return;
+    handleCanvasClick(e.clientX, e.clientY, false);
+  });
+
+  cv.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    handleCanvasClick(e.clientX, e.clientY, true);
+  });
+
+  btnAddP.addEventListener('click', () => { if (currentP < 20) { currentP++; updateUI(); } });
+  btnSubP.addEventListener('click', () => { if (currentP > 0) { currentP--; updateUI(); } });
+  btnAddN.addEventListener('click', () => { if (currentN < 22) { currentN++; updateUI(); } });
+  btnSubN.addEventListener('click', () => { if (currentN > 0) { currentN--; updateUI(); } });
+
+  btnAddEK.addEventListener('click', () => { if (currentK < 2) { currentK++; updateUI(); } });
+  btnSubEK.addEventListener('click', () => { if (currentK > 0) { currentK--; updateUI(); } });
+
+  btnAddEL.addEventListener('click', () => {
+    if (currentK < 2) {
+      feedbackBox.className = 'p-3.5 rounded-xl border border-amber-300 bg-amber-50 text-xs text-amber-900 leading-relaxed shadow-sm';
+      feedbackText.textContent = 'Hinweis: Die innere K-Schale muss erst voll sein (2 e⁻)!';
+      return;
+    }
+    if (currentL < 8) { currentL++; updateUI(); }
+  });
+  btnSubEL.addEventListener('click', () => { if (currentL > 0) { currentL--; updateUI(); } });
+
+  btnAddEM.addEventListener('click', () => {
+    if (currentL < 8) {
+      feedbackBox.className = 'p-3.5 rounded-xl border border-amber-300 bg-amber-50 text-xs text-amber-900 leading-relaxed shadow-sm';
+      feedbackText.textContent = 'Hinweis: Die L-Schale muss erst voll sein (8 e⁻)!';
+      return;
+    }
+    if (currentM < 8) { currentM++; updateUI(); }
+  });
+  btnSubEM.addEventListener('click', () => { if (currentM > 0) { currentM--; updateUI(); } });
+
+  btnResetBench.addEventListener('click', () => {
+    currentP = 0; currentN = 0; currentK = 0; currentL = 0; currentM = 0;
+    updateUI();
+  });
+
+  btnNextTask.addEventListener('click', loadRandomTask);
+  btnRandomTask.addEventListener('click', loadRandomTask);
+
+  loadRandomTask();
+  resize();
+  loop();
+})();
+</script>
+</body>
+</html>

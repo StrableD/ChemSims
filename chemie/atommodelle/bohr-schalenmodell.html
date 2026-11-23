@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bohr-Schalenmodell & Periodensystem</title>
+<meta name="description" content="Bohr-Schalenmodell aller Hauptgruppenelemente (Perioden 1 bis 6): Interaktives PSE, dynamisch kreisende Elektronen vs. statische 4er-Gruppierung zur Lewis-Vorbereitung.">
+<meta name="material:typ" content="Vorführung">
+<meta name="material:klasse" content="9">
+<meta name="material:geraet" content="Tablet, PC, Beamer">
+<meta name="material:stichworte" content="Bohr, Schalenmodell, Periodensystem, PSE, Hauptgruppen, Valenzelektronen, K-Schale, L-Schale, Lewis">
+<meta name="material:reihenfolge" content="2">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .hidden { display: none !important; }
+  
+  /* Browser-Vollbildmodus (:fullscreen) und Fallback */
+  #app-container:fullscreen,
+  #app-container.pseudo-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: white !important;
+    overflow: auto !important;
+  }
+  #app-container:fullscreen main,
+  #app-container.pseudo-fullscreen main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 1rem !important;
+  }
+  #app-container:fullscreen header,
+  #app-container.pseudo-fullscreen header,
+  #app-container:fullscreen footer,
+  #app-container.pseudo-fullscreen footer {
+    display: none !important;
+  }
+
+  /* PSE Styling */
+  .pse-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .pse-cell {
+    aspect-ratio: 1/1;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: 'Lexend', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 2px;
+    user-select: none;
+  }
+  .pse-cell:hover {
+    border-color: #2563eb;
+    transform: scale(1.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+  .pse-cell.active {
+    background: #1e293b;
+    border-color: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 0 0 2px #3b82f6;
+  }
+  .pse-cell .pse-z {
+    font-size: 0.62rem;
+    color: #6b7280;
+    align-self: flex-start;
+    line-height: 1;
+    margin-left: 2px;
+  }
+  .pse-cell.active .pse-z {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .pse-cell .pse-sym {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .pse-empty {
+    visibility: hidden;
+  }
+  .pse-head {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #6b7280;
+    font-weight: 700;
+    font-family: 'Lexend', sans-serif;
+    padding: 2px;
+  }
+
+  /* Shell Chips */
+  .shell-chip {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Lexend', sans-serif;
+  }
+  .shell-chip.val {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    color: #b45309;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4 md:p-8 font-sans text-gray-800 flex flex-col">
+
+<div id="app-container" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 w-full flex-1 flex flex-col transition-all relative">
+  
+  <!-- Vollbild Button -->
+  <button id="fullscreen-btn" class="absolute top-4 right-4 z-50 p-2 text-gray-500 hover:text-gray-800 bg-white/80 hover:bg-white rounded-lg shadow-sm backdrop-blur transition-all border border-gray-200" title="Vollbild umschalten">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+    </svg>
+  </button>
+
+  <!-- Header & Toolbar -->
+  <header class="bg-white border-b border-gray-200 px-6 pt-6 pb-4 relative shrink-0">
+    <div class="max-w-3xl mx-auto text-center">
+      <span class="text-xs uppercase tracking-wider font-semibold text-blue-600 block mb-1">Atommodelle · Didaktische Simulation</span>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+        Bohr-Schalenmodell & Periodensystem
+      </h1>
+      <p class="text-sm text-gray-600 leading-relaxed mb-4">
+        Niels Bohr postulierte 1913 stabile Elektronenbahnen um den Atomkern.
+        Erkunde alle Hauptgruppenelemente (Perioden 1 bis 6): Wechsle zwischen dynamisch kreisenden Elektronen und der statischen 4er-Gruppierung (Vorbereitung auf Lewis-Formeln).
+      </p>
+    </div>
+
+    <!-- Mode Buttons & Navigator -->
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-1">
+      <div class="inline-flex bg-gray-100 p-1 rounded-xl border border-gray-200 shadow-inner">
+        <button id="btnModeDynamic" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-gray-900 shadow-sm flex items-center gap-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Dynamisch (kreisend)
+        </button>
+        <button id="btnModeStatic" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-gray-600 hover:text-gray-900 flex items-center gap-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="7" r="1.5"/><circle cx="17" cy="12" r="1.5"/><circle cx="12" cy="17" r="1.5"/><circle cx="7" cy="12" r="1.5"/></svg>
+          Statisch (Lewis 4er)
+        </button>
+      </div>
+
+      <div class="inline-flex gap-1.5 bg-gray-100 p-1 rounded-xl border border-gray-200">
+        <button id="btnPrevElem" class="p-2 rounded-lg bg-white hover:bg-gray-50 text-gray-700 shadow-sm border border-gray-200 transition-colors" title="Vorheriges Element (Pfeil links)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button id="btnNextElem" class="p-2 rounded-lg bg-white hover:bg-gray-50 text-gray-700 shadow-sm border border-gray-200 transition-colors" title="Nächstes Element (Pfeil rechts)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="p-6 flex-1 flex flex-col relative z-0">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Links: Bohr-Atom Canvas (7 Spalten) -->
+      <div class="lg:col-span-7 flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-3.5 bg-gray-50 border-b border-gray-200 flex flex-wrap justify-between items-center gap-2">
+          <span id="atomTitle" class="font-bold text-gray-900 text-base">Natrium (Na) · Z = 11</span>
+          <div class="flex items-center gap-3 text-xs font-medium text-gray-600">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#0284c7] inline-block shadow-sm"></span> Rumpf (e⁻)
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#d97706] inline-block shadow-sm"></span> Valenzelektron (e⁻)
+            </span>
+          </div>
+        </div>
+
+        <div id="canvas-container" class="w-full bg-[#f8fafc] relative aspect-square max-h-[520px] border-b border-gray-200 shadow-inner">
+          <canvas id="cv" class="block w-full h-full"></canvas>
+        </div>
+      </div>
+
+      <!-- Rechts: Kontroll- & Info-Spalte (5 Spalten) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+        
+        <!-- 1. Hauptgruppen-Periodensystem -->
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+          <h2 class="font-bold text-gray-800 text-sm mb-2.5 flex items-center gap-2">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+            Hauptgruppen-PSE (Perioden 1–6)
+          </h2>
+          <div class="overflow-x-auto pb-1">
+            <div class="pse-grid mb-1">
+              <div class="pse-head">I</div><div class="pse-head">II</div><div class="pse-head">III</div><div class="pse-head">IV</div>
+              <div class="pse-head">V</div><div class="pse-head">VI</div><div class="pse-head">VII</div><div class="pse-head">VIII</div>
+            </div>
+            <div class="pse-grid" id="pseGrid"></div>
+          </div>
+        </div>
+
+        <!-- 2. Element-Steckbrief -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+          <h2 id="profileTitle" class="font-bold text-gray-800 text-sm mb-3">Element-Steckbrief: Natrium</h2>
+          <div class="grid grid-cols-3 gap-2.5 mb-3">
+            <div class="p-2.5 rounded-lg border border-orange-200 bg-orange-50 flex flex-col items-center justify-center">
+              <span class="text-xs text-orange-700 font-medium">Protonen</span>
+              <span id="valProtons" class="text-xl font-bold text-orange-900">11</span>
+              <span class="text-[11px] text-orange-600/80">Kernladung</span>
+            </div>
+            <div class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex flex-col items-center justify-center">
+              <span class="text-xs text-gray-600 font-medium">Neutronen</span>
+              <span id="valNeutrons" class="text-xl font-bold text-gray-800">12</span>
+              <span class="text-[11px] text-gray-500">A − Z</span>
+            </div>
+            <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50 flex flex-col items-center justify-center">
+              <span class="text-xs text-blue-700 font-medium">Elektronen</span>
+              <span id="valElectrons" class="text-xl font-bold text-blue-900">11</span>
+              <span class="text-[11px] text-blue-600/80">Hülle</span>
+            </div>
+          </div>
+
+          <div class="text-xs font-semibold text-gray-600 mb-1.5">Schalenbesetzung (K bis P):</div>
+          <div class="flex flex-wrap gap-1.5" id="shellsList"></div>
+        </div>
+
+        <!-- 3. Verbindung zum Periodensystem -->
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 p-4 rounded-xl shadow-sm space-y-2">
+          <h3 class="font-bold text-sm flex items-center gap-1.5 text-emerald-800">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Gesetzmäßigkeiten im Periodensystem
+          </h3>
+          <div class="text-xs space-y-1.5 leading-relaxed text-emerald-950">
+            <div class="flex items-baseline gap-2">
+              <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">Periode</span>
+              <span id="rulePeriod">= 3 besetzte Schalen.</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="bg-amber-600 text-white font-bold px-2 py-0.5 rounded text-[10px] uppercase shrink-0">Hauptgruppe</span>
+              <span id="ruleGroup">= 1 Außenelektron.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Dezente Navigation zu verwandten Simulationen -->
+    <footer class="mt-8 pt-4 border-t border-gray-200 text-xs text-gray-400 flex flex-wrap justify-between items-center gap-2 shrink-0">
+      <span class="font-medium text-gray-500">Atommodelle:</span>
+      <div class="flex flex-wrap gap-x-3 gap-y-1">
+        <a href="rutherford-streuversuch.html" class="hover:text-blue-600 transition-colors">Rutherford-Streuversuch</a>
+        <span>·</span>
+        <a href="bohr-schalenmodell.html" class="text-blue-600 font-semibold">Bohr-Schalenmodell</a>
+        <span>·</span>
+        <a href="atom-baukasten.html" class="hover:text-blue-600 transition-colors">Atom-Baukasten</a>
+        <span>·</span>
+        <a href="energiestufenmodell.html" class="hover:text-blue-600 transition-colors">Energiestufenmodell</a>
+        <span>·</span>
+        <a href="ionisierungsenergie.html" class="hover:text-blue-600 transition-colors">Ionisierungsenergie</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- ==================== JAVASCRIPT LOGIC ==================== -->
+<script>
+(function() {
+  'use strict';
+
+  const ELEMENTS = [
+    { z: 1,  sym: 'H',  name: 'Wasserstoff', mass: 1,   group: 1, period: 1, shells: [1] },
+    { z: 2,  sym: 'He', name: 'Helium',      mass: 4,   group: 8, period: 1, shells: [2] },
+    { z: 3,  sym: 'Li', name: 'Lithium',     mass: 7,   group: 1, period: 2, shells: [2, 1] },
+    { z: 4,  sym: 'Be', name: 'Beryllium',   mass: 9,   group: 2, period: 2, shells: [2, 2] },
+    { z: 5,  sym: 'B',  name: 'Bor',         mass: 11,  group: 3, period: 2, shells: [2, 3] },
+    { z: 6,  sym: 'C',  name: 'Kohlenstoff', mass: 12,  group: 4, period: 2, shells: [2, 4] },
+    { z: 7,  sym: 'N',  name: 'Stickstoff',  mass: 14,  group: 5, period: 2, shells: [2, 5] },
+    { z: 8,  sym: 'O',  name: 'Sauerstoff',  mass: 16,  group: 6, period: 2, shells: [2, 6] },
+    { z: 9,  sym: 'F',  name: 'Fluor',       mass: 19,  group: 7, period: 2, shells: [2, 7] },
+    { z: 10, sym: 'Ne', name: 'Neon',        mass: 20,  group: 8, period: 2, shells: [2, 8] },
+    { z: 11, sym: 'Na', name: 'Natrium',     mass: 23,  group: 1, period: 3, shells: [2, 8, 1] },
+    { z: 12, sym: 'Mg', name: 'Magnesium',   mass: 24,  group: 2, period: 3, shells: [2, 8, 2] },
+    { z: 13, sym: 'Al', name: 'Aluminium',   mass: 27,  group: 3, period: 3, shells: [2, 8, 3] },
+    { z: 14, sym: 'Si', name: 'Silicium',    mass: 28,  group: 4, period: 3, shells: [2, 8, 4] },
+    { z: 15, sym: 'P',  name: 'Phosphor',    mass: 31,  group: 5, period: 3, shells: [2, 8, 5] },
+    { z: 16, sym: 'S',  name: 'Schwefel',    mass: 32,  group: 6, period: 3, shells: [2, 8, 6] },
+    { z: 17, sym: 'Cl', name: 'Chlor',       mass: 35,  group: 7, period: 3, shells: [2, 8, 7] },
+    { z: 18, sym: 'Ar', name: 'Argon',       mass: 40,  group: 8, period: 3, shells: [2, 8, 8] },
+    { z: 19, sym: 'K',  name: 'Kalium',      mass: 39,  group: 1, period: 4, shells: [2, 8, 8, 1] },
+    { z: 20, sym: 'Ca', name: 'Calcium',     mass: 40,  group: 2, period: 4, shells: [2, 8, 8, 2] },
+    { z: 31, sym: 'Ga', name: 'Gallium',     mass: 70,  group: 3, period: 4, shells: [2, 8, 18, 3] },
+    { z: 32, sym: 'Ge', name: 'Germanium',   mass: 73,  group: 4, period: 4, shells: [2, 8, 18, 4] },
+    { z: 33, sym: 'As', name: 'Arsen',       mass: 75,  group: 5, period: 4, shells: [2, 8, 18, 5] },
+    { z: 34, sym: 'Se', name: 'Selen',       mass: 79,  group: 6, period: 4, shells: [2, 8, 18, 6] },
+    { z: 35, sym: 'Br', name: 'Brom',        mass: 80,  group: 7, period: 4, shells: [2, 8, 18, 7] },
+    { z: 36, sym: 'Kr', name: 'Krypton',     mass: 84,  group: 8, period: 4, shells: [2, 8, 18, 8] },
+    { z: 37, sym: 'Rb', name: 'Rubidium',    mass: 85,  group: 1, period: 5, shells: [2, 8, 18, 8, 1] },
+    { z: 38, sym: 'Sr', name: 'Strontium',   mass: 88,  group: 2, period: 5, shells: [2, 8, 18, 8, 2] },
+    { z: 49, sym: 'In', name: 'Indium',      mass: 115, group: 3, period: 5, shells: [2, 8, 18, 18, 3] },
+    { z: 50, sym: 'Sn', name: 'Zinn',        mass: 119, group: 4, period: 5, shells: [2, 8, 18, 18, 4] },
+    { z: 51, sym: 'Sb', name: 'Antimon',     mass: 122, group: 5, period: 5, shells: [2, 8, 18, 18, 5] },
+    { z: 52, sym: 'Te', name: 'Tellur',      mass: 128, group: 6, period: 5, shells: [2, 8, 18, 18, 6] },
+    { z: 53, sym: 'I',  name: 'Iod',         mass: 127, group: 7, period: 5, shells: [2, 8, 18, 18, 7] },
+    { z: 54, sym: 'Xe', name: 'Xenon',       mass: 131, group: 8, period: 5, shells: [2, 8, 18, 18, 8] },
+    { z: 55, sym: 'Cs', name: 'Caesium',     mass: 133, group: 1, period: 6, shells: [2, 8, 18, 18, 8, 1] },
+    { z: 56, sym: 'Ba', name: 'Barium',      mass: 137, group: 2, period: 6, shells: [2, 8, 18, 18, 8, 2] },
+    { z: 81, sym: 'Tl', name: 'Thallium',    mass: 204, group: 3, period: 6, shells: [2, 8, 18, 32, 18, 3] },
+    { z: 82, sym: 'Pb', name: 'Blei',        mass: 207, group: 4, period: 6, shells: [2, 8, 18, 32, 18, 4] },
+    { z: 83, sym: 'Bi', name: 'Bismut',      mass: 209, group: 5, period: 6, shells: [2, 8, 18, 32, 18, 5] }
+  ];
+
+  const SHELL_NAMES = ['K', 'L', 'M', 'N', 'O', 'P'];
+  const ROMAN_GROUPS = ['', 'I (Alkalimetalle)', 'II (Erdalkalimetalle)', 'III (Borgruppe)', 'IV (Kohlenstoffgruppe)', 'V (Stickstoffgruppe)', 'VI (Chalkogene)', 'VII (Halogene)', 'VIII (Edelgase)'];
+
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const appContainer = document.getElementById('app-container');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const btnModeDynamic = document.getElementById('btnModeDynamic');
+  const btnModeStatic = document.getElementById('btnModeStatic');
+  const btnPrevElem = document.getElementById('btnPrevElem');
+  const btnNextElem = document.getElementById('btnNextElem');
+  const pseGrid = document.getElementById('pseGrid');
+  const atomTitle = document.getElementById('atomTitle');
+  const profileTitle = document.getElementById('profileTitle');
+  const valProtons = document.getElementById('valProtons');
+  const valNeutrons = document.getElementById('valNeutrons');
+  const valElectrons = document.getElementById('valElectrons');
+  const shellsList = document.getElementById('shellsList');
+  const rulePeriod = document.getElementById('rulePeriod');
+  const ruleGroup = document.getElementById('ruleGroup');
+
+  let currentZ = 11;
+  let isDynamic = true;
+  let electronAngles = [];
+
+  let W = 500, H = 500;
+  function resize() {
+    const rect = cv.parentElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    W = rect.width;
+    H = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  window.addEventListener('resize', resize);
+
+  // Normaler Browser-Vollbildmodus mit Fallback
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      appContainer.requestFullscreen().catch(() => {
+        appContainer.classList.toggle('pseudo-fullscreen');
+        updateFsIcon();
+      });
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  function updateFsIcon() {
+    const isFs = !!document.fullscreenElement || appContainer.classList.contains('pseudo-fullscreen');
+    fullscreenBtn.innerHTML = isFs
+      ? `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>`
+      : `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>`;
+    setTimeout(resize, 60);
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', updateFsIcon);
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'f' || e.key === 'F') && document.activeElement.tagName !== 'INPUT') {
+      toggleFullscreen();
+    }
+  });
+
+  function buildPseGrid() {
+    pseGrid.innerHTML = '';
+    const layout = [
+      1, 0, 0, 0, 0, 0, 0, 2,
+      3, 4, 5, 6, 7, 8, 9, 10,
+      11, 12, 13, 14, 15, 16, 17, 18,
+      19, 20, 31, 32, 33, 34, 35, 36,
+      37, 38, 49, 50, 51, 52, 53, 54,
+      55, 56, 81, 82, 83, 0, 0, 0
+    ];
+
+    layout.forEach(z => {
+      if (z === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'pse-cell pse-empty';
+        pseGrid.appendChild(empty);
+      } else {
+        const el = ELEMENTS.find(e => e.z === z);
+        const cell = document.createElement('button');
+        cell.className = `pse-cell ${z === currentZ ? 'active' : ''}`;
+        cell.setAttribute('data-z', z);
+        cell.innerHTML = `<span class="pse-z">${el.z}</span><span class="pse-sym">${el.sym}</span>`;
+        cell.addEventListener('click', () => selectElement(z));
+        pseGrid.appendChild(cell);
+      }
+    });
+  }
+
+  function selectElement(z) {
+    currentZ = z;
+    const el = ELEMENTS.find(e => e.z === z) || ELEMENTS[0];
+
+    document.querySelectorAll('.pse-cell[data-z]').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.getAttribute('data-z')) === z);
+    });
+
+    atomTitle.textContent = `${el.name} (${el.sym}) · Z = ${el.z}`;
+    profileTitle.textContent = `Element-Steckbrief: ${el.name} (${el.sym})`;
+    valProtons.textContent = el.z;
+    valNeutrons.textContent = el.mass - el.z;
+    valElectrons.textContent = el.z;
+
+    shellsList.innerHTML = '';
+    el.shells.forEach((count, i) => {
+      const isVal = (i === el.shells.length - 1);
+      const chip = document.createElement('div');
+      chip.className = `shell-chip ${isVal ? 'val' : ''}`;
+      chip.innerHTML = `<strong>${SHELL_NAMES[i]}:</strong> ${count} e⁻ ${isVal ? '(Außen)' : ''}`;
+      shellsList.appendChild(chip);
+    });
+
+    const valCount = el.shells[el.shells.length - 1];
+    rulePeriod.innerHTML = `= <strong>${el.period} besetzte Schale(n)</strong> (${SHELL_NAMES.slice(0, el.period).join(', ')}).`;
+    ruleGroup.innerHTML = `= <strong>${valCount} Außenelektron(en)</strong> in Hauptgruppe ${ROMAN_GROUPS[el.group]}.`;
+
+    initAngles();
+  }
+
+  function initAngles() {
+    const el = ELEMENTS.find(e => e.z === currentZ) || ELEMENTS[0];
+    electronAngles = el.shells.map(count => {
+      const arr = [];
+      for (let i = 0; i < count; i++) {
+        arr.push((i / count) * Math.PI * 2);
+      }
+      return arr;
+    });
+  }
+
+  function getStaticAngles(count) {
+    const baseAngles = [-Math.PI / 2, 0, Math.PI / 2, Math.PI];
+    if (count <= 2 && count === 2) return [-Math.PI / 2, Math.PI / 2];
+    if (count <= 4) return baseAngles.slice(0, count);
+    const delta = 0.22;
+    const res = [];
+    const pairs = count - 4;
+    for (let pos = 0; pos < 4; pos++) {
+      const base = baseAngles[pos];
+      if (pos < pairs) res.push(base - delta, base + delta);
+      else res.push(base);
+    }
+    return res;
+  }
+
+  function drawAtom(dt) {
+    const el = ELEMENTS.find(e => e.z === currentZ) || ELEMENTS[0];
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+    const maxRadius = Math.min(W, H) * 0.44;
+    const numShells = el.shells.length;
+    const nucleusR = Math.max(18, 14 + Math.min(24, el.z * 0.35));
+
+    const shellRadii = [];
+    const shellStep = (maxRadius - nucleusR - 12) / Math.max(1, numShells);
+    for (let i = 0; i < numShells; i++) {
+      shellRadii.push(nucleusR + 20 + i * shellStep);
+    }
+
+    shellRadii.forEach((r, i) => {
+      const isVal = (i === numShells - 1);
+      ctx.strokeStyle = isVal ? 'rgba(217, 119, 6, 0.7)' : 'rgba(148, 163, 184, 0.5)';
+      ctx.lineWidth = isVal ? 2 : 1.5;
+      ctx.setLineDash(isVal ? [] : [4, 4]);
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = isVal ? '#b45309' : '#64748b';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText(SHELL_NAMES[i], cx + r - 10, cy - 5);
+    });
+
+    const grad = ctx.createRadialGradient(cx - 3, cy - 3, 2, cx, cy, nucleusR);
+    grad.addColorStop(0, '#ea580c');
+    grad.addColorStop(1, '#c2410c');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, nucleusR, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.max(13, nucleusR * 0.55)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${el.sym}`, cx, cy - 5);
+
+    ctx.font = '10px sans-serif';
+    ctx.fillText(`+${el.z}`, cx, cy + 9);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+
+    el.shells.forEach((count, sIdx) => {
+      const r = shellRadii[sIdx];
+      const isVal = (sIdx === numShells - 1);
+      const eColor = isVal ? '#d97706' : '#0284c7';
+      const glowColor = isVal ? 'rgba(217, 119, 6, 0.25)' : 'rgba(2, 132, 199, 0.2)';
+
+      let angles = [];
+      if (isDynamic) {
+        const speed = (0.8 / (sIdx + 1)) * (sIdx % 2 === 0 ? 1 : -1);
+        for (let eIdx = 0; eIdx < count; eIdx++) {
+          electronAngles[sIdx][eIdx] = (electronAngles[sIdx][eIdx] + speed * dt) % (Math.PI * 2);
+        }
+        angles = electronAngles[sIdx];
+      } else {
+        if (isVal || count <= 8) {
+          angles = getStaticAngles(count);
+        } else {
+          angles = [];
+          for (let k = 0; k < count; k++) angles.push((k / count) * Math.PI * 2);
+        }
+      }
+
+      const eRadius = count > 18 ? 4 : 5.5;
+      angles.forEach(ang => {
+        const ex = cx + Math.cos(ang) * r;
+        const ey = cy + Math.sin(ang) * r;
+
+        ctx.fillStyle = glowColor;
+        ctx.beginPath();
+        ctx.arc(ex, ey, eRadius + 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = eColor;
+        ctx.beginPath();
+        ctx.arc(ex, ey, eRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (count <= 18) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('−', ex, ey);
+          ctx.textBaseline = 'alphabetic';
+          ctx.textAlign = 'left';
+        }
+      });
+    });
+  }
+
+  let lastTime = performance.now();
+  function render(time) {
+    const dt = Math.min(0.05, (time - lastTime) / 1000);
+    lastTime = time;
+
+    // Helles Canvas
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, W, H);
+
+    drawAtom(dt);
+
+    requestAnimationFrame(render);
+  }
+
+  btnModeDynamic.addEventListener('click', () => {
+    isDynamic = true;
+    btnModeDynamic.classList.replace('text-gray-600', 'text-gray-900');
+    btnModeDynamic.classList.add('bg-white', 'shadow-sm');
+    btnModeStatic.classList.remove('bg-white', 'shadow-sm');
+    btnModeStatic.classList.replace('text-gray-900', 'text-gray-600');
+  });
+
+  btnModeStatic.addEventListener('click', () => {
+    isDynamic = false;
+    btnModeStatic.classList.replace('text-gray-600', 'text-gray-900');
+    btnModeStatic.classList.add('bg-white', 'shadow-sm');
+    btnModeDynamic.classList.remove('bg-white', 'shadow-sm');
+    btnModeDynamic.classList.replace('text-gray-900', 'text-gray-600');
+  });
+
+  function stepElement(offset) {
+    const curIdx = ELEMENTS.findIndex(e => e.z === currentZ);
+    const nextIdx = (curIdx + offset + ELEMENTS.length) % ELEMENTS.length;
+    selectElement(ELEMENTS[nextIdx].z);
+  }
+
+  btnPrevElem.addEventListener('click', () => stepElement(-1));
+  btnNextElem.addEventListener('click', () => stepElement(1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') stepElement(-1);
+    if (e.key === 'ArrowRight') stepElement(1);
+  });
+
+  buildPseGrid();
+  selectElement(11);
+  resize();
+  requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
